@@ -8,46 +8,67 @@ class QueryTest < Test::Unit::TestCase
       next if operator == 'size' && RUBY_VERSION >= '1.9.1' # 1.9 defines Symbol#size
 
       should "convert #{operator} conditions" do
-        Query.new(:age.send(operator) => 21).criteria.should == {
-          :age => {"$#{operator}" => 21}
-        }
+        Query.new(:age.send(operator) => 21).criteria.should == {:age => {"$#{operator}" => 21}}
       end
     end
 
     should "work with simple criteria" do
-      Query.new(:foo => 'bar').criteria.should == {
-        :foo => 'bar'
+      Query.new(:foo => 'bar').criteria.should == {:foo => 'bar'}
+      Query.new(:foo => 'bar', :baz => 'wick').criteria.should == {:foo => 'bar', :baz => 'wick'}
+    end
+
+    context "with id key" do
+      should "convert to _id" do
+        id = Mongo::ObjectID.new
+        Query.new(:id => id).criteria.should == {:_id => id}
+      end
+
+      should "convert id with symbol operator to _id with modifier" do
+        id = Mongo::ObjectID.new
+        Query.new(:id.ne => id).criteria.should == {:_id => {'$ne' => id}}
+      end
+    end
+
+    context "with time value" do
+      should "convert to utc if not utc" do
+        Query.new(:created_at => Time.now).criteria[:created_at].utc?.should be(true)
+      end
+
+      should "leave utc alone" do
+        Query.new(:created_at => Time.now.utc).criteria[:created_at].utc?.should be(true)
+      end
+    end
+
+    context "with array value" do
+      should "default to $in" do
+        Query.new(:numbers => [1,2,3]).criteria.should == {:numbers => {'$in' => [1,2,3]}}
+      end
+
+      should "use existing modifier if present" do
+        Query.new(:numbers => {'$all' => [1,2,3]}).criteria.should == {:numbers => {'$all' => [1,2,3]}}
+        Query.new(:numbers => {'$any' => [1,2,3]}).criteria.should == {:numbers => {'$any' => [1,2,3]}}
+      end
+    end
+
+    context "with set value" do
+      should "default to $in and convert to array" do
+        Query.new(:numbers => Set.new([1,2,3])).criteria.should == {:numbers => {'$in' => [1,2,3]}}
+      end
+      
+      should "use existing modifier if present and convert to array" do
+        Query.new(:numbers => {'$all' => Set.new([1,2,3])}).criteria.should == {:numbers => {'$all' => [1,2,3]}}
+        Query.new(:numbers => {'$any' => Set.new([1,2,3])}).criteria.should == {:numbers => {'$any' => [1,2,3]}}
+      end
+    end
+    
+    should "work arbitrarily deep" do
+      Query.new(:foo => {:bar => [1,2,3]}).criteria.should == {
+        :foo => {:bar => {'$in' => [1,2,3]}}
       }
 
-      Query.new(:foo => 'bar', :baz => 'wick').criteria.should == {
-        :foo => 'bar',
-        :baz => 'wick',
+      Query.new(:foo => {:bar => {'$any' => [1,2,3]}}).criteria.should == {
+        :foo => {:bar => {'$any' => [1,2,3]}}
       }
-    end
-
-    should "convert id to _id" do
-      id = Mongo::ObjectID.new
-      Query.new(:id => id).criteria.should == {:_id => id}
-    end
-
-    should "convert id with symbol operator to _id with modifier" do
-      id = Mongo::ObjectID.new
-      Query.new(:id.ne => id).criteria.should == {
-        :_id => {'$ne' => id}
-      }
-    end
-
-    should "convert times to utc if they aren't already" do
-      time = Time.now
-      criteria = Query.new(:created_at => time).criteria
-      criteria[:created_at].utc?.should be(true)
-    end
-
-    should "not funk with times already in utc" do
-      time = Time.now.utc
-      criteria = Query.new(:created_at => time).criteria
-      criteria[:created_at].utc?.should be(true)
-      criteria[:created_at].should == time
     end
   end
 
