@@ -41,6 +41,15 @@ module Mongo
         hash
       end
 
+      def normalized_options(options)
+        fields = @options[:fields] || @options[:select]
+        skip   = @options[:skip]   || @options[:offset] || 0
+        limit  = @options[:limit]  || 0
+        sort   = @options[:sort]   || normalized_sort(@options[:order])
+
+        {:fields => normalized_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
+      end
+
       def normalized_key(field)
         field.to_s == 'id' ? :_id : field
       end
@@ -56,6 +65,36 @@ module Mongo
           else
             value
         end
+      end
+
+      def normalized_sort(sort)
+        return if sort.nil?
+
+        if sort.respond_to?(:all?) && sort.all? { |s| symbol_operator?(s) }
+          sort.map { |s| normalized_order(s.field, s.operator) }
+        elsif symbol_operator?(sort)
+          [normalized_order(sort.field, sort.operator)]
+        else
+          sort.split(',').map do |str|
+            normalized_order(*str.strip.split(' '))
+          end
+        end
+      end
+
+      def normalized_fields(fields)
+        return if fields.nil? || fields == [] || fields == ''
+
+        if fields.respond_to?(:flatten, :compact)
+          fields.flatten.compact
+        else
+          fields.split(',').map { |field| field.strip }
+        end
+      end
+
+      def normalized_order(field, direction=nil)
+        direction ||= 'ASC'
+        direction = direction.upcase == 'ASC' ? 1 : -1
+        [normalized_key(field).to_s, direction]
       end
 
       def symbol_operator?(object)
@@ -80,6 +119,7 @@ module Mongo
         end
 
         @criteria = normalized_criteria(@criteria)
+        @options  = normalized_options(@options)
       end
   end
 end
