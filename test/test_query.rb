@@ -244,12 +244,12 @@ class QueryTest < Test::Unit::TestCase
 
     should "work with full range of things" do
       query_options = Query.new({
-        :foo => 'bar',
-        :baz => true,
-        :sort => [['foo', 1]],
+        :foo    => 'bar',
+        :baz    => true,
+        :sort   => [['foo', 1]],
         :fields => ['foo', 'baz'],
-        :limit => 10,
-        :skip => 10,
+        :limit  => 10,
+        :skip   => 10,
       })
 
       query_options.criteria.should == {
@@ -258,10 +258,10 @@ class QueryTest < Test::Unit::TestCase
       }
 
       query_options.options.should == {
-        :sort => [['foo', 1]],
+        :sort   => [['foo', 1]],
         :fields => ['foo', 'baz'],
-        :limit => 10,
-        :skip => 10,
+        :limit  => 10,
+        :skip   => 10,
       }
     end
   end
