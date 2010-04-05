@@ -13,6 +13,42 @@ class QueryTest < Test::Unit::TestCase
         }
       end
     end
+
+    should "work with simple criteria" do
+      Query.new(:foo => 'bar').criteria.should == {
+        :foo => 'bar'
+      }
+
+      Query.new(:foo => 'bar', :baz => 'wick').criteria.should == {
+        :foo => 'bar',
+        :baz => 'wick',
+      }
+    end
+
+    should "convert id to _id" do
+      id = Mongo::ObjectID.new
+      Query.new(:id => id).criteria.should == {:_id => id}
+    end
+
+    should "convert id with symbol operator to _id with modifier" do
+      id = Mongo::ObjectID.new
+      Query.new(:id.ne => id).criteria.should == {
+        :_id => {'$ne' => id}
+      }
+    end
+
+    should "convert times to utc if they aren't already" do
+      time = Time.now
+      criteria = Query.new(:created_at => time).criteria
+      criteria[:created_at].utc?.should be(true)
+    end
+
+    should "not funk with times already in utc" do
+      time = Time.now.utc
+      criteria = Query.new(:created_at => time).criteria
+      criteria[:created_at].utc?.should be(true)
+      criteria[:created_at].should == time
+    end
   end
 
   context "Condition auto-detection" do

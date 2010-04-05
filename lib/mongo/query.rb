@@ -28,23 +28,38 @@ module Mongo
     private
       def normalized_criteria(criteria, parent=nil)
         hash = {}
-        
+
         criteria.each_pair do |key, value|
           if symbol_operator?(key)
-            value = {"$#{key.operator}" => value}
-            key = key.field
+            key, value = key.field, {"$#{key.operator}" => value}
           end
-          
-          hash[key] = value
+          hash[normalized_key(key)] = normalized_value(value)
         end
-        
+
         hash
       end
-      
+
+      def normalized_key(field)
+        field.to_s == 'id' ? :_id : field
+      end
+
+      def normalized_value(value)
+        case value
+          # when Array, Set
+          #   modifier?(field) ? value.to_a : {'$in' => value.to_a}
+          # when Hash
+          #   to_criteria(value, field)
+          when Time
+            value.utc
+          else
+            value
+        end
+      end
+
       def symbol_operator?(object)
         object.respond_to?(:field, :operator)
       end
-      
+
       def separate_criteria_and_options
         @original_options.each_pair do |key, value|
           key = key.respond_to?(:to_sym) ? key.to_sym : key
@@ -57,7 +72,7 @@ module Mongo
             @criteria[key] = value
           end
         end
-        
+
         @criteria = normalized_criteria(@criteria)
       end
   end
