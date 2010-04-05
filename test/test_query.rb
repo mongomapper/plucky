@@ -67,6 +67,32 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "where" do
+    should "update criteria" do
+      Query.new(:moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
+    end
+  end
+
+  context "limit" do
+    should "set limit option" do
+      Query.new.limit(5).options[:limit].should == 5
+    end
+    
+    should "override existing limit" do
+      Query.new(:limit => 5).limit(15).options[:limit].should == 15
+    end
+  end
+
+  context "skip" do
+    should "set skip option" do
+      Query.new.skip(5).options[:skip].should == 5
+    end
+    
+    should "override existing skip" do
+      Query.new(:skip => 5).skip(10).options[:skip].should == 10
+    end
+  end
+
   context "ordering" do
     should "single field with ascending direction" do
       sort = [['foo', 1]]

@@ -1,20 +1,5 @@
 require 'set'
-
-class SymbolOperator
-  attr_reader :field, :operator
-
-  def initialize(field, operator, options={})
-    @field, @operator = field, operator
-  end unless method_defined?(:initialize)
-end
-
-class Symbol
-  %w(gt lt gte lte ne in nin mod all size where exists asc desc).each do |operator|
-    define_method(operator) do
-      SymbolOperator.new(self, operator)
-    end unless method_defined?(operator)
-  end
-end
+require 'support'
 
 module Mongo
   class Query
@@ -25,6 +10,21 @@ module Mongo
     def initialize(options={})
       @original_options, @options, @criteria, = options, {}, {}
       separate_criteria_and_options
+    end
+
+    def where(criteria={})
+      @criteria.update(criteria)
+      self
+    end
+
+    def skip(count)
+      @options[:skip] = count
+      self
+    end
+
+    def limit(count)
+      @options[:limit] = count
+      self
     end
 
     private
