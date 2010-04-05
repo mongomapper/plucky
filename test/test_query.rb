@@ -191,7 +191,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "Condition auto-detection" do
+  context "Criteria/option auto-detection" do
     should "know :conditions are criteria" do
       finder = Query.new(:conditions => {:foo => 'bar'})
       finder.criteria.should == {:foo => 'bar'}
