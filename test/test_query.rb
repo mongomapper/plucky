@@ -17,6 +17,12 @@ class QueryTest < Test::Unit::TestCase
       Query.new(:foo => 'bar', :baz => 'wick').criteria.should == {:foo => 'bar', :baz => 'wick'}
     end
 
+    should "work with multiple symbol operators on the same field" do
+      Query.new(:position.gt => 0, :position.lte => 10).criteria.should == {
+        :position => {"$gt" => 0, "$lte" => 10}
+      }
+    end
+
     context "with id key" do
       should "convert to _id" do
         id = BSON::ObjectID.new

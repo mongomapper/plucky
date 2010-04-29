@@ -43,10 +43,9 @@ module Mongo
         criteria.each_pair do |key, value|
           key = normalized_key(key)
           if symbol_operator?(key)
-            value = {"$#{key.operator}" => value}
-            key   = normalized_key(key.field)
+            key, value = normalized_key(key.field), {"$#{key.operator}" => value}
           end
-          hash[key] = normalized_value(key, value)
+          hash[key] = normalized_value(hash, key, value)
         end
         hash
       end
@@ -62,12 +61,16 @@ module Mongo
         field.to_s == 'id' ? :_id : field
       end
 
-      def normalized_value(key, value)
+      def normalized_value(criteria, key, value)
         case value
           when Array, Set
             modifier?(key) ? value.to_a : {'$in' => value.to_a}
           when Hash
-            normalized_criteria(value, key)
+            if criteria[key].kind_of?(Hash)
+              criteria[key].dup.merge(normalized_criteria(value, key))
+            else
+              normalized_criteria(value, key)
+            end
           when Time
             value.utc
           else
