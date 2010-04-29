@@ -19,12 +19,12 @@ class QueryTest < Test::Unit::TestCase
 
     context "with id key" do
       should "convert to _id" do
-        id = Mongo::ObjectID.new
+        id = BSON::ObjectID.new
         Query.new(:id => id).criteria.should == {:_id => id}
       end
 
       should "convert id with symbol operator to _id with modifier" do
-        id = Mongo::ObjectID.new
+        id = BSON::ObjectID.new
         Query.new(:id.ne => id).criteria.should == {:_id => {'$ne' => id}}
       end
     end
@@ -71,13 +71,31 @@ class QueryTest < Test::Unit::TestCase
     should "update criteria" do
       Query.new(:moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
     end
+    
+    should "get normalized" do
+      Query.new(:moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
+        :moo => 'cow', :foo => {'$in' => ['bar']}
+      }
+    end
+  end
+
+  context "select" do
+    should "update criteria" do
+      Query.new.fields([:foo, :bar, :baz]).options[:fields].should == [:foo, :bar, :baz]
+    end
+    
+    should "get normalized" do
+      Query.new(:moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
+        :moo => 'cow', :foo => {'$in' => ['bar']}
+      }
+    end
   end
 
   context "limit" do
     should "set limit option" do
       Query.new.limit(5).options[:limit].should == 5
     end
-    
+
     should "override existing limit" do
       Query.new(:limit => 5).limit(15).options[:limit].should == 15
     end
@@ -87,7 +105,7 @@ class QueryTest < Test::Unit::TestCase
     should "set skip option" do
       Query.new.skip(5).options[:skip].should == 5
     end
-    
+
     should "override existing skip" do
       Query.new(:skip => 5).skip(10).options[:skip].should == 10
     end
@@ -164,7 +182,7 @@ class QueryTest < Test::Unit::TestCase
       Query.new(:skip => 2).options[:skip].should == 2
     end
 
-    should "covert string to integer" do
+    should "convert string to integer" do
       Query.new(:skip => '2').options[:skip].should == 2
     end
 
@@ -182,7 +200,7 @@ class QueryTest < Test::Unit::TestCase
       Query.new(:limit => 2).options[:limit].should == 2
     end
 
-    should "covert string to integer" do
+    should "convert string to integer" do
       Query.new(:limit => '2').options[:limit].should == 2
     end
   end

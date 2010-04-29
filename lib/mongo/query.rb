@@ -13,17 +13,27 @@ module Mongo
     end
 
     def where(criteria={})
-      @criteria.update(criteria)
+      @criteria.update(normalized_criteria(criteria))
       self
     end
 
-    def skip(count)
-      @options[:skip] = count
+    def skip(count=0)
+      @options[:skip] = count.to_i
       self
     end
 
-    def limit(count)
-      @options[:limit] = count
+    def limit(count=0)
+      @options[:limit] = count.to_i
+      self
+    end
+
+    def fields(fields)
+      @options[:fields] = fields
+      self
+    end
+    
+    def sort(options)
+      @options[:sort] = options
       self
     end
 
@@ -41,13 +51,11 @@ module Mongo
         hash
       end
 
-      def normalized_options(options)
-        fields = @options[:fields] || @options[:select]
-        skip   = @options[:skip]   || @options[:offset] || 0
-        limit  = @options[:limit]  || 0
-        sort   = @options[:sort]   || normalized_sort(@options[:order])
-
-        {:fields => normalized_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
+      def normalize_options
+        sort(@options[:sort] || normalized_sort(@options[:order]))
+        skip(@options[:skip] || @options[:offset])
+        limit(@options[:limit])
+        fields(normalized_fields(@options[:fields] || @options[:select]))
       end
 
       def normalized_key(field)
@@ -119,7 +127,7 @@ module Mongo
         end
 
         @criteria = normalized_criteria(@criteria)
-        @options  = normalized_options(@options)
+        normalize_options
       end
   end
 end
