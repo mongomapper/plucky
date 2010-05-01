@@ -73,7 +73,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "where" do
+  context "#where" do
     should "update criteria" do
       Query.new(:moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
     end
@@ -85,8 +85,8 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "select" do
-    should "update criteria" do
+  context "#fields" do
+    should "update options" do
       Query.new.fields([:foo, :bar, :baz]).options[:fields].should == [:foo, :bar, :baz]
     end
     
@@ -97,7 +97,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "limit" do
+  context "#limit" do
     should "set limit option" do
       Query.new.limit(5).options[:limit].should == 5
     end
@@ -107,7 +107,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "skip" do
+  context "#skip" do
     should "set skip option" do
       Query.new.skip(5).options[:skip].should == 5
     end
@@ -117,7 +117,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "ordering" do
+  context "order option" do
     should "single field with ascending direction" do
       sort = [['foo', 1]]
       Query.new(:order => 'foo asc').options[:sort].should == sort
@@ -154,11 +154,6 @@ class QueryTest < Test::Unit::TestCase
       Query.new(:order => 'foo desc, bar, baz').options[:sort].should == sort
     end
 
-    should "just use sort if sort and order are present" do
-      sort = [['$natural', 1]]
-      Query.new(:sort => sort, :order => 'foo asc').options[:sort].should == sort
-    end
-
     should "normalize id to _id" do
       Query.new(:order => :id.asc).options[:sort].should == [['_id', 1]]
     end
@@ -169,7 +164,9 @@ class QueryTest < Test::Unit::TestCase
       sort = [['$natural', -1]]
       Query.new(:order => '$natural desc').options[:sort].should == sort
     end
-
+  end
+  
+  context "sort option" do
     should "work for natural order ascending" do
       Query.new(:sort => {'$natural' => 1}).options[:sort]['$natural'].should == 1
     end
@@ -177,9 +174,14 @@ class QueryTest < Test::Unit::TestCase
     should "work for natural order descending" do
       Query.new(:sort => {'$natural' => -1}).options[:sort]['$natural'].should == -1
     end
+    
+    should "should be used if both sort and order are present" do
+      sort = [['$natural', 1]]
+      Query.new(:sort => sort, :order => 'foo asc').options[:sort].should == sort
+    end
   end
 
-  context "skip" do
+  context "skip option" do
     should "default to 0" do
       Query.new({}).options[:skip].should == 0
     end
@@ -197,7 +199,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "limit" do
+  context "limit option" do
     should "default to 0" do
       Query.new({}).options[:limit].should == 0
     end
@@ -211,7 +213,7 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "fields" do
+  context "fields option" do
     should "default to nil" do
       Query.new({}).options[:fields].should be(nil)
     end
@@ -248,48 +250,23 @@ class QueryTest < Test::Unit::TestCase
       finder.options.keys.should_not include(:conditions)
     end
 
-    should "know fields is an option" do
-      finder = Query.new(:fields => ['foo'])
-      finder.options[:fields].should == ['foo']
-      finder.criteria.keys.should_not include(:fields)
-    end
-
-    should "know select is an option" do
-      finder = Query.new(:select => 'foo')
-      finder.options.keys.should include(:sort)
-      finder.criteria.keys.should_not include(:select)
-      finder.criteria.keys.should_not include(:fields)
-    end
-
-    should "know skip is an option" do
-      finder = Query.new(:skip => 10)
-      finder.options[:skip].should == 10
-      finder.criteria.keys.should_not include(:skip)
-    end
-
-    should "know offset is an option" do
-      finder = Query.new(:offset => 10)
-      finder.options.keys.should include(:skip)
-      finder.criteria.keys.should_not include(:skip)
-      finder.criteria.keys.should_not include(:offset)
-    end
-
-    should "know limit is an option" do
-      finder = Query.new(:limit => 10)
-      finder.options[:limit].should == 10
-      finder.criteria.keys.should_not include(:limit)
-    end
-
-    should "know sort is an option" do
-      finder = Query.new(:sort => [['foo', 1]])
-      finder.options[:sort].should == [['foo', 1]]
-      finder.criteria.keys.should_not include(:sort)
-    end
-
-    should "know order is an option" do
-      finder = Query.new(:order => 'foo')
-      finder.options.keys.should include(:sort)
-      finder.criteria.keys.should_not include(:sort)
+    {
+      :fields     => ['foo'],
+      :select     => 'foo',
+      :order      => 'foo',
+      :sort       => 'foo',
+      :hint       => '',
+      :offset     => 0,
+      :skip       => 0,
+      :limit      => 0,
+      :batch_size => 0,
+      :timeout    => 0,
+    }.each do |option, value|
+      should "know #{option} is an option" do
+        finder = Query.new(option => value)
+        finder.options[option].should == value
+        finder.criteria.keys.should_not include(option)
+      end
     end
 
     should "work with full range of things" do
