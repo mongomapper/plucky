@@ -86,14 +86,12 @@ class QueryTest < Test::Unit::TestCase
   end
 
   context "#fields" do
-    should "update options" do
+    should "update options (with array)" do
       Query.new.fields([:foo, :bar, :baz]).options[:fields].should == [:foo, :bar, :baz]
     end
     
-    should "get normalized" do
-      Query.new(:moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
-        :moo => 'cow', :foo => {'$in' => ['bar']}
-      }
+    should "update options (with hash)" do
+      Query.new.fields(:foo => 1, :bar => 0).options[:fields].should == {:foo => 1, :bar => 0}      
     end
   end
 
