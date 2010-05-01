@@ -43,7 +43,7 @@ module Plucky
       @options[:fields] = fields
       self
     end
-    
+
     def sort(options)
       @options[:sort] = options
       self
@@ -52,6 +52,24 @@ module Plucky
     def reverse
       @options[:sort] = @options[:sort].map { |s| [s[0], -s[1]] }
       self
+    end
+
+    def merge(other)
+      self.class.new.tap do |query|
+        query.update(options).update(other.options).filter(criteria)
+        other.criteria.each do |key, value|
+          if query.criteria.key?(key)
+            existing_value = query.criteria[key]
+            if existing_value.is_a?(Hash) && existing_value.key?('$in')
+              query.criteria[key]['$in'] << value
+            else
+              query.criteria[key] = {'$in' => [existing_value, value].flatten}
+            end
+          else
+            query.criteria[key] = value
+          end
+        end
+      end
     end
 
     private

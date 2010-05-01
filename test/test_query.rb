@@ -73,6 +73,31 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#merge" do
+    should "overwrite options" do
+      query1 = Query.new(:skip => 5, :limit => 5)
+      query2 = Query.new(:skip => 10, :limit => 10)
+      new_query = query1.merge(query2)
+      new_query.options[:skip].should == 10
+      new_query.options[:limit].should == 10
+    end
+
+    should "merge criteria when no criteria match" do
+      query1 = Query.new(:foo => 'bar')
+      query2 = Query.new(:baz => 'wick')
+      new_query = query1.merge(query2)
+      new_query.criteria.should == {:foo => 'bar', :baz => 'wick'}
+    end
+
+    should "merge exact matches to $in with array" do
+      query1 = Query.new(:foo => 'bar')
+      query2 = Query.new(:foo => 'baz')
+      query3 = Query.new(:foo => 'wick')
+      new_query = query1.merge(query2).merge(query3)
+      new_query.criteria.should == {:foo => {'$in' => ['bar', 'baz', 'wick']}}
+    end
+  end
+
   context "#filter" do
     should "update criteria" do
       Query.new(:moo => 'cow').filter(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
@@ -292,21 +317,21 @@ class QueryTest < Test::Unit::TestCase
         finder.criteria.keys.should_not include(option)
       end
     end
-    
+
     should "know select is an option and remove it from options" do
       finder = Query.new(:select => 'foo')
       finder.options[:fields].should == ['foo']
       finder.criteria.keys.should_not include(:select)
       finder.options.keys.should_not  include(:select)
     end
-    
+
     should "know order is an option and remove it from options" do
       finder = Query.new(:order => 'foo')
       finder.options[:sort].should == [['foo', 1]]
       finder.criteria.keys.should_not include(:order)
       finder.options.keys.should_not  include(:order)
     end
-    
+
     should "know offset is an option and remove it from options" do
       finder = Query.new(:offset => 0)
       finder.options[:skip].should == 0
