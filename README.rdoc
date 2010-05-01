@@ -1,6 +1,6 @@
-= mongo-query
+= Plucky
 
-Fancy query magic for the mongo ruby driver; currently WIP and not useful.
+Thin layer over the ruby driver that allows you to quickly grab hold of your data (pluck it!).
 
 == Install
 
