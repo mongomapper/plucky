@@ -1,7 +1,7 @@
 require 'helper'
 
 class QueryTest < Test::Unit::TestCase
-  include Mongo
+  include Plucky
 
   context "Converting to criteria" do
     %w{gt lt gte lte ne in nin mod all size exists}.each do |operator|
@@ -85,6 +85,14 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#where" do
+    should "update criteria with $where statement" do
+      Query.new.where('this.writer_id = 1 || this.editor_id = 1').criteria.should == {
+        '$where' => 'this.writer_id = 1 || this.editor_id = 1'
+      }
+    end
+  end
+
   context "#fields" do
     should "update options (with array)" do
       Query.new.fields([:foo, :bar, :baz]).options[:fields].should == [:foo, :bar, :baz]
@@ -115,6 +123,15 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#update" do
+    should "split and update criteria and options" do
+      query = Query.new(:foo => 'bar')
+      query.update(:bar => 'baz', :skip => 5)
+      query.criteria.should == {:foo => 'bar', :bar => 'baz'}
+      query.options[:skip].should == 5
+    end
+  end
+
   context "order option" do
     should "single field with ascending direction" do
       sort = [['foo', 1]]
@@ -129,8 +146,13 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "convert order operators to mongo sort" do
-      Query.new(:order => :foo.asc).options[:sort].should == [['foo', 1]]
-      Query.new(:order => :foo.desc).options[:sort].should == [['foo', -1]]
+      query = Query.new(:order => :foo.asc)
+      query.options[:sort].should == [['foo', 1]]
+      query.options[:order].should be_nil
+
+      query = Query.new(:order => :foo.desc)
+      query.options[:sort].should == [['foo', -1]]
+      query.options[:order].should be_nil
     end
 
     should "convert array of order operators to mongo sort" do
@@ -176,6 +198,13 @@ class QueryTest < Test::Unit::TestCase
     should "should be used if both sort and order are present" do
       sort = [['$natural', 1]]
       Query.new(:sort => sort, :order => 'foo asc').options[:sort].should == sort
+    end
+  end
+
+  context "#reverse" do
+    should "reverse the sort order" do
+      query = Query.new(:order => 'foo asc, bar desc')
+      query.reverse.options[:sort].should == [['foo', -1], ['bar', 1]]
     end
   end
 
@@ -250,11 +279,8 @@ class QueryTest < Test::Unit::TestCase
 
     {
       :fields     => ['foo'],
-      :select     => 'foo',
-      :order      => 'foo',
       :sort       => 'foo',
       :hint       => '',
-      :offset     => 0,
       :skip       => 0,
       :limit      => 0,
       :batch_size => 0,
@@ -265,6 +291,27 @@ class QueryTest < Test::Unit::TestCase
         finder.options[option].should == value
         finder.criteria.keys.should_not include(option)
       end
+    end
+    
+    should "know select is an option and remove it from options" do
+      finder = Query.new(:select => 'foo')
+      finder.options[:fields].should == ['foo']
+      finder.criteria.keys.should_not include(:select)
+      finder.options.keys.should_not  include(:select)
+    end
+    
+    should "know order is an option and remove it from options" do
+      finder = Query.new(:order => 'foo')
+      finder.options[:sort].should == [['foo', 1]]
+      finder.criteria.keys.should_not include(:order)
+      finder.options.keys.should_not  include(:order)
+    end
+    
+    should "know offset is an option and remove it from options" do
+      finder = Query.new(:offset => 0)
+      finder.options[:skip].should == 0
+      finder.criteria.keys.should_not include(:offset)
+      finder.options.keys.should_not  include(:offset)
     end
 
     should "work with full range of things" do

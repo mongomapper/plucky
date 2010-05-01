@@ -1,22 +1,4 @@
-require 'set'
-
-class SymbolOperator
-  attr_reader :field, :operator
-
-  def initialize(field, operator, options={})
-    @field, @operator = field, operator
-  end unless method_defined?(:initialize)
-end
-
-class Symbol
-  %w(gt lt gte lte ne in nin mod all size exists asc desc).each do |operator|
-    define_method(operator) do
-      SymbolOperator.new(self, operator)
-    end unless method_defined?(operator)
-  end
-end
-
-module Mongo
+module Plucky
   class Query
     OptionKeys = [
       :select, :offset, :order,                                              # MM
@@ -26,12 +8,22 @@ module Mongo
     attr_reader :criteria, :options
 
     def initialize(options={})
-      @original_options, @options, @criteria, = options, {}, {}
-      separate_criteria_and_options
+      @options, @criteria, = {}, {}
+      separate_criteria_and_options(options)
+    end
+
+    def update(options={})
+      separate_criteria_and_options(options)
+      self
     end
 
     def filter(criteria={})
       @criteria.update(normalized_criteria(criteria))
+      self
+    end
+
+    def where(js)
+      @criteria['$where'] = js
       self
     end
 
@@ -55,6 +47,11 @@ module Mongo
       self
     end
 
+    def reverse
+      @options[:sort] = @options[:sort].map { |s| [s[0], -s[1]] }
+      self
+    end
+
     private
       def normalized_criteria(criteria, parent=nil)
         hash = {}
@@ -69,10 +66,14 @@ module Mongo
       end
 
       def normalize_options
-        sort(@options[:sort] || normalized_sort(@options[:order]))
-        skip(@options[:skip] || @options[:offset])
-        limit(@options[:limit])
-        fields(normalized_fields(@options[:fields] || @options[:select]))
+        sort    @options[:sort] || normalized_sort(@options[:order])
+        skip    @options[:skip] || @options[:offset]
+        limit   @options[:limit]
+        fields  normalized_fields(@options[:fields] || @options[:select])
+
+        @options.delete(:order)   # normalized to sort
+        @options.delete(:select)  # normalized to fields
+        @options.delete(:offset)  # normalized to skip
       end
 
       def normalized_key(field)
@@ -134,8 +135,8 @@ module Mongo
         key.to_s =~ /^\$/
       end
 
-      def separate_criteria_and_options
-        @original_options.each_pair do |key, value|
+      def separate_criteria_and_options(options={})
+        options.each_pair do |key, value|
           key = key.respond_to?(:to_sym) ? key.to_sym : key
 
           if OptionKeys.include?(key)
