@@ -1,7 +1,7 @@
 require 'set'
 
 module Plucky
-  class Builder
+  class Query
     OptionKeys = [
       :select, :offset, :order,                                              # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
@@ -11,7 +11,7 @@ module Plucky
 
     def initialize(options={})
       @options, @criteria, = {}, {}
-      separate_criteria_and_options(options)
+      update(options)
     end
 
     def update(options={})

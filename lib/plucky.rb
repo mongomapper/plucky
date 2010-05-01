@@ -18,5 +18,5 @@ end
 
 module Plucky
   autoload :Collection, 'plucky/collection'
-  autoload :Builder,    'plucky/builder'
+  autoload :Query,      'plucky/query'
 end

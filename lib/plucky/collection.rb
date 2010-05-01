@@ -27,7 +27,7 @@ module Plucky
       end
 
       def query
-        @query ||= Builder.new
+        @query ||= Query.new
       end
   end
 end
