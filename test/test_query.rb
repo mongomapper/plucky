@@ -4,7 +4,7 @@ class QueryTest < Test::Unit::TestCase
   include Mongo
 
   context "Converting to criteria" do
-    %w{gt lt gte lte ne in nin mod all size where exists}.each do |operator|
+    %w{gt lt gte lte ne in nin mod all size exists}.each do |operator|
       next if operator == 'size' && RUBY_VERSION >= '1.9.1' # 1.9 defines Symbol#size
 
       should "convert #{operator} conditions" do
@@ -73,13 +73,13 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "#where" do
+  context "#filter" do
     should "update criteria" do
-      Query.new(:moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
+      Query.new(:moo => 'cow').filter(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
     end
-    
+
     should "get normalized" do
-      Query.new(:moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
+      Query.new(:moo => 'cow').filter(:foo.in => ['bar']).criteria.should == {
         :moo => 'cow', :foo => {'$in' => ['bar']}
       }
     end
@@ -89,9 +89,9 @@ class QueryTest < Test::Unit::TestCase
     should "update options (with array)" do
       Query.new.fields([:foo, :bar, :baz]).options[:fields].should == [:foo, :bar, :baz]
     end
-    
+
     should "update options (with hash)" do
-      Query.new.fields(:foo => 1, :bar => 0).options[:fields].should == {:foo => 1, :bar => 0}      
+      Query.new.fields(:foo => 1, :bar => 0).options[:fields].should == {:foo => 1, :bar => 0}
     end
   end
 
@@ -163,7 +163,7 @@ class QueryTest < Test::Unit::TestCase
       Query.new(:order => '$natural desc').options[:sort].should == sort
     end
   end
-  
+
   context "sort option" do
     should "work for natural order ascending" do
       Query.new(:sort => {'$natural' => 1}).options[:sort]['$natural'].should == 1
@@ -172,7 +172,7 @@ class QueryTest < Test::Unit::TestCase
     should "work for natural order descending" do
       Query.new(:sort => {'$natural' => -1}).options[:sort]['$natural'].should == -1
     end
-    
+
     should "should be used if both sort and order are present" do
       sort = [['$natural', 1]]
       Query.new(:sort => sort, :order => 'foo asc').options[:sort].should == sort
