@@ -1,5 +1,7 @@
+require 'set'
+
 module Plucky
-  class Query
+  class Builder
     OptionKeys = [
       :select, :offset, :order,                                              # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver

@@ -3,7 +3,7 @@ require 'shoulda'
 require 'matchy'
 require 'mocha'
 require 'mongo'
-require File.expand_path('../../lib/fango', __FILE__)
+require File.expand_path('../../lib/plucky', __FILE__)
 
 connection = Mongo::Connection.new
 DB = connection.db('testing')

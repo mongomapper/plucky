@@ -1,5 +1,4 @@
 require 'mongo'
-require 'set'
 
 class SymbolOperator
   attr_reader :field, :operator
@@ -19,5 +18,5 @@ end
 
 module Plucky
   autoload :Collection, 'plucky/collection'
-  autoload :Query,      'plucky/query'
+  autoload :Builder,    'plucky/builder'
 end
