@@ -95,14 +95,10 @@ module Plucky
       end
 
       def normalize_options
-        sort    @options[:sort] || normalized_sort(@options[:order])
-        skip    @options[:skip] || @options[:offset]
+        sort    @options[:sort] || normalized_sort(@options.delete(:order))
+        skip    @options[:skip] || @options.delete(:offset)
         limit   @options[:limit]
-        fields  normalized_fields(@options[:fields] || @options[:select])
-
-        @options.delete(:order)   # normalized to sort
-        @options.delete(:select)  # normalized to fields
-        @options.delete(:offset)  # normalized to skip
+        fields  normalized_fields(@options[:fields] || @options.delete(:select))
       end
 
       def normalized_key(field)
