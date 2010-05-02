@@ -51,17 +51,23 @@ class CollectionTest < Test::Unit::TestCase
       end
     end
 
-    context "#delete" do
+    context "#count" do
       should "work with no arguments" do
-        lambda {
-          @collection.delete
-        }.should change { @collection.find().count }.by(2)
+        @collection.count.should == 2
       end
 
       should "work with and normalize criteria" do
-        lambda {
-          @collection.delete(:age.lte => 28)
-        }.should change { @collection.find().count }.by(1)
+        @collection.count(:age.lte => 28).should == 1
+      end
+    end
+
+    context "#delete" do
+      should "work with no arguments" do
+        lambda { @collection.delete }.should change { @collection.count }.by(2)
+      end
+
+      should "work with and normalize criteria" do
+        lambda { @collection.delete(:age.lte => 28) }.should change { @collection.count }
       end
     end
   end

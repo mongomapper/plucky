@@ -26,6 +26,11 @@ module Plucky
       remove(query.criteria)
     end
 
+    def count(options={})
+      query.update(options)
+      find(query.criteria, query.options).count
+    end
+
     private
       def method_missing(method, *args, &block)
         @collection.send(method, *args, &block)
