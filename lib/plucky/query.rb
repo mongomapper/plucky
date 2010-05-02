@@ -58,6 +58,10 @@ module Plucky
       @criteria[key.to_sym]
     end
 
+    def []=(key, value)
+      @criteria[key.to_sym] = normalized_value(@criteria, key, value)
+    end
+
     def merge(other)
       self.class.new.tap do |query|
         query.update(options).update(other.options).filter(criteria)

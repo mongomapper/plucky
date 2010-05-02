@@ -87,6 +87,27 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#[]=" do
+    setup { @query = Query.new }
+
+    should "set the value of the given criteria key" do
+      @query[:count] = 1
+      @query[:count].should == 1
+    end
+    
+    should "overwrite value if key already exists" do
+      @query[:count] = 1
+      @query[:count] = 2
+      @query[:count].should == 2
+    end
+    
+    should "normalize value" do
+      now = Time.now
+      @query[:published_at] = now
+      @query[:published_at].should == now.utc
+    end
+  end
+
   context "#merge" do
     should "overwrite options" do
       query1 = Query.new(:skip => 5, :limit => 5)
