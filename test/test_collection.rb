@@ -50,5 +50,19 @@ class CollectionTest < Test::Unit::TestCase
         @collection.last(:age.lte => 29, :order => :name.desc).should == @john
       end
     end
+
+    context "#delete" do
+      should "work with no arguments" do
+        lambda {
+          @collection.delete
+        }.should change { @collection.find().count }.by(2)
+      end
+
+      should "work with and normalize criteria" do
+        lambda {
+          @collection.delete(:age.lte => 28)
+        }.should change { @collection.find().count }.by(1)
+      end
+    end
   end
 end

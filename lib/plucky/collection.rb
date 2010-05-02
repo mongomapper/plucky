@@ -21,6 +21,11 @@ module Plucky
       find_one(query.criteria, query.options)
     end
 
+    def delete(options={})
+      query.update(options)
+      remove(query.criteria)
+    end
+
     private
       def method_missing(method, *args, &block)
         @collection.send(method, *args, &block)
