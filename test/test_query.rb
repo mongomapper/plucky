@@ -73,6 +73,20 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#[]" do
+    should "return value if key in criteria (symbol)" do
+      Query.new(:count => 1)[:count].should == 1
+    end
+
+    should "return value if key in criteria (string)" do
+      Query.new(:count => 1)['count'].should == 1
+    end
+
+    should "return nil if key not in criteria" do
+      Query.new[:count].should be_nil
+    end
+  end
+
   context "#merge" do
     should "overwrite options" do
       query1 = Query.new(:skip => 5, :limit => 5)
@@ -96,7 +110,7 @@ class QueryTest < Test::Unit::TestCase
       new_query = query1.merge(query2).merge(query3)
       new_query.criteria.should == {:foo => {'$in' => ['bar', 'baz', 'wick']}}
     end
-    
+
     should "merge $in arrays" do
       query1 = Query.new(:foo => [1, 2])
       query2 = Query.new(:foo => [3, 4, 5])

@@ -54,6 +54,10 @@ module Plucky
       self
     end
 
+    def [](key)
+      @criteria[key.to_sym]
+    end
+
     def merge(other)
       self.class.new.tap do |query|
         query.update(options).update(other.options).filter(criteria)
