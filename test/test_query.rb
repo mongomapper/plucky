@@ -82,7 +82,7 @@ class QueryTest < Test::Unit::TestCase
       new_query.options[:limit].should == 10
     end
 
-    should "merge criteria when no criteria match" do
+    should "merge when no criteria match" do
       query1 = Query.new(:foo => 'bar')
       query2 = Query.new(:baz => 'wick')
       new_query = query1.merge(query2)
@@ -95,6 +95,14 @@ class QueryTest < Test::Unit::TestCase
       query3 = Query.new(:foo => 'wick')
       new_query = query1.merge(query2).merge(query3)
       new_query.criteria.should == {:foo => {'$in' => ['bar', 'baz', 'wick']}}
+    end
+    
+    should "merge $in arrays" do
+      query1 = Query.new(:foo => [1, 2])
+      query2 = Query.new(:foo => [3, 4, 5])
+      query3 = Query.new(:foo => [6])
+      new_query = query1.merge(query2).merge(query3)
+      new_query.criteria.should == {:foo => {'$in' => [1, 2, 3, 4, 5, 6]}}
     end
   end
 

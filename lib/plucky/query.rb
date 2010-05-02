@@ -60,8 +60,13 @@ module Plucky
         other.criteria.each do |key, value|
           if query.criteria.key?(key)
             existing_value = query.criteria[key]
-            if existing_value.is_a?(Hash) && existing_value.key?('$in')
-              query.criteria[key]['$in'] << value
+
+            if existing_value.is_a?(Hash)
+              if value.is_a?(Hash)
+                query.criteria[key]['$in'].concat(value['$in'])
+              else
+                query.criteria[key]['$in'] << value
+              end
             else
               query.criteria[key] = {'$in' => [existing_value, value].flatten}
             end
