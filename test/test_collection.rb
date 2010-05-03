@@ -75,7 +75,7 @@ class CollectionTest < Test::Unit::TestCase
     end
     
     context "#sort" do
-      should "change the sort order of the documents" do
+      should "work" do
         @collection.sort(:age).all.should == [@chris, @john, @steve]
         @collection.sort(:age.desc).all.should == [@steve, @john, @chris]
       end
