@@ -20,18 +20,13 @@ module Plucky
       self
     end
 
+    def fields(*args)
+      @options[:fields] = normalized_fields(args)
+      self
+    end
+
     def filter(hash={})
       @criteria.update(CriteriaMerger.merge(@criteria, normalized_criteria(hash)))
-      self
-    end
-
-    def where(js)
-      @criteria['$where'] = js
-      self
-    end
-
-    def skip(count=0)
-      @options[:skip] = count.to_i
       self
     end
 
@@ -40,8 +35,13 @@ module Plucky
       self
     end
 
-    def fields(*args)
-      @options[:fields] = normalized_fields(args)
+    def reverse
+      @options[:sort] = @options[:sort].map { |s| [s[0], -s[1]] }
+      self
+    end
+
+    def skip(count=0)
+      @options[:skip] = count.to_i
       self
     end
 
@@ -50,8 +50,8 @@ module Plucky
       self
     end
 
-    def reverse
-      @options[:sort] = @options[:sort].map { |s| [s[0], -s[1]] }
+    def where(js)
+      @criteria['$where'] = js
       self
     end
 
