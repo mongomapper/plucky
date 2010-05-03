@@ -200,6 +200,24 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#sort" do
+    should "work with symbol operators" do
+      Query.new.sort(:foo.asc, :bar.desc).options[:sort].should == [['foo', 1], ['bar', -1]]
+    end
+    
+    should "work with string" do
+      Query.new.sort('foo, bar desc').options[:sort].should == [['foo', 1], ['bar', -1]]
+    end
+    
+    should "work with just a symbol" do
+      Query.new.sort(:foo).options[:sort].should == :foo
+    end
+    
+    should "work with multiple symbols" do
+      Query.new.sort(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
+    end
+  end
+
   context "order option" do
     should "single field with ascending direction" do
       sort = [['foo', 1]]
@@ -340,14 +358,14 @@ class QueryTest < Test::Unit::TestCase
 
   context "Criteria/option auto-detection" do
     should "know :conditions are criteria" do
-      finder = Query.new(:conditions => {:foo => 'bar'})
-      finder.criteria.should == {:foo => 'bar'}
-      finder.options.keys.should_not include(:conditions)
+      query = Query.new(:conditions => {:foo => 'bar'})
+      query.criteria.should == {:foo => 'bar'}
+      query.options.keys.should_not include(:conditions)
     end
 
     {
       :fields     => ['foo'],
-      :sort       => 'foo',
+      :sort       => [['foo', 1]],
       :hint       => '',
       :skip       => 0,
       :limit      => 0,
@@ -355,35 +373,35 @@ class QueryTest < Test::Unit::TestCase
       :timeout    => 0,
     }.each do |option, value|
       should "know #{option} is an option" do
-        finder = Query.new(option => value)
-        finder.options[option].should == value
-        finder.criteria.keys.should_not include(option)
+        query = Query.new(option => value)
+        query.options[option].should == value
+        query.criteria.keys.should_not include(option)
       end
     end
 
     should "know select is an option and remove it from options" do
-      finder = Query.new(:select => 'foo')
-      finder.options[:fields].should == ['foo']
-      finder.criteria.keys.should_not include(:select)
-      finder.options.keys.should_not  include(:select)
+      query = Query.new(:select => 'foo')
+      query.options[:fields].should == ['foo']
+      query.criteria.keys.should_not include(:select)
+      query.options.keys.should_not  include(:select)
     end
 
     should "know order is an option and remove it from options" do
-      finder = Query.new(:order => 'foo')
-      finder.options[:sort].should == [['foo', 1]]
-      finder.criteria.keys.should_not include(:order)
-      finder.options.keys.should_not  include(:order)
+      query = Query.new(:order => 'foo')
+      query.options[:sort].should == [['foo', 1]]
+      query.criteria.keys.should_not include(:order)
+      query.options.keys.should_not  include(:order)
     end
 
     should "know offset is an option and remove it from options" do
-      finder = Query.new(:offset => 0)
-      finder.options[:skip].should == 0
-      finder.criteria.keys.should_not include(:offset)
-      finder.options.keys.should_not  include(:offset)
+      query = Query.new(:offset => 0)
+      query.options[:skip].should == 0
+      query.criteria.keys.should_not include(:offset)
+      query.options.keys.should_not  include(:offset)
     end
 
     should "work with full range of things" do
-      query_options = Query.new({
+      query = Query.new({
         :foo    => 'bar',
         :baz    => true,
         :sort   => [['foo', 1]],
@@ -392,12 +410,12 @@ class QueryTest < Test::Unit::TestCase
         :skip   => 10,
       })
 
-      query_options.criteria.should == {
+      query.criteria.should == {
         :foo => 'bar',
         :baz => true,
       }
 
-      query_options.options.should == {
+      query.options.should == {
         :sort   => [['foo', 1]],
         :fields => ['foo', 'baz'],
         :limit  => 10,

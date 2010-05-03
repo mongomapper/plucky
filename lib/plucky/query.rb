@@ -44,8 +44,8 @@ module Plucky
       self
     end
 
-    def sort(options)
-      @options[:sort] = options
+    def sort(*args)
+      @options[:sort] = normalized_sort(args)
       self
     end
 
@@ -80,7 +80,7 @@ module Plucky
       end
 
       def normalize_options
-        sort    @options[:sort] || normalized_sort(@options.delete(:order))
+        sort    @options[:sort] || @options.delete(:order)
         skip    @options[:skip] || @options.delete(:offset)
         limit   @options[:limit]
         fields  normalized_fields(@options[:fields] || @options.delete(:select))
@@ -109,20 +109,33 @@ module Plucky
 
       def normalized_sort(sort)
         return if sort.nil?
+        return if sort.respond_to?(:compact) && sort.compact.empty? # all nil array
 
-        if sort.respond_to?(:all?) && sort.all? { |s| symbol_operator?(s) }
-          sort.map { |s| normalized_order(s.field, s.operator) }
-        elsif symbol_operator?(sort)
-          [normalized_order(sort.field, sort.operator)]
-        else
-          sort.split(',').map do |str|
-            normalized_order(*str.strip.split(' '))
-          end
+        sort = sort[0] if sort.size == 1
+
+        case sort
+          when Array
+            sort.map do |s|
+              case s
+              when SymbolOperator
+                normalized_order(s.field, s.operator)
+              when Array
+                s
+              else
+                [s.to_s, 1]
+              end
+            end
+          when SymbolOperator
+            [normalized_order(sort.field, sort.operator)]
+          when String
+            sort.split(',').map { |str| normalized_order(*str.strip.split(' ')) }
+          else
+            sort
         end
       end
 
       def normalized_fields(fields)
-        return if fields.nil? || fields == [] || fields == ''
+        return if fields.nil? || fields.empty?
 
         if fields.respond_to?(:flatten, :compact)
           fields.flatten.compact
