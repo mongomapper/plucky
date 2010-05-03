@@ -98,5 +98,11 @@ class CollectionTest < Test::Unit::TestCase
         @collection.limit(2).all(:order => :age).should == [@chris, @john]
       end
     end
+    
+    context "#fields" do
+      should "work" do
+        @collection.fields(:name).first(:id => 'john').keys.should == ['_id', 'name']
+      end
+    end
   end
 end

@@ -39,8 +39,8 @@ module Plucky
       self
     end
 
-    def fields(fields)
-      @options[:fields] = normalized_fields(fields)
+    def fields(*args)
+      @options[:fields] = normalized_fields(args)
       self
     end
 
@@ -83,7 +83,7 @@ module Plucky
         sort    @options[:sort] || @options.delete(:order)
         skip    @options[:skip] || @options.delete(:offset)
         limit   @options[:limit]
-        fields  normalized_fields(@options[:fields] || @options.delete(:select))
+        fields  @options[:fields] || @options.delete(:select)
       end
 
       def normalized_key(field)
@@ -109,7 +109,7 @@ module Plucky
 
       def normalized_sort(sort)
         return if sort.nil?
-        return if sort.respond_to?(:compact) && sort.compact.empty? # all nil array
+        return if sort.respond_to?(:compact) && sort.compact.empty?
 
         sort = sort[0] if sort.size == 1
 
@@ -135,13 +135,19 @@ module Plucky
       end
 
       def normalized_fields(fields)
-        return        if fields.nil? || fields.empty?
-        return fields if fields.is_a?(Hash)
-
-        if fields.respond_to?(:flatten, :compact)
-          fields.flatten.compact
-        else
-          fields.split(',').map { |field| field.strip }
+        return if fields.nil?
+        fields = fields[0] if fields.size == 1
+        return if fields.respond_to?(:empty?) && fields.empty?
+        
+        case fields
+          when Array
+            fields.flatten.compact
+          when String
+            fields.split(',').map { |field| field.strip }
+          when Symbol
+            [fields]
+          else
+            fields
         end
       end
 

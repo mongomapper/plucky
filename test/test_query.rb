@@ -173,6 +173,14 @@ class QueryTest < Test::Unit::TestCase
     should "normalize fields" do
       Query.new.fields('foo, bar').options[:fields].should == %w(foo bar)
     end
+    
+    should "work with symbol" do
+      Query.new.fields(:foo).options[:fields].should == [:foo]
+    end
+    
+    should "work with array of symbols" do
+      Query.new.fields(:foo, :bar).options[:fields].should == [:foo, :bar]
+    end
   end
 
   context "#limit" do
@@ -180,7 +188,7 @@ class QueryTest < Test::Unit::TestCase
       Query.new.limit(5).options[:limit].should == 5
     end
 
-    should "override existing limit" do
+    should "overwrite existing limit" do
       Query.new(:limit => 5).limit(15).options[:limit].should == 15
     end
   end
@@ -344,11 +352,11 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "should work with array" do
-      Query.new({:fields => %w(a b)}).options[:fields].should == %w(a b)
+      Query.new(:fields => %w(a b)).options[:fields].should == %w(a b)
     end
 
     should "convert comma separated list to array" do
-      Query.new({:fields => 'a, b'}).options[:fields].should == %w(a b)
+      Query.new(:fields => 'a, b').options[:fields].should == %w(a b)
     end
 
     should "also work as select" do
