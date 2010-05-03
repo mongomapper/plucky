@@ -94,13 +94,13 @@ class QueryTest < Test::Unit::TestCase
       @query[:count] = 1
       @query[:count].should == 1
     end
-    
+
     should "overwrite value if key already exists" do
       @query[:count] = 1
       @query[:count] = 2
       @query[:count].should == 2
     end
-    
+
     should "normalize value" do
       now = Time.now
       @query[:published_at] = now

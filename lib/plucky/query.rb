@@ -19,8 +19,8 @@ module Plucky
       self
     end
 
-    def filter(criteria={})
-      @criteria.update(normalized_criteria(criteria))
+    def filter(hash={})
+      @criteria.update(CriteriaMerger.merge(criteria, normalized_criteria(hash)))
       self
     end
 
@@ -63,10 +63,7 @@ module Plucky
     end
 
     def merge(other)
-      self.class.new.tap do |query|
-        query.update(options.merge(other.options))
-        query.filter(CriteriaMerger.merge(criteria, other.criteria))
-      end
+      clone.update(other.options).filter(other.criteria)
     end
 
     private
