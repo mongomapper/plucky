@@ -169,6 +169,10 @@ class QueryTest < Test::Unit::TestCase
     should "update options (with hash)" do
       Query.new.fields(:foo => 1, :bar => 0).options[:fields].should == {:foo => 1, :bar => 0}
     end
+    
+    should "normalize fields" do
+      Query.new.fields('foo, bar').options[:fields].should == %w(foo bar)
+    end
   end
 
   context "#limit" do

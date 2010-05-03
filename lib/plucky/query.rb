@@ -40,7 +40,7 @@ module Plucky
     end
 
     def fields(fields)
-      @options[:fields] = fields
+      @options[:fields] = normalized_fields(fields)
       self
     end
 
@@ -135,7 +135,8 @@ module Plucky
       end
 
       def normalized_fields(fields)
-        return if fields.nil? || fields.empty?
+        return        if fields.nil? || fields.empty?
+        return fields if fields.is_a?(Hash)
 
         if fields.respond_to?(:flatten, :compact)
           fields.flatten.compact
