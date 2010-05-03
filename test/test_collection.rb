@@ -86,5 +86,17 @@ class CollectionTest < Test::Unit::TestCase
         @collection.filter(:age.lt => 29).filter(:name => 'Chris').all.should == [@chris]
       end
     end
+    
+    context "#skip" do
+      should "work" do
+        @collection.skip(2).all(:order => :age).should == [@steve]
+      end
+    end
+
+    context "#limit" do
+      should "work" do
+        @collection.limit(2).all(:order => :age).should == [@chris, @john]
+      end
+    end
   end
 end
