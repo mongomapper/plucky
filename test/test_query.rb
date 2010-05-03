@@ -133,9 +133,9 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "merge $in arrays" do
-      query1 = Query.new(:foo => [1, 2])
-      query2 = Query.new(:foo => [3, 4, 5])
-      query3 = Query.new(:foo => [6])
+      query1 = Query.new(:foo.in => [1, 2])
+      query2 = Query.new(:foo.in => [3, 4, 5])
+      query3 = Query.new(:foo.in => [6])
       new_query = query1.merge(query2).merge(query3)
       new_query.criteria.should == {:foo => {'$in' => [1, 2, 3, 4, 5, 6]}}
     end

@@ -17,6 +17,7 @@ class Symbol
 end
 
 module Plucky
-  autoload :Collection, 'plucky/collection'
-  autoload :Query,      'plucky/query'
+  autoload :Collection,     'plucky/collection'
+  autoload :CriteriaMerger, 'plucky/criteria_merger'
+  autoload :Query,          'plucky/query'
 end

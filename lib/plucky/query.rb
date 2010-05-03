@@ -64,38 +64,22 @@ module Plucky
 
     def merge(other)
       self.class.new.tap do |query|
-        query.update(options).update(other.options).filter(criteria)
-        other.criteria.each do |key, value|
-          if query.criteria.key?(key)
-            existing_value = query.criteria[key]
-
-            if existing_value.is_a?(Hash)
-              if value.is_a?(Hash)
-                query.criteria[key]['$in'].concat(value['$in'])
-              else
-                query.criteria[key]['$in'] << value
-              end
-            else
-              query.criteria[key] = {'$in' => [existing_value, value].flatten}
-            end
-          else
-            query.criteria[key] = value
-          end
-        end
+        query.update(options.merge(other.options))
+        query.filter(CriteriaMerger.merge(criteria, other.criteria))
       end
     end
 
     private
       def normalized_criteria(criteria, parent=nil)
-        hash = {}
-        criteria.each_pair do |key, value|
-          key = normalized_key(key)
-          if symbol_operator?(key)
-            key, value = normalized_key(key.field), {"$#{key.operator}" => value}
+        {}.tap do |hash|
+          criteria.each_pair do |key, value|
+            key = normalized_key(key)
+            if symbol_operator?(key)
+              key, value = normalized_key(key.field), {"$#{key.operator}" => value}
+            end
+            hash[key] = normalized_value(hash, key, value)
           end
-          hash[key] = normalized_value(hash, key, value)
         end
-        hash
       end
 
       def normalize_options
