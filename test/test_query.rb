@@ -141,6 +141,12 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
+  context "#options" do
+    should "normalize and update options" do
+      Query.new.options(:order => :age.desc).options[:sort].should == [['age', -1]]
+    end
+  end
+
   context "#filter" do
     should "update criteria" do
       Query.new(:moo => 'cow').filter(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
@@ -155,8 +161,8 @@ class QueryTest < Test::Unit::TestCase
 
   context "#where" do
     should "update criteria with $where statement" do
-      Query.new.where('this.writer_id = 1 || this.editor_id = 1').criteria.should == {
-        '$where' => 'this.writer_id = 1 || this.editor_id = 1'
+      Query.new.where('this.writer_id == 1 || this.editor_id == 1').criteria.should == {
+        '$where' => 'this.writer_id == 1 || this.editor_id == 1'
       }
     end
   end
@@ -200,15 +206,6 @@ class QueryTest < Test::Unit::TestCase
 
     should "override existing skip" do
       Query.new(:skip => 5).skip(10).options[:skip].should == 10
-    end
-  end
-
-  context "#update" do
-    should "split and update criteria and options" do
-      query = Query.new(:foo => 'bar')
-      query.update(:bar => 'baz', :skip => 5)
-      query.criteria.should == {:foo => 'bar', :bar => 'baz'}
-      query.options[:skip].should == 5
     end
   end
 

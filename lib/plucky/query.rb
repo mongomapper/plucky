@@ -7,20 +7,21 @@ module Plucky
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
     ]
 
-    attr_reader :criteria, :options
+    attr_reader :criteria
 
-    def initialize(options={})
+    def initialize(opts={})
       @options, @criteria, = {}, {}
-      update(options)
+      options(opts)
     end
 
-    def update(options={})
-      separate_criteria_and_options(options)
+    def options(opts=nil)
+      return @options if opts.nil?
+      separate_criteria_and_options(opts || {})
       self
     end
 
     def filter(hash={})
-      @criteria.update(CriteriaMerger.merge(criteria, normalized_criteria(hash)))
+      @criteria.update(CriteriaMerger.merge(@criteria, normalized_criteria(hash)))
       self
     end
 
@@ -63,7 +64,7 @@ module Plucky
     end
 
     def merge(other)
-      clone.update(other.options).filter(other.criteria)
+      clone.options(other.options).filter(other.criteria)
     end
 
     private
@@ -140,7 +141,7 @@ module Plucky
         return if fields.nil?
         fields = fields[0] if fields.size == 1
         return if fields.respond_to?(:empty?) && fields.empty?
-        
+
         case fields
           when Array
             fields.flatten.compact
@@ -167,8 +168,8 @@ module Plucky
         key.to_s =~ /^\$/
       end
 
-      def separate_criteria_and_options(options={})
-        options.each_pair do |key, value|
+      def separate_criteria_and_options(opts={})
+        opts.each_pair do |key, value|
           key = key.respond_to?(:to_sym) ? key.to_sym : key
 
           if OptionKeys.include?(key)

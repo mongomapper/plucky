@@ -15,32 +15,32 @@ module Plucky
       @collection = collection
     end
 
-    query_delegator :fields, :filter, :limit, :reverse, :skip, :sort
+    query_delegator :fields, :filter, :limit, :reverse, :skip, :sort, :where
 
     def all(options={})
-      query.update(options)
+      query.options(options)
       [].tap do |docs|
         find(query.criteria, query.options).each { |doc| docs << doc }
       end
     end
 
     def first(options={})
-      query.update(options)
+      query.options(options)
       find_one(query.criteria, query.options)
     end
 
     def last(options={})
-      query.update(options).reverse
+      query.options(options).reverse
       find_one(query.criteria, query.options)
     end
 
     def delete(options={})
-      query.update(options)
+      query.options(options)
       remove(query.criteria)
     end
 
     def count(options={})
-      query.update(options)
+      query.options(options)
       find(query.criteria, query.options).count
     end
 
