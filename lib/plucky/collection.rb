@@ -1,8 +1,21 @@
 module Plucky
   class Collection
+    def self.query_delegator(*methods)
+      methods.each do |method|
+        class_eval <<-EOC
+          def #{method}(*args)
+            query.#{method}(*args)
+            self
+          end
+        EOC
+      end
+    end
+
     def initialize(collection)
       @collection = collection
     end
+
+    query_delegator :sort, :filter
 
     def all(options={})
       query.update(options)
