@@ -117,18 +117,20 @@ module Plucky
           when Array
             sort.map do |s|
               case s
-              when SymbolOperator
-                normalized_order(s.field, s.operator)
-              when Array
-                s
-              else
-                [s.to_s, 1]
+                when SymbolOperator
+                  normalized_order(s.field, s.operator)
+                when Array
+                  s
+                else
+                  [s.to_s, 1]
               end
             end
           when SymbolOperator
             [normalized_order(sort.field, sort.operator)]
           when String
             sort.split(',').map { |str| normalized_order(*str.strip.split(' ')) }
+          when Symbol
+            [[sort, 1]]
           else
             sort
         end

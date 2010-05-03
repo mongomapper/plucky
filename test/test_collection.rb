@@ -73,20 +73,20 @@ class CollectionTest < Test::Unit::TestCase
         lambda { @collection.delete(:age.lte => 28) }.should change { @collection.count }
       end
     end
-    
+
     context "#sort" do
       should "work" do
         @collection.sort(:age).all.should == [@chris, @john, @steve]
         @collection.sort(:age.desc).all.should == [@steve, @john, @chris]
       end
     end
-    
+
     context "#filter" do
       should "work" do
         @collection.filter(:age.lt => 29).filter(:name => 'Chris').all.should == [@chris]
       end
     end
-    
+
     context "#skip" do
       should "work" do
         @collection.skip(2).all(:order => :age).should == [@steve]
@@ -98,10 +98,16 @@ class CollectionTest < Test::Unit::TestCase
         @collection.limit(2).all(:order => :age).should == [@chris, @john]
       end
     end
-    
+
     context "#fields" do
       should "work" do
         @collection.fields(:name).first(:id => 'john').keys.should == ['_id', 'name']
+      end
+    end
+    
+    context "#reverse" do
+      should "work" do
+        @collection.sort(:age).reverse.all.should == [@steve, @john, @chris]
       end
     end
   end

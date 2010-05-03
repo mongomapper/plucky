@@ -15,7 +15,7 @@ module Plucky
       @collection = collection
     end
 
-    query_delegator :fields, :filter, :limit, :skip, :sort
+    query_delegator :fields, :filter, :limit, :reverse, :skip, :sort
 
     def all(options={})
       query.update(options)

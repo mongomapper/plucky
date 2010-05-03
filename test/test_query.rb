@@ -222,7 +222,7 @@ class QueryTest < Test::Unit::TestCase
     end
     
     should "work with just a symbol" do
-      Query.new.sort(:foo).options[:sort].should == :foo
+      Query.new.sort(:foo).options[:sort].should == [[:foo, 1]]
     end
     
     should "work with multiple symbols" do
