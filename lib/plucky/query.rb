@@ -96,7 +96,7 @@ module Plucky
             modifier?(key) ? value.to_a : {'$in' => value.to_a}
           when Hash
             if criteria[key].kind_of?(Hash)
-              criteria[key].dup.merge(normalized_criteria(value, key))
+              criteria[key].merge(normalized_criteria(value, key))
             else
               normalized_criteria(value, key)
             end
