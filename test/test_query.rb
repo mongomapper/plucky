@@ -175,15 +175,15 @@ class QueryTest < Test::Unit::TestCase
     should "update options (with hash)" do
       Query.new.fields(:foo => 1, :bar => 0).options[:fields].should == {:foo => 1, :bar => 0}
     end
-    
+
     should "normalize fields" do
       Query.new.fields('foo, bar').options[:fields].should == %w(foo bar)
     end
-    
+
     should "work with symbol" do
       Query.new.fields(:foo).options[:fields].should == [:foo]
     end
-    
+
     should "work with array of symbols" do
       Query.new.fields(:foo, :bar).options[:fields].should == [:foo, :bar]
     end
@@ -213,15 +213,15 @@ class QueryTest < Test::Unit::TestCase
     should "work with symbol operators" do
       Query.new.sort(:foo.asc, :bar.desc).options[:sort].should == [['foo', 1], ['bar', -1]]
     end
-    
+
     should "work with string" do
       Query.new.sort('foo, bar desc').options[:sort].should == [['foo', 1], ['bar', -1]]
     end
-    
+
     should "work with just a symbol" do
       Query.new.sort(:foo).options[:sort].should == [[:foo, 1]]
     end
-    
+
     should "work with multiple symbols" do
       Query.new.sort(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
     end

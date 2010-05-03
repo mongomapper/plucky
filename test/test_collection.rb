@@ -104,26 +104,26 @@ class CollectionTest < Test::Unit::TestCase
         @collection.fields(:name).first(:id => 'john').keys.should == ['_id', 'name']
       end
     end
-    
+
     context "#reverse" do
       should "work" do
         @collection.sort(:age).reverse.all.should == [@steve, @john, @chris]
       end
     end
-    
+
     context "#where" do
       should "work" do
         @collection.where('this.name == "John"').all.should == [@john]
       end
     end
-    
+
     context "#[]" do
       should "work" do
         @collection.filter(:name => 'John')
         @collection[:name].should == 'John'
       end
     end
-    
+
     context "#[]=" do
       should "work" do
         @collection[:name] = 'John'
