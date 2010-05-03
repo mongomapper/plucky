@@ -116,5 +116,19 @@ class CollectionTest < Test::Unit::TestCase
         @collection.where('this.name == "John"').all.should == [@john]
       end
     end
+    
+    context "#[]" do
+      should "work" do
+        @collection.filter(:name => 'John')
+        @collection[:name].should == 'John'
+      end
+    end
+    
+    context "#[]=" do
+      should "work" do
+        @collection[:name] = 'John'
+        @collection.all.should == [@john]
+      end
+    end
   end
 end
