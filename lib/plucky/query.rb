@@ -7,16 +7,45 @@ module Plucky
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
     ]
 
-    attr_reader :criteria
+    attr_reader :criteria, :options, :collection
 
-    def initialize(opts={})
-      @options, @criteria, = {}, {}
-      options(opts)
+    def initialize(collection, opts={})
+      @collection, @options, @criteria, = collection, {}, {}
+      update(opts)
     end
 
-    def options(opts=nil)
-      return @options if opts.nil?
-      separate_criteria_and_options(opts || {})
+    def find(opts={})
+      update(opts).collection.find(criteria, options)
+    end
+
+    def find_one(opts={})
+      update(opts).collection.find_one(criteria, options)
+    end
+
+    def all(opts={})
+      [].tap do |docs|
+        update(opts).find(criteria.merge(options)).each { |doc| docs << doc }
+      end
+    end
+
+    def first(opts={})
+      update(opts).find_one(criteria.merge(options))
+    end
+
+    def last(opts={})
+      update(opts).reverse.find_one(criteria.merge(options))
+    end
+
+    def remove(opts={})
+      update(opts).collection.remove(criteria)
+    end
+
+    def count(opts={})
+      update(opts).find(criteria.merge(options)).count
+    end
+
+    def update(opts={})
+      separate_criteria_and_options(opts)
       self
     end
 
@@ -59,7 +88,7 @@ module Plucky
     end
 
     def merge(other)
-      clone.options(other.options).where(other.criteria)
+      clone.update(other.options).where(other.criteria)
     end
 
     private
