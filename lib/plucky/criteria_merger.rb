@@ -7,7 +7,7 @@ module Plucky
             if other[key].is_a?(Hash)
               target[key] = merge(target[key], other[key])
             else
-              target[key]['$in'].concat([other[key]].flatten).uniq!
+              target[key]['$in'].concat(Array(other[key])).uniq!
             end
             next
           end
