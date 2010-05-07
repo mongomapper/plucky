@@ -9,9 +9,9 @@ class CollectionTest < Test::Unit::TestCase
       @john       = oh(['_id', 'john'],   ['age', 28], ['name', 'John'])
       @steve      = oh(['_id', 'steve'],  ['age', 29], ['name', 'Steve'])
       @collection = Collection.new(DB['users'])
-      @collection.insert(:_id => 'john', :name => 'John', :age => 28)
-      @collection.insert(:_id => 'steve', :name => 'Steve', :age => 29)
-      @collection.insert(:_id => 'chris', :name => 'Chris', :age => 26)
+      @collection.insert(:_id => 'john',  :age => 28, :name => 'John')
+      @collection.insert(:_id => 'steve', :age => 29, :name => 'Steve')
+      @collection.insert(:_id => 'chris', :age => 26, :name => 'Chris')
     end
 
     context "#all" do
