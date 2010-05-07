@@ -39,6 +39,7 @@ end
 watch('test/helper\.rb')  { system('clear'); run_all_tests }
 watch('test/test_.*\.rb') { |m| system('clear'); run_test_file(m[0]) }
 watch('lib/.*')           { |m| related_test_files(m[0]).each { |file| run_test_file(file) } }
+watch('lib/plucky/criteria_merger\.rb') { |m| run_test_file('test/test_query.rb') }
 
 # Ctrl-\
 Signal.trap('QUIT') do
