@@ -25,11 +25,6 @@ module Plucky
       self
     end
 
-    def filter(hash={})
-      @criteria.update(CriteriaMerger.merge(@criteria, normalized_criteria(hash)))
-      self
-    end
-
     def limit(count=nil)
       @options[:limit] = count.nil? ? nil : count.to_i
       self
@@ -50,8 +45,8 @@ module Plucky
       self
     end
 
-    def where(js)
-      @criteria['$where'] = js
+    def where(hash={})
+      @criteria.update(CriteriaMerger.merge(@criteria, normalized_criteria(hash)))
       self
     end
 
@@ -64,7 +59,7 @@ module Plucky
     end
 
     def merge(other)
-      clone.options(other.options).filter(other.criteria)
+      clone.options(other.options).where(other.criteria)
     end
 
     private

@@ -147,22 +147,14 @@ class QueryTest < Test::Unit::TestCase
     end
   end
 
-  context "#filter" do
+  context "#where" do
     should "update criteria" do
-      Query.new(:moo => 'cow').filter(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
+      Query.new(:moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
     end
 
     should "get normalized" do
-      Query.new(:moo => 'cow').filter(:foo.in => ['bar']).criteria.should == {
+      Query.new(:moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
         :moo => 'cow', :foo => {'$in' => ['bar']}
-      }
-    end
-  end
-
-  context "#where" do
-    should "update criteria with $where statement" do
-      Query.new.where('this.writer_id == 1 || this.editor_id == 1').criteria.should == {
-        '$where' => 'this.writer_id == 1 || this.editor_id == 1'
       }
     end
   end

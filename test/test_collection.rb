@@ -81,9 +81,9 @@ class CollectionTest < Test::Unit::TestCase
       end
     end
 
-    context "#filter" do
+    context "#where" do
       should "work" do
-        @collection.filter(:age.lt => 29).filter(:name => 'Chris').all.should == [@chris]
+        @collection.where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
       end
     end
 
@@ -111,15 +111,9 @@ class CollectionTest < Test::Unit::TestCase
       end
     end
 
-    context "#where" do
-      should "work" do
-        @collection.where('this.name == "John"').all.should == [@john]
-      end
-    end
-
     context "#[]" do
       should "work" do
-        @collection.filter(:name => 'John')
+        @collection.where(:name => 'John')
         @collection[:name].should == 'John'
       end
     end
