@@ -30,8 +30,8 @@ module Plucky
       self
     end
 
-    def limit(count=0)
-      @options[:limit] = count.to_i
+    def limit(count=nil)
+      @options[:limit] = count.nil? ? nil : count.to_i
       self
     end
 
@@ -40,8 +40,8 @@ module Plucky
       self
     end
 
-    def skip(count=0)
-      @options[:skip] = count.to_i
+    def skip(count=nil)
+      @options[:skip] = count.nil? ? nil : count.to_i
       self
     end
 

@@ -207,6 +207,10 @@ class QueryTest < Test::Unit::TestCase
     should "override existing skip" do
       Query.new(:skip => 5).skip(10).options[:skip].should == 10
     end
+    
+    should "return nil for nil" do
+      Query.new.skip.options[:skip].should be_nil
+    end
   end
 
   context "#sort" do
@@ -304,8 +308,8 @@ class QueryTest < Test::Unit::TestCase
   end
 
   context "skip option" do
-    should "default to 0" do
-      Query.new({}).options[:skip].should == 0
+    should "default to nil" do
+      Query.new({}).options[:skip].should == nil
     end
 
     should "use skip provided" do
@@ -322,8 +326,8 @@ class QueryTest < Test::Unit::TestCase
   end
 
   context "limit option" do
-    should "default to 0" do
-      Query.new({}).options[:limit].should == 0
+    should "default to nil" do
+      Query.new({}).options[:limit].should == nil
     end
 
     should "use limit provided" do
