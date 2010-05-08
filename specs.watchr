@@ -36,10 +36,10 @@ def related_test_files(path)
   Dir['test/**/*.rb'].select { |file| file =~ /test_#{File.basename(path)}/ }
 end
 
-watch('test/helper\.rb')  { system('clear'); run_all_tests }
-watch('test/test_.*\.rb') { |m| system('clear'); run_test_file(m[0]) }
-watch('lib/.*')           { |m| related_test_files(m[0]).each { |file| run_test_file(file) } }
-watch('lib/plucky/criteria_merger\.rb') { |m| run_test_file('test/test_query.rb') }
+watch('.*\.rb') { system('clear'); run_all_tests }
+# watch('test/helper\.rb')  { system('clear'); run_all_tests }
+# watch('test/test_.*\.rb') { |m| system('clear'); run_test_file(m[0]) }
+# watch('lib/.*')           { |m| related_test_files(m[0]).each { |file| run_test_file(file) } }
 
 # Ctrl-\
 Signal.trap('QUIT') do
