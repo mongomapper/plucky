@@ -9,10 +9,13 @@ module Plucky
             else
               target[key]['$in'].concat(Array(other[key])).uniq!
             end
-            next
+          else
+            if target.key?(key) && other.key?(key)
+              target[key] = Array(target[key]).concat(Array(other[key]))
+            else
+              target[key] = other[key]
+            end
           end
-
-          target.update(other) { |key, *values| values.flatten.uniq }
         end
       end
     end
