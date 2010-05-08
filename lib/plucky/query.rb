@@ -7,11 +7,16 @@ module Plucky
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
     ]
 
-    attr_reader :criteria, :options, :collection
+    attr_reader   :criteria, :options, :collection
 
     def initialize(collection, opts={})
       @collection, @options, @criteria, = collection, {}, {}
       update(opts)
+    end
+
+    def object_ids(*keys)
+      @object_id_keys = keys.flatten.map { |k| k.to_sym }
+      self
     end
 
     def find(opts={})
@@ -92,13 +97,30 @@ module Plucky
     end
 
     private
+      def object_id_key?(key)
+        return false if @object_id_keys.nil?
+        key = key.respond_to?(:field) ? key.field.to_sym : key.to_sym
+        @object_id_keys.include?(key)
+      end
+
       def normalized_criteria(criteria, parent=nil)
         {}.tap do |hash|
           criteria.each_pair do |key, value|
             key = normalized_key(key)
+
+            if object_id_key?(key)
+              case value
+                when String
+                  value = Plucky.to_object_id(value)
+                when Array
+                  value.map! { |id| Plucky.to_object_id(id) }
+              end
+            end
+
             if symbol_operator?(key)
               key, value = normalized_key(key.field), {"$#{key.operator}" => value}
             end
+
             hash[key] = normalized_value(hash, key, value)
           end
         end

@@ -248,6 +248,13 @@ class QueryTest < Test::Unit::TestCase
       should "normalize and update options" do
         Query.new(@collection).update(:order => :age.desc).options[:sort].should == [['age', -1]]
       end
+
+      should "work with simple stuff" do
+        Query.new(@collection).update(:foo => 'bar').update(:baz => 'wick').criteria.should == {
+          :foo => 'bar',
+          :baz => 'wick',
+        }
+      end
     end
 
     context "#merge" do
@@ -349,6 +356,67 @@ class QueryTest < Test::Unit::TestCase
         should "use existing modifier if present and convert to array" do
           Query.new(@collection, :numbers => {'$all' => Set.new([1,2,3])}).criteria.should == {:numbers => {'$all' => [1,2,3]}}
           Query.new(@collection, :numbers => {'$any' => Set.new([1,2,3])}).criteria.should == {:numbers => {'$any' => [1,2,3]}}
+        end
+      end
+
+      context "with string ids for string keys" do
+        setup do
+          @id      = BSON::ObjectID.new.to_s
+          @room_id = BSON::ObjectID.new.to_s
+          @query   = Query.new(@collection)
+          @query.where(:_id => @id, :room_id => @room_id)
+        end
+
+        should "convert strings to object ids" do
+          @query[:_id].should     == @id
+          @query[:room_id].should == @room_id
+          @query[:_id].should     be_instance_of(String)
+          @query[:room_id].should be_instance_of(String)
+        end
+      end
+
+      context "with string ids for object id keys (*keys)" do
+        setup do
+          @id      = BSON::ObjectID.new
+          @room_id = BSON::ObjectID.new
+          @query   = Query.new(@collection).object_ids(:_id, :room_id)
+          @query.where(:_id => @id.to_s, :room_id => @room_id.to_s)
+        end
+
+        should "convert strings to object ids" do
+          @query[:_id].should     == @id
+          @query[:room_id].should == @room_id
+          @query[:_id].should     be_instance_of(BSON::ObjectID)
+          @query[:room_id].should be_instance_of(BSON::ObjectID)
+        end
+      end
+
+      context "with string ids for object id keys (array of keys)" do
+        setup do
+          @id      = BSON::ObjectID.new
+          @room_id = BSON::ObjectID.new
+          @query   = Query.new(@collection).object_ids([:_id, :room_id])
+          @query.where(:_id => @id.to_s, :room_id => @room_id.to_s)
+        end
+
+        should "convert strings to object ids" do
+          @query[:_id].should     == @id
+          @query[:room_id].should == @room_id
+          @query[:_id].should     be_instance_of(BSON::ObjectID)
+          @query[:room_id].should be_instance_of(BSON::ObjectID)
+        end
+      end
+
+      context "with string ids for object id keys (array)" do
+        setup do
+          @id1   = BSON::ObjectID.new
+          @id2   = BSON::ObjectID.new
+          @query = Query.new(@collection).object_ids(:_id)
+          @query.where(:_id.in => [@id1.to_s, @id2.to_s])
+        end
+
+        should "convert strings to object ids" do
+          @query[:_id].should == {'$in' => [@id1, @id2]}
         end
       end
     end
