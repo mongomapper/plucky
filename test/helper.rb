@@ -19,3 +19,7 @@ class Test::Unit::TestCase
     end
   end
 end
+
+operators = %w{gt lt gte lte ne in nin mod all size exists}
+operators.delete('size') if RUBY_VERSION >= '1.9.1'
+SymbolOperators = operators

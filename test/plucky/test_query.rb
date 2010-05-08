@@ -1,17 +1,17 @@
 require 'helper'
 
 class QueryTest < Test::Unit::TestCase
-  context "Plucky::Query" do
+  context "Query" do
     include Plucky
 
     setup do
       @chris      = oh(['_id', 'chris'],  ['age', 26], ['name', 'Chris'])
-      @john       = oh(['_id', 'john'],   ['age', 28], ['name', 'John'])
       @steve      = oh(['_id', 'steve'],  ['age', 29], ['name', 'Steve'])
+      @john       = oh(['_id', 'john'],   ['age', 28], ['name', 'John'])
       @collection = DB['users']
-      @collection.insert(:_id => 'john',  :age => 28, :name => 'John')
-      @collection.insert(:_id => 'steve', :age => 29, :name => 'Steve')
-      @collection.insert(:_id => 'chris', :age => 26, :name => 'Chris')
+      @collection.insert(@chris)
+      @collection.insert(@steve)
+      @collection.insert(@john)
     end
 
     context "#find" do
@@ -63,7 +63,7 @@ class QueryTest < Test::Unit::TestCase
 
     context "#first" do
       should "work with and normalize criteria" do
-        Query.new(@collection).first(:age.lt => 29).should == @john
+        Query.new(@collection).first(:age.lt => 29).should == @chris
       end
 
       should "work with and normalize options" do
@@ -162,22 +162,6 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
-    context "#where" do
-      should "work" do
-        Query.new(@collection).where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
-      end
-
-      should "update criteria" do
-        Query.new(@collection, :moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
-      end
-
-      should "get normalized" do
-        Query.new(@collection, :moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
-          :moo => 'cow', :foo => {'$in' => ['bar']}
-        }
-      end
-    end
-
     context "#skip" do
       should "work" do
         Query.new(@collection).skip(2).all(:order => :age).should == [@steve]
@@ -257,6 +241,28 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#where" do
+      should "work" do
+        Query.new(@collection).where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
+      end
+
+      should "update criteria" do
+        Query.new(@collection, :moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
+      end
+
+      should "get normalized" do
+        Query.new(@collection, :moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
+          :moo => 'cow', :foo => {'$in' => ['bar']}
+        }
+      end
+
+      should "normalize merged criteria" do
+        Query.new(@collection).where(:foo => 'bar').where(:foo => 'baz').criteria.should == {
+          :foo => {'$in' => %w[bar baz]}
+        }
+      end
+    end
+
     context "#merge" do
       should "overwrite options" do
         query1 = Query.new(@collection, :skip => 5, :limit => 5)
@@ -266,34 +272,16 @@ class QueryTest < Test::Unit::TestCase
         new_query.options[:limit].should == 10
       end
 
-      should "merge when no criteria match" do
+      should "merge criteria" do
         query1 = Query.new(@collection, :foo => 'bar')
-        query2 = Query.new(@collection, :baz => 'wick')
+        query2 = Query.new(@collection, :foo => 'baz', :fent => 'wick')
         new_query = query1.merge(query2)
-        new_query.criteria.should == {:foo => 'bar', :baz => 'wick'}
-      end
-
-      should "merge exact matches to $in with array" do
-        query1 = Query.new(@collection, :foo => 'bar')
-        query2 = Query.new(@collection, :foo => 'baz')
-        query3 = Query.new(@collection, :foo => 'wick')
-        new_query = query1.merge(query2).merge(query3)
-        new_query.criteria.should == {:foo => {'$in' => ['bar', 'baz', 'wick']}}
-      end
-
-      should "merge $in arrays" do
-        query1 = Query.new(@collection, :foo.in => [1, 2])
-        query2 = Query.new(@collection, :foo.in => [3, 4, 5])
-        query3 = Query.new(@collection, :foo.in => [6])
-        new_query = query1.merge(query2).merge(query3)
-        new_query.criteria.should == {:foo => {'$in' => [1, 2, 3, 4, 5, 6]}}
+        new_query.criteria.should == {:foo => {'$in' => %w[bar baz]}, :fent => 'wick'}
       end
     end
 
     context "Converting criteria" do
-      %w{gt lt gte lte ne in nin mod all size exists}.each do |operator|
-        next if operator == 'size' && RUBY_VERSION >= '1.9.1' # 1.9 defines Symbol#size
-
+      SymbolOperators.each do |operator|
         should "work with #{operator} symbol operator" do
           Query.new(@collection, :age.send(operator) => 21).criteria.should == {:age => {"$#{operator}" => 21}}
         end

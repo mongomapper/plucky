@@ -80,7 +80,8 @@ module Plucky
     end
 
     def where(hash={})
-      @criteria.update(CriteriaMerger.merge(@criteria, normalized_criteria(hash)))
+      merged_criteria = CriteriaHash.new(@criteria).merge(normalized_criteria(hash))
+      @criteria.update(normalized_criteria(merged_criteria))
       self
     end
 

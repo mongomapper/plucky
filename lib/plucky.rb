@@ -17,7 +17,7 @@ class Symbol
 end
 
 module Plucky
-  autoload :CriteriaMerger, 'plucky/criteria_merger'
+  autoload :CriteriaHash, 'plucky/criteria_hash'
   autoload :Query,          'plucky/query'
 
   def self.to_object_id(value)
