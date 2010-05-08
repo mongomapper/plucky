@@ -1,5 +1,3 @@
-require 'set'
-
 module Plucky
   class Query
     OptionKeys = [
