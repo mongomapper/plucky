@@ -4,7 +4,7 @@ class CriteriaHashTest < Test::Unit::TestCase
   include Plucky
 
   context "Plucky::CriteriaHash" do
-    context ".merge" do
+    context "#merge" do
       should "work when no keys match" do
         first, second = {:foo => 'bar'}, {:baz => 'wick'}
         CriteriaHash.new(first).merge(second).should == {
