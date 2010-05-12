@@ -14,6 +14,34 @@ class QueryTest < Test::Unit::TestCase
       @collection.insert(@john)
     end
 
+    context "#initialize" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
+      should "default options to options hash" do
+        @query.options.should be_instance_of(OptionsHash)
+      end
+
+      should "default criteria to criteria hash" do
+        @query.criteria.should be_instance_of(CriteriaHash)
+      end
+    end
+
+    context "#[]=" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
+      should "set key on options for option" do
+        subject[:skip] = 1
+        subject[:skip].should == 1
+      end
+      
+      should "set key on criteria for criteria" do
+        subject[:foo] = 'bar'
+        subject[:foo].should == 'bar'
+      end
+    end
+
     context "#find" do
       should "return a cursor" do
         cursor = Query.new(@collection).find
@@ -102,26 +130,6 @@ class QueryTest < Test::Unit::TestCase
     end
 
     context "#fields" do
-      should "update options (with array)" do
-        Query.new(@collection).fields([:foo, :bar, :baz]).options[:fields].should == [:foo, :bar, :baz]
-      end
-
-      should "update options (with hash)" do
-        Query.new(@collection).fields(:foo => 1, :bar => 0).options[:fields].should == {:foo => 1, :bar => 0}
-      end
-
-      should "normalize fields" do
-        Query.new(@collection).fields('foo, bar').options[:fields].should == %w(foo bar)
-      end
-
-      should "work with symbol" do
-        Query.new(@collection).fields(:foo).options[:fields].should == [:foo]
-      end
-
-      should "work with array of symbols" do
-        Query.new(@collection).fields(:foo, :bar).options[:fields].should == [:foo, :bar]
-      end
-
       should "work" do
         Query.new(@collection).fields(:name).first(:id => 'john').keys.should == ['_id', 'name']
       end
@@ -209,7 +217,7 @@ class QueryTest < Test::Unit::TestCase
       end
 
       should "work with just a symbol" do
-        Query.new(@collection).sort(:foo).options[:sort].should == [[:foo, 1]]
+        Query.new(@collection).sort(:foo).options[:sort].should == [['foo', 1]]
       end
 
       should "work with multiple symbols" do
@@ -234,10 +242,10 @@ class QueryTest < Test::Unit::TestCase
       end
 
       should "work with simple stuff" do
-        Query.new(@collection).update(:foo => 'bar').update(:baz => 'wick').criteria.should == {
-          :foo => 'bar',
-          :baz => 'wick',
-        }
+        Query.new(@collection).
+          update(:foo => 'bar').
+          update(:baz => 'wick').
+          criteria.should == CriteriaHash.new(:foo => 'bar', :baz => 'wick')
       end
     end
 
@@ -247,19 +255,22 @@ class QueryTest < Test::Unit::TestCase
       end
 
       should "update criteria" do
-        Query.new(@collection, :moo => 'cow').where(:foo => 'bar').criteria.should == {:foo => 'bar', :moo => 'cow'}
+        Query.new(@collection, :moo => 'cow').
+          where(:foo => 'bar').
+          criteria.should == CriteriaHash.new(:foo => 'bar', :moo => 'cow')
       end
 
       should "get normalized" do
-        Query.new(@collection, :moo => 'cow').where(:foo.in => ['bar']).criteria.should == {
-          :moo => 'cow', :foo => {'$in' => ['bar']}
-        }
+        Query.new(@collection, :moo => 'cow').
+          where(:foo.in => ['bar']).
+          criteria.should == CriteriaHash.new(:moo => 'cow', :foo => {'$in' => ['bar']})
       end
 
       should "normalize merged criteria" do
-        Query.new(@collection).where(:foo => 'bar').where(:foo => 'baz').criteria.should == {
-          :foo => {'$in' => %w[bar baz]}
-        }
+        Query.new(@collection).
+          where(:foo => 'bar').
+          where(:foo => 'baz').
+          criteria.should == CriteriaHash.new(:foo => {'$in' => %w[bar baz]})
       end
     end
 
@@ -276,274 +287,15 @@ class QueryTest < Test::Unit::TestCase
         query1 = Query.new(@collection, :foo => 'bar')
         query2 = Query.new(@collection, :foo => 'baz', :fent => 'wick')
         new_query = query1.merge(query2)
-        new_query.criteria.should == {:foo => {'$in' => %w[bar baz]}, :fent => 'wick'}
-      end
-    end
-
-    context "Converting criteria" do
-      SymbolOperators.each do |operator|
-        should "work with #{operator} symbol operator" do
-          Query.new(@collection, :age.send(operator) => 21).criteria.should == {:age => {"$#{operator}" => 21}}
-        end
-      end
-
-      should "work with simple criteria" do
-        Query.new(@collection, :foo => 'bar').criteria.should == {:foo => 'bar'}
-        Query.new(@collection, :foo => 'bar', :baz => 'wick').criteria.should == {:foo => 'bar', :baz => 'wick'}
-      end
-
-      should "work with multiple symbol operators on the same field" do
-        Query.new(@collection, :position.gt => 0, :position.lte => 10).criteria.should == {
-          :position => {"$gt" => 0, "$lte" => 10}
-        }
-      end
-
-      context "with id key" do
-        should "convert to _id" do
-          id = BSON::ObjectID.new
-          Query.new(@collection, :id => id).criteria.should == {:_id => id}
-        end
-
-        should "convert id with symbol operator to _id with modifier" do
-          id = BSON::ObjectID.new
-          Query.new(@collection, :id.ne => id).criteria.should == {:_id => {'$ne' => id}}
-        end
-      end
-
-      context "with time value" do
-        should "convert to utc if not utc" do
-          Query.new(@collection, :created_at => Time.now).criteria[:created_at].utc?.should be(true)
-        end
-
-        should "leave utc alone" do
-          Query.new(@collection, :created_at => Time.now.utc).criteria[:created_at].utc?.should be(true)
-        end
-      end
-
-      context "with array value" do
-        should "default to $in" do
-          Query.new(@collection, :numbers => [1,2,3]).criteria.should == {:numbers => {'$in' => [1,2,3]}}
-        end
-
-        should "use existing modifier if present" do
-          Query.new(@collection, :numbers => {'$all' => [1,2,3]}).criteria.should == {:numbers => {'$all' => [1,2,3]}}
-          Query.new(@collection, :numbers => {'$any' => [1,2,3]}).criteria.should == {:numbers => {'$any' => [1,2,3]}}
-        end
-
-        should "work arbitrarily deep" do
-          Query.new(@collection, :foo => {:bar => [1,2,3]}).criteria.should == {:foo => {:bar => {'$in' => [1,2,3]}}}
-          Query.new(@collection, :foo => {:bar => {'$any' => [1,2,3]}}).criteria.should == {:foo => {:bar => {'$any' => [1,2,3]}}}
-        end
-      end
-
-      context "with set value" do
-        should "default to $in and convert to array" do
-          Query.new(@collection, :numbers => Set.new([1,2,3])).criteria.should == {:numbers => {'$in' => [1,2,3]}}
-        end
-
-        should "use existing modifier if present and convert to array" do
-          Query.new(@collection, :numbers => {'$all' => Set.new([1,2,3])}).criteria.should == {:numbers => {'$all' => [1,2,3]}}
-          Query.new(@collection, :numbers => {'$any' => Set.new([1,2,3])}).criteria.should == {:numbers => {'$any' => [1,2,3]}}
-        end
-      end
-
-      context "with string ids for string keys" do
-        setup do
-          @id      = BSON::ObjectID.new.to_s
-          @room_id = BSON::ObjectID.new.to_s
-          @query   = Query.new(@collection)
-          @query.where(:_id => @id, :room_id => @room_id)
-        end
-
-        should "convert strings to object ids" do
-          @query[:_id].should     == @id
-          @query[:room_id].should == @room_id
-          @query[:_id].should     be_instance_of(String)
-          @query[:room_id].should be_instance_of(String)
-        end
-      end
-
-      context "with string ids for object id keys (*keys)" do
-        setup do
-          @id      = BSON::ObjectID.new
-          @room_id = BSON::ObjectID.new
-          @query   = Query.new(@collection).object_ids(:_id, :room_id)
-          @query.where(:_id => @id.to_s, :room_id => @room_id.to_s)
-        end
-
-        should "convert strings to object ids" do
-          @query[:_id].should     == @id
-          @query[:room_id].should == @room_id
-          @query[:_id].should     be_instance_of(BSON::ObjectID)
-          @query[:room_id].should be_instance_of(BSON::ObjectID)
-        end
-      end
-
-      context "with string ids for object id keys (array of keys)" do
-        setup do
-          @id      = BSON::ObjectID.new
-          @room_id = BSON::ObjectID.new
-          @query   = Query.new(@collection).object_ids([:_id, :room_id])
-          @query.where(:_id => @id.to_s, :room_id => @room_id.to_s)
-        end
-
-        should "convert strings to object ids" do
-          @query[:_id].should     == @id
-          @query[:room_id].should == @room_id
-          @query[:_id].should     be_instance_of(BSON::ObjectID)
-          @query[:room_id].should be_instance_of(BSON::ObjectID)
-        end
-      end
-
-      context "with string ids for object id keys (array)" do
-        setup do
-          @id1   = BSON::ObjectID.new
-          @id2   = BSON::ObjectID.new
-          @query = Query.new(@collection).object_ids(:_id)
-          @query.where(:_id.in => [@id1.to_s, @id2.to_s])
-        end
-
-        should "convert strings to object ids" do
-          @query[:_id].should == {'$in' => [@id1, @id2]}
-        end
-      end
-    end
-
-    context "order option" do
-      should "single field with ascending direction" do
-        sort = [['foo', 1]]
-        Query.new(@collection, :order => 'foo asc').options[:sort].should == sort
-        Query.new(@collection, :order => 'foo ASC').options[:sort].should == sort
-      end
-
-      should "single field with descending direction" do
-        sort = [['foo', -1]]
-        Query.new(@collection, :order => 'foo desc').options[:sort].should == sort
-        Query.new(@collection, :order => 'foo DESC').options[:sort].should == sort
-      end
-
-      should "convert order operators to mongo sort" do
-        query = Query.new(@collection, :order => :foo.asc)
-        query.options[:sort].should == [['foo', 1]]
-        query.options[:order].should be_nil
-
-        query = Query.new(@collection, :order => :foo.desc)
-        query.options[:sort].should == [['foo', -1]]
-        query.options[:order].should be_nil
-      end
-
-      should "convert array of order operators to mongo sort" do
-        Query.new(@collection, :order => [:foo.asc, :bar.desc]).options[:sort].should == [['foo', 1], ['bar', -1]]
-      end
-
-      should "convert field without direction to ascending" do
-        sort = [['foo', 1]]
-        Query.new(@collection, :order => 'foo').options[:sort].should == sort
-      end
-
-      should "convert multiple fields with directions" do
-        sort = [['foo', -1], ['bar', 1], ['baz', -1]]
-        Query.new(@collection, :order => 'foo desc, bar asc, baz desc').options[:sort].should == sort
-      end
-
-      should "convert multiple fields with some missing directions" do
-        sort = [['foo', -1], ['bar', 1], ['baz', 1]]
-        Query.new(@collection, :order => 'foo desc, bar, baz').options[:sort].should == sort
-      end
-
-      should "normalize id to _id" do
-        Query.new(@collection, :order => :id.asc).options[:sort].should == [['_id', 1]]
-      end
-
-      should "convert natural in order to proper" do
-        sort = [['$natural', 1]]
-        Query.new(@collection, :order => '$natural asc').options[:sort].should == sort
-        sort = [['$natural', -1]]
-        Query.new(@collection, :order => '$natural desc').options[:sort].should == sort
-      end
-    end
-
-    context "sort option" do
-      should "work for natural order ascending" do
-        Query.new(@collection, :sort => {'$natural' => 1}).options[:sort]['$natural'].should == 1
-      end
-
-      should "work for natural order descending" do
-        Query.new(@collection, :sort => {'$natural' => -1}).options[:sort]['$natural'].should == -1
-      end
-
-      should "should be used if both sort and order are present" do
-        sort = [['$natural', 1]]
-        Query.new(@collection, :sort => sort, :order => 'foo asc').options[:sort].should == sort
-      end
-    end
-
-    context "skip option" do
-      should "default to nil" do
-        Query.new(@collection, {}).options[:skip].should == nil
-      end
-
-      should "use skip provided" do
-        Query.new(@collection, :skip => 2).options[:skip].should == 2
-      end
-
-      should "convert string to integer" do
-        Query.new(@collection, :skip => '2').options[:skip].should == 2
-      end
-
-      should "convert offset to skip" do
-        Query.new(@collection, :offset => 1).options[:skip].should == 1
-      end
-    end
-
-    context "limit option" do
-      should "default to nil" do
-        Query.new(@collection, {}).options[:limit].should == nil
-      end
-
-      should "use limit provided" do
-        Query.new(@collection, :limit => 2).options[:limit].should == 2
-      end
-
-      should "convert string to integer" do
-        Query.new(@collection, :limit => '2').options[:limit].should == 2
-      end
-    end
-
-    context "fields option" do
-      should "default to nil" do
-        Query.new(@collection, {}).options[:fields].should be(nil)
-      end
-
-      should "be converted to nil if empty string" do
-        Query.new(@collection, :fields => '').options[:fields].should be(nil)
-      end
-
-      should "be converted to nil if []" do
-        Query.new(@collection, :fields => []).options[:fields].should be(nil)
-      end
-
-      should "should work with array" do
-        Query.new(@collection, :fields => %w(a b)).options[:fields].should == %w(a b)
-      end
-
-      should "convert comma separated list to array" do
-        Query.new(@collection, :fields => 'a, b').options[:fields].should == %w(a b)
-      end
-
-      should "also work as select" do
-        Query.new(@collection, :select => %w(a b)).options[:fields].should == %w(a b)
-      end
-
-      should "also work with select as array of symbols" do
-        Query.new(@collection, :select => [:a, :b]).options[:fields].should == [:a, :b]
+        new_query.criteria[:fent].should == 'wick'
+        new_query.criteria[:foo].should == {'$in' => %w[bar baz]}
       end
     end
 
     context "Criteria/option auto-detection" do
       should "know :conditions are criteria" do
         query = Query.new(@collection, :conditions => {:foo => 'bar'})
-        query.criteria.should == {:foo => 'bar'}
+        query.criteria.should == CriteriaHash.new(:foo => 'bar')
         query.options.keys.should_not include(:conditions)
       end
 
@@ -593,18 +345,13 @@ class QueryTest < Test::Unit::TestCase
           :limit  => 10,
           :skip   => 10,
         })
-
-        query.criteria.should == {
-          :foo => 'bar',
-          :baz => true,
-        }
-
-        query.options.should == {
+        query.criteria.should == CriteriaHash.new(:foo => 'bar', :baz => true)
+        query.options.should == OptionsHash.new({
           :sort   => [['foo', 1]],
           :fields => ['foo', 'baz'],
           :limit  => 10,
           :skip   => 10,
-        }
+        })
       end
     end
   end

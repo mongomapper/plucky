@@ -3,6 +3,7 @@ require 'mongo'
 require 'plucky/support'
 
 module Plucky
+  autoload :OptionsHash,  'plucky/options_hash'
   autoload :CriteriaHash, 'plucky/criteria_hash'
   autoload :Query,        'plucky/query'
 
