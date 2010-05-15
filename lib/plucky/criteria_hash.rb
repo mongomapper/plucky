@@ -88,7 +88,7 @@ module Plucky
       def normalized_key(key)
         key = key.to_sym                 if key.respond_to?(:to_sym)
         return normalized_key(key.field) if key.respond_to?(:field)
-        return :_id if key == :id
+        return :_id                      if key == :id
         key
       end
 
