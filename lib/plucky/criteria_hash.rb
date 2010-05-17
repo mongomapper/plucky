@@ -68,11 +68,12 @@ module Plucky
     end
 
     def object_ids
-      @options[:object_ids]
+      @options[:object_ids] ||= []
     end
 
     def object_ids=(value)
-      @options[:object_ids] = value
+      raise ArgumentError unless value.respond_to?(:flatten)
+      @options[:object_ids] = value.flatten
     end
 
     private
@@ -81,7 +82,6 @@ module Plucky
       end
 
       def object_id?(key)
-        return false if object_ids.nil?
         object_ids.include?(key.to_sym)
       end
 

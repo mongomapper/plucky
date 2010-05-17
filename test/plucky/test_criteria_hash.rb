@@ -23,33 +23,47 @@ class CriteriaHashTest < Test::Unit::TestCase
         '$gt' => 12, '$lt' => 20
       }
     end
-    
-    should "allow setting the object ids" do
-      criteria = CriteriaHash.new
-      criteria.object_ids = [:_id]
-      criteria.object_ids.should == [:_id]
+
+    context "#object_ids=" do
+      should "work with array" do
+        criteria = CriteriaHash.new
+        criteria.object_ids = [:_id]
+        criteria.object_ids.should == [:_id]
+      end
+
+      should "flatten multi-dimensional array" do
+        criteria = CriteriaHash.new
+        criteria.object_ids = [[:_id]]
+        criteria.object_ids.should == [:_id]
+      end
+      
+      should "raise argument error if does not respond to flatten" do
+        assert_raises(ArgumentError) { CriteriaHash.new.object_ids = {} }
+        assert_raises(ArgumentError) { CriteriaHash.new.object_ids = nil }
+        assert_raises(ArgumentError) { CriteriaHash.new.object_ids = 'foo' }
+      end
     end
-    
+
     context "#[]=" do
       should "leave string values for string keys alone" do
         criteria = CriteriaHash.new
         criteria[:foo] = 'bar'
         criteria[:foo].should == 'bar'
       end
-      
+
       should "convert string values to object ids for object id keys" do
         id = BSON::ObjectID.new
         criteria = CriteriaHash.new({}, :object_ids => [:_id])
         criteria[:_id] = id.to_s
         criteria[:_id].should == id
       end
-      
+
       should "convert sets to arrays" do
         criteria = CriteriaHash.new
         criteria[:foo] = [1, 2].to_set
         criteria[:foo].should == {'$in' => [1, 2]}
       end
-      
+
       should "convert times to utc" do
         time = Time.now
         criteria = CriteriaHash.new
@@ -57,20 +71,20 @@ class CriteriaHashTest < Test::Unit::TestCase
         criteria[:foo].should be_utc
         criteria[:foo].should == time.utc
       end
-      
+
       should "convert :id to :_id" do
         criteria = CriteriaHash.new
         criteria[:id] = 1
         criteria[:_id].should == 1
         criteria[:id].should be_nil
       end
-      
+
       should "work with symbol operators" do
         criteria = CriteriaHash.new
         criteria[:_id.in] = ['foo']
         criteria[:_id].should == {'$in' => ['foo']}
       end
-      
+
       should "set each of the conditions pairs" do
         criteria = CriteriaHash.new
         criteria[:conditions] = {:_id => 'john', :foo => 'bar'}
@@ -78,7 +92,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         criteria[:foo].should == 'bar'
       end
     end
-    
+
     context "with id key" do
       should "convert to _id" do
         id = BSON::ObjectID.new
@@ -94,7 +108,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         criteria[:id].should be_nil
       end
     end
-    
+
     context "with time value" do
       should "convert to utc if not utc" do
         CriteriaHash.new(:created_at => Time.now)[:created_at].utc?.should be(true)
@@ -155,7 +169,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         criteria[:_id].should     be_instance_of(BSON::ObjectID)
         criteria[:room_id].should be_instance_of(BSON::ObjectID)
       end
-      
+
       should "convert :id with string value to object id value" do
         criteria = CriteriaHash.new({:id => @id.to_s}, :object_ids => [:_id])
         criteria[:_id].should == @id
@@ -211,7 +225,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         c2 = CriteriaHash.new(:foo => {'$in' => [1, 4, 5]})
         c1.merge(c2).should == CriteriaHash.new(:foo => {'$in' => [1, 2, 3, 4, 5]})
       end
-      
+
       should "merge matching keys with multiple modifiers" do
         c1 = CriteriaHash.new(:foo => {'$in' => [1, 2, 3]})
         c2 = CriteriaHash.new(:foo => {'$all' => [1, 4, 5]})
