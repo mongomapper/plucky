@@ -35,7 +35,7 @@ class QueryTest < Test::Unit::TestCase
         subject[:skip] = 1
         subject[:skip].should == 1
       end
-      
+
       should "set key on criteria for criteria" do
         subject[:foo] = 'bar'
         subject[:foo].should == 'bar'
@@ -271,6 +271,21 @@ class QueryTest < Test::Unit::TestCase
           where(:foo => 'bar').
           where(:foo => 'baz').
           criteria.should == CriteriaHash.new(:foo => {'$in' => %w[bar baz]})
+      end
+    end
+
+    context "#object_ids" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
+      should "set criteria's object_ids" do
+        subject.criteria.expects(:object_ids=).with([:foo, :bar])
+        subject.object_ids(:foo, :bar)
+      end
+
+      should "return current object ids if keys argument is empty" do
+        subject.object_ids(:foo, :bar)
+        subject.object_ids.should == [:foo, :bar]
       end
     end
 

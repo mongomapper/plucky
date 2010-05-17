@@ -13,7 +13,8 @@ module Plucky
     end
 
     def object_ids(*keys)
-      criteria.object_ids = @object_ids
+      return criteria.object_ids if keys.empty?
+      criteria.object_ids = *keys
       self
     end
 
