@@ -1,6 +1,6 @@
 require 'set'
 require 'mongo'
-require 'plucky/support'
+require 'plucky/extensions'
 
 module Plucky
   autoload :CriteriaHash, 'plucky/criteria_hash'
