@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
+require File.expand_path('../lib/plucky/version', __FILE__)
 
 Rake::TestTask.new(:test) do |test|
   test.libs      << 'lib' << 'test'
@@ -10,3 +11,15 @@ Rake::TestTask.new(:test) do |test|
 end
 
 task :default => :test
+
+task :build do
+  sh "gem build plucky.gemspec"
+end
+
+task :install => :build do
+  sh "gem install plucky-#{Plucky::Version}"
+end
+
+task :release => :build do
+  sh "gem push plucky-#{Plucky::Version}"
+end
