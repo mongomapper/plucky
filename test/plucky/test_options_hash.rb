@@ -5,7 +5,7 @@ class OptionsHashTest < Test::Unit::TestCase
 
   context "Plucky::OptionsHash" do
     should "delegate missing methods to the source hash" do
-      hash = {:skip => 1, :limit => 1}
+      hash = {:limit => 1, :skip => 1}
       options = OptionsHash.new(hash)
       options[:skip].should   == 1
       options[:limit].should  == 1
@@ -194,11 +194,16 @@ class OptionsHashTest < Test::Unit::TestCase
           subject[:sort] = [['first_name', 1], ['last_name', 1]]
         end
 
+        should "work with array and one string element" do
+          subject[:sort] = ['foo, bar desc']
+          subject[:sort].should == [['foo', 1], ['bar', -1]]
+        end
+
         should "work with array of single array" do
           subject[:sort] = [['foo', -1]]
           subject[:sort].should == [['foo', -1]]
         end
-        
+
         should "work with array of multiple arrays" do
           subject[:sort] = [['foo', -1], ['bar', 1]]
           subject[:sort].should == [['foo', -1], ['bar', 1]]

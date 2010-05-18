@@ -67,7 +67,11 @@ module Plucky
       def normalized_sort(value)
         case value
           when Array
-            value.compact.map { |v| normalized_sort_piece(v).flatten }
+            if value.size == 1 && value[0].is_a?(String)
+              normalized_sort_piece(value[0])
+            else
+              value.compact.map { |v| normalized_sort_piece(v).flatten }
+            end
           else
             normalized_sort_piece(value)
         end
