@@ -72,7 +72,7 @@ module Plucky
     end
 
     def object_ids=(value)
-      raise ArgumentError unless value.respond_to?(:flatten)
+      raise ArgumentError unless value.is_a?(Array)
       @options[:object_ids] = value.flatten
     end
 

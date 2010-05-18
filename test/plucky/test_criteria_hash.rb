@@ -37,7 +37,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         criteria.object_ids.should == [:_id]
       end
       
-      should "raise argument error if does not respond to flatten" do
+      should "raise argument error if not array" do
         assert_raises(ArgumentError) { CriteriaHash.new.object_ids = {} }
         assert_raises(ArgumentError) { CriteriaHash.new.object_ids = nil }
         assert_raises(ArgumentError) { CriteriaHash.new.object_ids = 'foo' }
