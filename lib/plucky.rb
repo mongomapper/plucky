@@ -3,9 +3,10 @@ require 'mongo'
 require 'plucky/support'
 
 module Plucky
-  autoload :OptionsHash,  'plucky/options_hash'
   autoload :CriteriaHash, 'plucky/criteria_hash'
+  autoload :OptionsHash,  'plucky/options_hash'
   autoload :Query,        'plucky/query'
+  autoload :Version,      'plucky/version'
 
   def self.to_object_id(value)
     if value.nil? || (value.respond_to?(:empty?) && value.empty?)
