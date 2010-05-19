@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module Plucky
   class OptionsHash
     attr_reader :source

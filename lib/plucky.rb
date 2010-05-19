@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'set'
 require 'mongo'
 require 'plucky/extensions'
