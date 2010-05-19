@@ -19,7 +19,7 @@ class Test::Unit::TestCase
   end
   
   def oh(*args)
-    OrderedHash.new.tap do |hash|
+    BSON::OrderedHash.new.tap do |hash|
       args.each { |a| hash[a[0]] = a[1] }
     end
   end

@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files        = Dir.glob("{bin,lib}/**/*") + %w[LICENSE README.rdoc]
   s.required_rubygems_version = '>= 1.3.6'
 
-  s.add_dependency              'mongo', '1.0'
+  s.add_dependency              'mongo', '1.0.1'
   s.add_development_dependency  'shoulda'
   s.add_development_dependency  'jnunemaker-matchy'
   s.add_development_dependency  'mocha'
