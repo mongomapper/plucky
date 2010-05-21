@@ -11,6 +11,7 @@ module Plucky
 
     attr_reader   :criteria, :options, :collection
     def_delegator :criteria, :simple?
+    def_delegator :options,  :fields?
 
     def initialize(collection, opts={})
       @collection, @options, @criteria = collection, OptionsHash.new, CriteriaHash.new

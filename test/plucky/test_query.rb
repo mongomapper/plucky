@@ -386,5 +386,11 @@ class QueryTest < Test::Unit::TestCase
       query.criteria.expects(:simple?)
       query.simple?
     end
+
+    should "delegate fields? to options" do
+      query = Query.new(@collection)
+      query.options.expects(:fields?)
+      query.fields?
+    end
   end
 end

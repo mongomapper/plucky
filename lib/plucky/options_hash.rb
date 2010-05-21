@@ -21,6 +21,10 @@ module Plucky
       source
     end
 
+    def fields?
+      !self[:fields].nil?
+    end
+
     private
       def method_missing(method, *args, &block)
         @source.send(method, *args, &block)

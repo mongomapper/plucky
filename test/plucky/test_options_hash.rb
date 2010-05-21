@@ -12,6 +12,16 @@ class OptionsHashTest < Test::Unit::TestCase
       options.keys.should     == [:limit, :skip]
     end
 
+    context "#fields?" do
+      should "be true if fields have been selected" do
+        OptionsHash.new(:fields => :name).fields?.should be(true)
+      end
+
+      should "be false if no fields have been selected" do
+        OptionsHash.new.fields?.should be(false)
+      end
+    end
+
     context "#[]=" do
       should "convert order to sort" do
         options = OptionsHash.new(:order => :foo)
