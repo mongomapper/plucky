@@ -28,9 +28,7 @@ module Plucky
     end
 
     def all(opts={})
-      [].tap do |docs|
-        update(opts).find(to_hash).each { |doc| docs << doc }
-      end
+      update(opts).find(to_hash).to_a
     end
 
     def first(opts={})
