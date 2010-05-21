@@ -369,5 +369,10 @@ class QueryTest < Test::Unit::TestCase
         })
       end
     end
+    
+    should "inspect pretty" do
+      inspect = Query.new(@collection, :foo => 'bar', :baz => 'wick').inspect
+      inspect.should == '#<Plucky::Query baz: "wick", foo: "bar">'
+    end
   end
 end

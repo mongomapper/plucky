@@ -110,5 +110,12 @@ module Plucky
     def to_hash
       criteria.to_hash.merge(options.to_hash)
     end
+
+    def inspect
+      as_nice_string = to_hash.collect do |key, value|
+        " #{key}: #{value.inspect}"
+      end.join(",")
+      "#<#{self.class}#{as_nice_string}>"
+    end
   end
 end
