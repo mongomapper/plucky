@@ -375,10 +375,16 @@ class QueryTest < Test::Unit::TestCase
         })
       end
     end
-    
+
     should "inspect pretty" do
       inspect = Query.new(@collection, :baz => 'wick', :foo => 'bar').inspect
       inspect.should == '#<Plucky::Query baz: "wick", foo: "bar">'
+    end
+
+    should "delegate simple? to criteria" do
+      query = Query.new(@collection)
+      query.criteria.expects(:simple?)
+      query.simple?
     end
   end
 end

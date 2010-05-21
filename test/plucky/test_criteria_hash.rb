@@ -232,5 +232,23 @@ class CriteriaHashTest < Test::Unit::TestCase
         c1.merge(c2).should == CriteriaHash.new(:foo => {'$in' => [1, 2, 3], '$all' => [1, 4, 5]})
       end
     end
+    
+    context "#simple?" do
+      should "be true if only filtering by _id" do
+        CriteriaHash.new(:_id => 'id').should be_simple
+      end
+
+      should "be true if only filtering by Sci" do
+        CriteriaHash.new(:_id => 'id', :_type => 'Foo').should be_simple
+      end
+
+      should "be false if querying by anthing other than _id/Sci" do
+        CriteriaHash.new(:foo => 'bar').should_not be_simple
+      end
+
+      should "be false if querying only by _type" do
+        CriteriaHash.new(:_type => 'Foo').should_not be_simple
+      end
+    end
   end
 end

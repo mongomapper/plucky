@@ -77,6 +77,14 @@ module Plucky
       @options[:object_ids] = value.flatten
     end
 
+    # The definition of simple is querying by only _id or _id and _type. 
+    # If this is the case, you can use IdentityMap in library to not perform
+    # query and instead just return from map.
+    def simple?
+      key_set = keys.to_set
+      key_set == [:_id].to_set || key_set == [:_id, :_type].to_set
+    end
+
     private
       def method_missing(method, *args, &block)
         @source.send(method, *args, &block)

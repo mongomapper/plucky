@@ -1,12 +1,16 @@
 # encoding: UTF-8
+require 'forwardable'
 module Plucky
   class Query
+    extend Forwardable
+
     OptionKeys = [
       :select, :offset, :order,                                              # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
     ]
 
-    attr_reader :criteria, :options, :collection
+    attr_reader   :criteria, :options, :collection
+    def_delegator :criteria, :simple?
 
     def initialize(collection, opts={})
       @collection, @options, @criteria = collection, OptionsHash.new, CriteriaHash.new
@@ -112,7 +116,7 @@ module Plucky
     def inspect
       as_nice_string = to_hash.collect do |key, value|
         " #{key}: #{value.inspect}"
-      end.join(",")
+      end.sort.join(",")
       "#<#{self.class}#{as_nice_string}>"
     end
   end
