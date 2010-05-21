@@ -230,6 +230,12 @@ class QueryTest < Test::Unit::TestCase
         Query.new(@collection).sort(:age).reverse.all.should == [@steve, @john, @chris]
       end
 
+      should "not error if no sort provided" do
+        assert_nothing_raised do
+          Query.new(@collection).reverse
+        end
+      end
+
       should "reverse the sort order" do
         query = Query.new(@collection, :order => 'foo asc, bar desc')
         query.reverse.options[:sort].should == [['foo', -1], ['bar', 1]]

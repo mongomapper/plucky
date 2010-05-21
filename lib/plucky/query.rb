@@ -63,7 +63,7 @@ module Plucky
     end
 
     def reverse
-      self[:sort].map! { |s| [s[0], -s[1]] }
+      self[:sort].map! { |s| [s[0], -s[1]] } unless self[:sort].nil?
       self
     end
 
