@@ -126,9 +126,5 @@ module Plucky
       end.sort.join(",")
       "#<#{self.class}#{as_nice_string}>"
     end
-
-    # def copy
-    #       self.class.new(@collection).object_ids(object_ids).update(to_hash)
-    #     end
   end
 end
