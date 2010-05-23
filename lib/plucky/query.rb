@@ -18,6 +18,12 @@ module Plucky
       opts.each { |key, value| self[key] = value }
     end
 
+    def initialize_copy(source)
+      super
+      @criteria = @criteria.dup
+      @options  = @options.dup
+    end
+
     def object_ids(*keys)
       return criteria.object_ids if keys.empty?
       criteria.object_ids = *keys
@@ -120,5 +126,9 @@ module Plucky
       end.sort.join(",")
       "#<#{self.class}#{as_nice_string}>"
     end
+
+    # def copy
+    #       self.class.new(@collection).object_ids(object_ids).update(to_hash)
+    #     end
   end
 end

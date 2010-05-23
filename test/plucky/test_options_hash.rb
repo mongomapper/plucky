@@ -12,6 +12,17 @@ class OptionsHashTest < Test::Unit::TestCase
       options.keys.should     == [:limit, :skip]
     end
 
+    context "#initialize_copy" do
+      setup do
+        @original = OptionsHash.new(:limit => 10)
+        @cloned   = @original.clone
+      end
+
+      should "duplicate source hash" do
+        @original.source.should_not equal(@cloned.source)
+      end
+    end
+
     context "#fields?" do
       should "be true if fields have been selected" do
         OptionsHash.new(:fields => :name).fields?.should be(true)

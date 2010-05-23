@@ -1,11 +1,17 @@
 # encoding: UTF-8
 module Plucky
   class CriteriaHash
-    attr_reader :source
+    attr_reader :source, :options
 
     def initialize(hash={}, options={})
       @source, @options = {}, options
       hash.each { |key, value| self[key] = value }
+    end
+
+    def initialize_copy(source)
+      super
+      @options = @options.dup
+      @source  = @source.dup
     end
 
     def []=(key, value)
@@ -77,7 +83,7 @@ module Plucky
       @options[:object_ids] = value.flatten
     end
 
-    # The definition of simple is querying by only _id or _id and _type. 
+    # The definition of simple is querying by only _id or _id and _type.
     # If this is the case, you can use IdentityMap in library to not perform
     # query and instead just return from map.
     def simple?

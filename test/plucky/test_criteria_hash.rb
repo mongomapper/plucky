@@ -24,6 +24,21 @@ class CriteriaHashTest < Test::Unit::TestCase
       }
     end
 
+    context "#initialize_copy" do
+      setup do
+        @original = CriteriaHash.new({:foo => 'bar'}, :object_ids => [:_id])
+        @cloned   = @original.clone
+      end
+
+      should "duplicate source hash" do
+        @original.source.should_not equal(@cloned.source)
+      end
+
+      should "duplicate options hash" do
+        @original.options.should_not equal(@cloned.options)
+      end
+    end
+
     context "#object_ids=" do
       should "work with array" do
         criteria = CriteriaHash.new
@@ -232,7 +247,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         c1.merge(c2).should == CriteriaHash.new(:foo => {'$in' => [1, 2, 3], '$all' => [1, 4, 5]})
       end
     end
-    
+
     context "#simple?" do
       should "be true if only filtering by _id" do
         CriteriaHash.new(:_id => 'id').should be_simple

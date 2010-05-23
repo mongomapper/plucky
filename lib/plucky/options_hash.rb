@@ -8,6 +8,11 @@ module Plucky
       hash.each { |key, value| self[key] = value }
     end
 
+    def initialize_copy(source)
+      super
+      @source = @source.dup
+    end
+
     def []=(key, value)
       key = normalized_key(key)
       source[key] = normalized_value(key, value)

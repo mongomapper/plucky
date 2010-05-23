@@ -27,6 +27,21 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#initialize_copy" do
+      setup do
+        @original = Query.new(@collection)
+        @cloned   = @original.clone
+      end
+
+      should "duplicate options" do
+        @cloned.options.should_not equal(@original.options)
+      end
+
+      should "duplicate criteria" do
+        @cloned.criteria.should_not equal(@original.criteria)
+      end
+    end
+
     context "#[]=" do
       setup   { @query = Query.new(@collection) }
       subject { @query }
@@ -310,6 +325,16 @@ class QueryTest < Test::Unit::TestCase
         new_query = query1.merge(query2)
         new_query.criteria[:fent].should == 'wick'
         new_query.criteria[:foo].should == {'$in' => %w[bar baz]}
+      end
+
+      should "not affect either of the merged queries" do
+        query1 = Query.new(@collection, :foo => 'bar', :limit => 5)
+        query2 = Query.new(@collection, :foo => 'baz', :limit => 10)
+        new_query = query1.merge(query2)
+        query1[:foo].should   == 'bar'
+        query1[:limit].should == 5
+        query2[:foo].should   == 'baz'
+        query2[:limit].should == 10
       end
     end
 
