@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.files        = Dir.glob("{bin,lib}/**/*") + %w[LICENSE README.rdoc]
 
-  s.add_dependency              'mongo', '1.0.1'
+  s.add_dependency              'mongo', '~> 1.0.1'
   s.add_development_dependency  'shoulda'
   s.add_development_dependency  'jnunemaker-matchy'
   s.add_development_dependency  'mocha'
