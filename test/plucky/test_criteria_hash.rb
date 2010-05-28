@@ -26,16 +26,23 @@ class CriteriaHashTest < Test::Unit::TestCase
 
     context "#initialize_copy" do
       setup do
-        @original = CriteriaHash.new({:foo => 'bar'}, :object_ids => [:_id])
+        @original = CriteriaHash.new({
+          :comments => {:_id => 1}, :tags => ['mongo', 'ruby'],
+        }, :object_ids => [:_id])
         @cloned   = @original.clone
       end
 
       should "duplicate source hash" do
-        @original.source.should_not equal(@cloned.source)
+        @cloned.source.should_not equal(@original.source)
       end
 
       should "duplicate options hash" do
-        @original.options.should_not equal(@cloned.options)
+        @cloned.options.should_not equal(@original.options)
+      end
+
+      should "duplicate hash and array values" do
+        @cloned[:comments].should_not equal(@original[:comments])
+        @cloned[:tags].should_not equal(@original[:tags])
       end
     end
 
@@ -245,6 +252,22 @@ class CriteriaHashTest < Test::Unit::TestCase
         c1 = CriteriaHash.new(:foo => {'$in' => [1, 2, 3]})
         c2 = CriteriaHash.new(:foo => {'$all' => [1, 4, 5]})
         c1.merge(c2).should == CriteriaHash.new(:foo => {'$in' => [1, 2, 3], '$all' => [1, 4, 5]})
+      end
+      
+      should "not update mergee" do
+        c1 = CriteriaHash.new(:foo => 'bar')
+        c2 = CriteriaHash.new(:foo => 'baz')
+        c1.merge(c2).should_not equal(c1)
+        c1[:foo].should == 'bar'
+      end
+    end
+
+    context "#merge!" do
+      should "merge and replace" do
+        c1 = CriteriaHash.new(:foo => 'bar')
+        c2 = CriteriaHash.new(:foo => 'baz')
+        c1.merge!(c2)
+        c1[:foo].should == {'$in' => ['bar', 'baz']}
       end
     end
 

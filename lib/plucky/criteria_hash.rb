@@ -12,6 +12,9 @@ module Plucky
       super
       @options = @options.dup
       @source  = @source.dup
+      each do |key, value|
+        self[key] = value.dup if value.is_a?(Array) || value.is_a?(Hash)
+      end
     end
 
     def []=(key, value)
@@ -72,6 +75,12 @@ module Plucky
           end
       end
       self.class.new(target)
+    end
+
+    def merge!(other)
+      merge(other).to_hash.each do |key, value|
+        self[key] = value
+      end
     end
 
     def object_ids
