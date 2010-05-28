@@ -84,6 +84,46 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#per_page" do
+      should "default to 25" do
+        Query.new(@collection).per_page.should == 25
+      end
+
+      should "be changeable and chainable" do
+        query = Query.new(@collection)
+        query.per_page(10).per_page.should == 10
+      end
+    end
+
+    context "#paginate" do
+      setup do
+        @query = Query.new(@collection)
+        @query.sort(:age).per_page(1)
+      end
+      subject { @query }
+
+      should "default to page 1" do
+        subject.paginate.should == [@chris]
+      end
+
+      should "work with other pages" do
+        subject.paginate(:page => 2).should == [@john]
+        subject.paginate(:page => 3).should == [@steve]
+      end
+
+      should "work with string page number" do
+        subject.paginate(:page => '2').should == [@john]
+      end
+
+      should "allow changing per_page" do
+        subject.paginate(:per_page => 2).should == [@chris, @john]
+      end
+
+      should "decorate return value" do
+        subject.paginate.should respond_to(:paginator)
+      end
+    end
+
     context "#all" do
       should "work with no arguments" do
         docs = Query.new(@collection).all

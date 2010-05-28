@@ -30,6 +30,23 @@ module Plucky
       self
     end
 
+    def per_page(limit=nil)
+      return @per_page || 25 if limit.nil?
+      @per_page = limit
+      self
+    end
+
+    def paginate(options={})
+      total     = count
+      page      = options[:page]
+      limit     = options[:per_page] || per_page
+      paginator = Pagination::Paginator.new(total, page, limit)
+
+      clone.limit(paginator.limit).skip(paginator.skip).all.tap do |docs|
+        docs.extend(Pagination::Decorator).paginator(paginator)
+      end
+    end
+
     def find(opts={})
       update(opts).collection.find(criteria.to_hash, options.to_hash)
     end
@@ -55,7 +72,7 @@ module Plucky
     end
 
     def count(opts={})
-      update(opts).find(to_hash).count
+      update(opts).collection.find(criteria.to_hash).count
     end
 
     def update(opts={})
