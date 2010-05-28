@@ -84,6 +84,40 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#find" do
+      setup do
+        @query = Query.new(@collection)
+      end
+      subject { @query }
+
+      should "work with single id" do
+        @query.find('chris').should == @chris
+      end
+
+      should "work with multiple ids" do
+        @query.find('chris', 'john').should == [@chris, @john]
+      end
+
+      should "work with array of one id" do
+        @query.find(['chris']).should == [@chris]
+      end
+
+      should "work with array of ids" do
+        @query.find(['chris', 'john']).should == [@chris, @john]
+      end
+
+      should "ignore those not found" do
+        @query.find('john', 'frank').should == [@john]
+      end
+
+      should "normalize if using object id" do
+        id = @collection.insert(:name => 'Frank')
+        @query.object_ids([:_id])
+        doc = @query.find(id.to_s)
+        doc['name'].should == 'Frank'
+      end
+    end
+
     context "#per_page" do
       should "default to 25" do
         Query.new(@collection).per_page.should == 25

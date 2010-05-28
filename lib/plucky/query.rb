@@ -56,6 +56,14 @@ module Plucky
       query.collection.find_one(query.criteria.to_hash, query.options.to_hash)
     end
 
+    def find(*ids)
+      if ids.size == 1 && !ids[0].is_a?(Array)
+        first(:_id => ids[0])
+      else
+        all(:_id => ids.flatten)
+      end
+    end
+
     def all(opts={})
       find_many(opts).to_a
     end
