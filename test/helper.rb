@@ -6,7 +6,7 @@ require 'logger'
 require 'fileutils'
 require File.expand_path('../../lib/plucky', __FILE__)
 
-log_dir = File.join(File.dirname(__FILE__), '..', 'log')
+log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir)
 Log = Logger.new(File.join(log_dir, 'test.log'))
 
