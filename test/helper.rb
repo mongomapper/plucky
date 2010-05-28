@@ -15,7 +15,10 @@ DB = connection.db('plucky')
 
 class Test::Unit::TestCase
   def setup
-    DB.collections.map(&:remove)
+    DB.collections.map do |collection|
+      collection.remove
+      collection.drop_indexes
+    end
   end
   
   def oh(*args)
