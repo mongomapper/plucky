@@ -120,7 +120,9 @@ class QueryTest < Test::Unit::TestCase
       end
 
       should "decorate return value" do
-        subject.paginate.should respond_to(:paginator)
+        docs = subject.paginate
+        docs.should respond_to(:paginator)
+        docs.should respond_to(:total_entries)
       end
     end
 
