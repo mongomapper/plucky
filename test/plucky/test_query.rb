@@ -124,6 +124,17 @@ class QueryTest < Test::Unit::TestCase
         docs.should respond_to(:paginator)
         docs.should respond_to(:total_entries)
       end
+
+      should "work with options" do
+        subject.paginate(:name => 'John').should == [@john]
+      end
+
+      should "not modify the original query" do
+        subject.paginate(:name => 'John')
+        subject[:page].should     be_nil
+        subject[:per_page].should be_nil
+        subject[:name].should     be_nil
+      end
     end
 
     context "#all" do
