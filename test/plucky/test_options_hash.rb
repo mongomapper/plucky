@@ -14,12 +14,17 @@ class OptionsHashTest < Test::Unit::TestCase
 
     context "#initialize_copy" do
       setup do
-        @original = OptionsHash.new(:limit => 10)
+        @original = OptionsHash.new(:fields => {:name => true}, :sort => :name, :limit => 10)
         @cloned   = @original.clone
       end
 
       should "duplicate source hash" do
-        @original.source.should_not equal(@cloned.source)
+        @cloned.source.should_not equal(@original.source)
+      end
+
+      should "duplicate any hash and array values" do
+        @cloned[:fields].should_not equal(@original[:fields])
+        @cloned[:sort].should_not equal(@original[:sort])
       end
     end
 
@@ -250,6 +255,41 @@ class OptionsHashTest < Test::Unit::TestCase
           subject[:sort].should == [['$natural', -1]]
         end
       end
+    end
+  end
+
+  context "#merge" do
+    setup do
+      @o1 = OptionsHash.new(:skip => 5, :sort => :name)
+      @o2 = OptionsHash.new(:limit => 10, :skip => 15)
+      @merged = @o1.merge(@o2)
+    end
+
+    should "override options in first with options in second" do
+      @merged.should == OptionsHash.new(:limit => 10, :skip => 15, :sort => :name)
+    end
+
+    should "return new instance and not change either of the merged" do
+      @o1[:skip].should == 5
+      @o2[:sort].should be_nil
+      @merged.should_not equal(@o1)
+      @merged.should_not equal(@o2)
+    end
+  end
+
+  context "#merge!" do
+    setup do
+      @o1 = OptionsHash.new(:skip => 5, :sort => :name)
+      @o2 = OptionsHash.new(:limit => 10, :skip => 15)
+      @merged = @o1.merge!(@o2)
+    end
+
+    should "override options in first with options in second" do
+      @merged.should == OptionsHash.new(:limit => 10, :skip => 15, :sort => :name)
+    end
+
+    should "just update the first" do
+      @merged.should equal(@o1)
     end
   end
 end

@@ -11,6 +11,9 @@ module Plucky
     def initialize_copy(source)
       super
       @source = @source.dup
+      each do |key, value|
+        self[key] = value.dup if value.is_a?(Array) || value.is_a?(Hash)
+      end
     end
 
     def []=(key, value)
@@ -28,6 +31,15 @@ module Plucky
 
     def fields?
       !self[:fields].nil?
+    end
+
+    def merge(other)
+      self.class.new(to_hash.merge(other.to_hash))
+    end
+
+    def merge!(other)
+      other.to_hash.each { |key, value| self[key] = value }
+      self
     end
 
     private
