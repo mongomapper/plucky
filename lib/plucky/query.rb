@@ -47,7 +47,7 @@ module Plucky
       end
     end
 
-    def find(opts={})
+    def find_many(opts={})
       update(opts).collection.find(criteria.to_hash, options.to_hash)
     end
 
@@ -56,7 +56,7 @@ module Plucky
     end
 
     def all(opts={})
-      update(opts).find(to_hash).to_a
+      update(opts).find_many(to_hash).to_a
     end
 
     def first(opts={})
