@@ -97,8 +97,7 @@ class QueryTest < Test::Unit::TestCase
 
     context "#paginate" do
       setup do
-        @query = Query.new(@collection)
-        @query.sort(:age).per_page(1)
+        @query = Query.new(@collection).sort(:age).per_page(1)
       end
       subject { @query }
 
@@ -155,6 +154,12 @@ class QueryTest < Test::Unit::TestCase
         docs = Query.new(@collection).all(:order => :name.asc)
         docs.should == [@chris, @john, @steve]
       end
+
+      should "not modify original query object" do
+        query = Query.new(@collection)
+        query.all(:name => 'Steve')
+        query[:name].should be_nil
+      end
     end
 
     context "#first" do
@@ -164,6 +169,12 @@ class QueryTest < Test::Unit::TestCase
 
       should "work with and normalize options" do
         Query.new(@collection).first(:age.lte => 29, :order => :name.desc).should == @steve
+      end
+
+      should "not modify original query object" do
+        query = Query.new(@collection)
+        query.first(:name => 'Steve')
+        query[:name].should be_nil
       end
     end
 
@@ -175,6 +186,12 @@ class QueryTest < Test::Unit::TestCase
       should "work with and normalize options" do
         Query.new(@collection).last(:age.lte => 26, :order => :name.desc).should == @chris
       end
+
+      should "not modify original query object" do
+        query = Query.new(@collection)
+        query.last(:name => 'Steve')
+        query[:name].should be_nil
+      end
     end
 
     context "#count" do
@@ -184,6 +201,12 @@ class QueryTest < Test::Unit::TestCase
 
       should "work with and normalize criteria" do
         Query.new(@collection).count(:age.lte => 28).should == 2
+      end
+
+      should "not modify original query object" do
+        query = Query.new(@collection)
+        query.count(:name => 'Steve')
+        query[:name].should be_nil
       end
     end
 
@@ -195,11 +218,11 @@ class QueryTest < Test::Unit::TestCase
       should "work with and normalize criteria" do
         lambda { Query.new(@collection).remove(:age.lte => 28) }.should change { @collection.count }
       end
-    end
 
-    context "#fields" do
-      should "work" do
-        Query.new(@collection).fields(:name).first(:id => 'john').keys.should == ['_id', 'name']
+      should "not modify original query object" do
+        query = Query.new(@collection)
+        query.remove(:name => 'Steve')
+        query[:name].should be_nil
       end
     end
 
@@ -238,75 +261,127 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
-    context "#skip" do
+    context "#fields" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
       should "work" do
-        Query.new(@collection).skip(2).all(:order => :age).should == [@steve]
+        subject.fields(:name).first(:id => 'john').keys.should == ['_id', 'name']
+      end
+
+      should "return new instance of query" do
+        new_query = subject.fields(:name)
+        new_query.should_not equal(subject)
+        subject[:fields].should be_nil
+      end
+    end
+
+    context "#skip" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
+      should "work" do
+        subject.skip(2).all(:order => :age).should == [@steve]
       end
 
       should "set skip option" do
-        Query.new(@collection).skip(5).options[:skip].should == 5
+        subject.skip(5).options[:skip].should == 5
       end
 
       should "override existing skip" do
-        Query.new(@collection, :skip => 5).skip(10).options[:skip].should == 10
+        subject.skip(5).skip(10).options[:skip].should == 10
       end
 
       should "return nil for nil" do
-        Query.new(@collection).skip.options[:skip].should be_nil
+        subject.skip.options[:skip].should be_nil
+      end
+
+      should "return new instance of query" do
+        new_query = subject.skip(2)
+        new_query.should_not equal(subject)
+        subject[:skip].should be_nil
       end
     end
 
     context "#limit" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
       should "work" do
-        Query.new(@collection).limit(2).all(:order => :age).should == [@chris, @john]
+        subject.limit(2).all(:order => :age).should == [@chris, @john]
       end
 
       should "set limit option" do
-        Query.new(@collection).limit(5).options[:limit].should == 5
+        subject.limit(5).options[:limit].should == 5
       end
 
       should "overwrite existing limit" do
-        Query.new(@collection, :limit => 5).limit(15).options[:limit].should == 15
+        subject.limit(5).limit(15).options[:limit].should == 15
+      end
+
+      should "return new instance of query" do
+        new_query = subject.limit(2)
+        new_query.should_not equal(subject)
+        subject[:limit].should be_nil
       end
     end
 
     context "#sort" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
       should "work" do
-        Query.new(@collection).sort(:age).all.should == [@chris, @john, @steve]
-        Query.new(@collection).sort(:age.desc).all.should == [@steve, @john, @chris]
+        subject.sort(:age).all.should == [@chris, @john, @steve]
+        subject.sort(:age.desc).all.should == [@steve, @john, @chris]
       end
 
       should "work with symbol operators" do
-        Query.new(@collection).sort(:foo.asc, :bar.desc).options[:sort].should == [['foo', 1], ['bar', -1]]
+        subject.sort(:foo.asc, :bar.desc).options[:sort].should == [['foo', 1], ['bar', -1]]
       end
 
       should "work with string" do
-        Query.new(@collection).sort('foo, bar desc').options[:sort].should == [['foo', 1], ['bar', -1]]
+        subject.sort('foo, bar desc').options[:sort].should == [['foo', 1], ['bar', -1]]
       end
 
       should "work with just a symbol" do
-        Query.new(@collection).sort(:foo).options[:sort].should == [['foo', 1]]
+        subject.sort(:foo).options[:sort].should == [['foo', 1]]
       end
 
       should "work with multiple symbols" do
-        Query.new(@collection).sort(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
+        subject.sort(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
+      end
+
+      should "return new instance of query" do
+        new_query = subject.sort(:name)
+        new_query.should_not equal(subject)
+        subject[:sort].should be_nil
       end
     end
 
     context "#reverse" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
       should "work" do
-        Query.new(@collection).sort(:age).reverse.all.should == [@steve, @john, @chris]
+        subject.sort(:age).reverse.all.should == [@steve, @john, @chris]
       end
 
       should "not error if no sort provided" do
         assert_nothing_raised do
-          Query.new(@collection).reverse
+          subject.reverse
         end
       end
 
       should "reverse the sort order" do
-        query = Query.new(@collection, :order => 'foo asc, bar desc')
-        query.reverse.options[:sort].should == [['foo', -1], ['bar', 1]]
+        subject.sort('foo asc, bar desc').
+          reverse.options[:sort].should == [['foo', -1], ['bar', 1]]
+      end
+
+      should "return new instance of query" do
+        sorted_query = subject.sort(:name)
+        new_query = sorted_query.reverse
+        new_query.should_not equal(sorted_query)
+        sorted_query[:sort].should == [['name', 1]]
       end
     end
 
@@ -324,27 +399,38 @@ class QueryTest < Test::Unit::TestCase
     end
 
     context "#where" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
       should "work" do
-        Query.new(@collection).where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
+        subject.where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
       end
 
       should "update criteria" do
-        Query.new(@collection, :moo => 'cow').
+        subject.
+          where(:moo => 'cow').
           where(:foo => 'bar').
           criteria.should == CriteriaHash.new(:foo => 'bar', :moo => 'cow')
       end
 
       should "get normalized" do
-        Query.new(@collection, :moo => 'cow').
+        subject.
+          where(:moo => 'cow').
           where(:foo.in => ['bar']).
           criteria.should == CriteriaHash.new(:moo => 'cow', :foo => {'$in' => ['bar']})
       end
 
       should "normalize merged criteria" do
-        Query.new(@collection).
+        subject.
           where(:foo => 'bar').
           where(:foo => 'baz').
           criteria.should == CriteriaHash.new(:foo => {'$in' => %w[bar baz]})
+      end
+
+      should "return new instance of query" do
+        new_query = subject.where(:name => 'John')
+        new_query.should_not equal(subject)
+        subject[:name].should be_nil
       end
     end
 

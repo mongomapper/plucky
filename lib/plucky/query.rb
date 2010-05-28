@@ -36,43 +36,45 @@ module Plucky
       self
     end
 
-    def paginate(options={})
+    def paginate(opts={})
       total     = count
-      page      = options.delete(:page)
-      limit     = options.delete(:per_page) || per_page
+      page      = opts.delete(:page)
+      limit     = opts.delete(:per_page) || per_page
       paginator = Pagination::Paginator.new(total, page, limit)
-
-      clone.update(options).limit(paginator.limit).skip(paginator.skip).all.tap do |docs|
+      clone.update(opts).limit(paginator.limit).skip(paginator.skip).all.tap do |docs|
         docs.extend(Pagination::Decorator).paginator(paginator)
       end
     end
 
     def find_many(opts={})
-      update(opts).collection.find(criteria.to_hash, options.to_hash)
+      query = clone.update(opts)
+      query.collection.find(query.criteria.to_hash, query.options.to_hash)
     end
 
     def find_one(opts={})
-      update(opts).collection.find_one(criteria.to_hash, options.to_hash)
+      query = clone.update(opts)
+      query.collection.find_one(query.criteria.to_hash, query.options.to_hash)
     end
 
     def all(opts={})
-      update(opts).find_many(to_hash).to_a
+      find_many(opts).to_a
     end
 
     def first(opts={})
-      update(opts).find_one(to_hash)
+      find_one(opts)
     end
 
     def last(opts={})
-      update(opts).reverse.find_one(to_hash)
+      clone.update(opts).reverse.find_one
     end
 
     def remove(opts={})
-      update(opts).collection.remove(criteria.to_hash)
+      query = clone.update(opts)
+      query.collection.remove(query.criteria.to_hash)
     end
 
     def count(opts={})
-      update(opts).collection.find(criteria.to_hash).count
+      find_many(opts).count
     end
 
     def update(opts={})
@@ -81,33 +83,33 @@ module Plucky
     end
 
     def fields(*args)
-      self[:fields] = args
-      self
+      clone.tap { |query| query.options[:fields] = args }
     end
 
     def limit(count=nil)
-      self[:limit] = count
-      self
+      clone.tap { |query| query.options[:limit] = count }
     end
 
     def reverse
-      self[:sort].map! { |s| [s[0], -s[1]] } unless self[:sort].nil?
-      self
+      clone.tap do |query|
+        query[:sort].map! do |s|
+          [s[0], -s[1]]
+        end unless query.options[:sort].nil?
+      end
     end
 
     def skip(count=nil)
-      self[:skip] = count
-      self
+      clone.tap { |query| query.options[:skip] = count }
     end
 
     def sort(*args)
-      self[:sort] = *args
-      self
+      clone.tap { |query| query.options[:sort] = *args }
     end
 
     def where(hash={})
-      criteria.merge(CriteriaHash.new(hash)).to_hash.each { |key, value| self[key] = value }
-      self
+      clone.tap do |query|
+        query.criteria.merge!(CriteriaHash.new(hash))
+      end
     end
 
     def [](key)
@@ -129,8 +131,9 @@ module Plucky
     end
 
     def merge(other)
-      merged = criteria.merge(other.criteria).to_hash.merge(options.to_hash.merge(other.options.to_hash))
-      clone.update(merged)
+      merged_criteria = criteria.merge(other.criteria).to_hash
+      merged_options  = options.merge(other.options).to_hash
+      clone.update(merged_criteria).update(merged_options)
     end
 
     def to_hash
