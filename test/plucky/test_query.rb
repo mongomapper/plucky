@@ -158,15 +158,26 @@ class QueryTest < Test::Unit::TestCase
         docs.should respond_to(:total_entries)
       end
 
-      should "work with options" do
-        subject.paginate(:name => 'John').should == [@john]
-      end
-
       should "not modify the original query" do
         subject.paginate(:name => 'John')
         subject[:page].should     be_nil
         subject[:per_page].should be_nil
         subject[:name].should     be_nil
+      end
+
+      context "with options" do
+        setup do
+          @result = @query.sort(:age).paginate(:age.gt => 27, :per_page => 10)
+        end
+        subject { @result }
+
+        should "only return matching" do
+          subject.should == [@john, @steve]
+        end
+
+        should "correctly count matching" do
+          subject.total_entries.should == 2
+        end
       end
     end
 
