@@ -61,6 +61,7 @@ module Plucky
     end
 
     def find(*ids)
+      return nil if ids.empty?
       if ids.size == 1 && !ids[0].is_a?(Array)
         first(:_id => ids[0])
       else

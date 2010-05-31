@@ -110,6 +110,14 @@ class QueryTest < Test::Unit::TestCase
         @query.find('john', 'frank').should == [@john]
       end
 
+      should "return nil for nil" do
+        @query.find(nil).should be_nil
+      end
+
+      should "return nil for *nil" do
+        @query.find(*nil).should be_nil
+      end
+
       should "normalize if using object id" do
         id = @collection.insert(:name => 'Frank')
         @query.object_ids([:_id])
