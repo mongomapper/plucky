@@ -40,7 +40,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         @cloned.options.should_not equal(@original.options)
       end
 
-      should "duplicate hash and array values" do
+      should "clone duplicable? values" do
         @cloned[:comments].should_not equal(@original[:comments])
         @cloned[:tags].should_not equal(@original[:tags])
       end

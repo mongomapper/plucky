@@ -22,7 +22,7 @@ class OptionsHashTest < Test::Unit::TestCase
         @cloned.source.should_not equal(@original.source)
       end
 
-      should "duplicate any hash and array values" do
+      should "clone duplicable? values" do
         @cloned[:fields].should_not equal(@original[:fields])
         @cloned[:sort].should_not equal(@original[:sort])
       end

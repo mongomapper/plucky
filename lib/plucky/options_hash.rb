@@ -12,7 +12,7 @@ module Plucky
       super
       @source = @source.dup
       each do |key, value|
-        self[key] = value.dup if value.is_a?(Array) || value.is_a?(Hash)
+        self[key] = value.clone if value.duplicable?
       end
     end
 

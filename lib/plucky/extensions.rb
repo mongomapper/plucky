@@ -28,3 +28,5 @@ class Symbol
     end unless method_defined?(operator)
   end
 end
+
+require 'plucky/extensions/duplicable'
