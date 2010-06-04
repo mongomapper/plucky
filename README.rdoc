@@ -2,8 +2,6 @@
 
 Thin layer over the ruby driver that allows you to quickly grab hold of your data (pluck it!).
 
-*Still rough around the edges and changing rapidly.*
-
 == Install
 
   $ gem install plucky
