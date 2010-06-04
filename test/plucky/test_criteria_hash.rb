@@ -9,7 +9,7 @@ class CriteriaHashTest < Test::Unit::TestCase
       criteria = CriteriaHash.new(hash)
       criteria[:foo].should == 'bar'
       criteria[:baz].should == 'wick'
-      criteria.keys.should == [:baz, :foo]
+      criteria.keys.to_set.should == [:baz, :foo].to_set
     end
 
     SymbolOperators.each do |operator|
