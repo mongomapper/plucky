@@ -493,6 +493,17 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#empty?" do
+      should "be true if empty" do
+        @collection.remove
+        Query.new(@collection).should be_empty
+      end
+
+      should "be false if not empty" do
+        Query.new(@collection).should_not be_empty
+      end
+    end
+
     context "#object_ids" do
       setup   { @query = Query.new(@collection) }
       subject { @query }

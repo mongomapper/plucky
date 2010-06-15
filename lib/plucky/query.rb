@@ -129,6 +129,10 @@ module Plucky
       end
     end
 
+    def empty?
+      count.zero?
+    end
+
     def [](key)
       key = key.to_sym if key.respond_to?(:to_sym)
       if OptionKeys.include?(key)
