@@ -263,6 +263,12 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#size" do
+      should "work just like count without options" do
+        Query.new(@collection).size.should == 3
+      end
+    end
+
     context "#remove" do
       should "work with no arguments" do
         lambda { Query.new(@collection).remove }.should change { @collection.count }.by(3)

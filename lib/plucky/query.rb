@@ -90,6 +90,10 @@ module Plucky
       find_many(opts).count
     end
 
+    def size
+      count
+    end
+
     def update(opts={})
       opts.each { |key, value| self[key] = value }
       self
