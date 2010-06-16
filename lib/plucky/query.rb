@@ -52,7 +52,7 @@ module Plucky
       end
     end
 
-    def find_many(opts={})
+    def find_each(opts={})
       query = clone.update(opts)
       query.collection.find(query.criteria.to_hash, query.options.to_hash)
     end
@@ -72,7 +72,7 @@ module Plucky
     end
 
     def all(opts={})
-      find_many(opts).to_a
+      find_each(opts).to_a
     end
 
     def first(opts={})
@@ -89,7 +89,7 @@ module Plucky
     end
 
     def count(opts={})
-      find_many(opts).count
+      find_each(opts).count
     end
 
     def size

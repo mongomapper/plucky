@@ -57,19 +57,19 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
-    context "#find_many" do
+    context "#find_each" do
       should "return a cursor" do
-        cursor = Query.new(@collection).find_many
+        cursor = Query.new(@collection).find_each
         cursor.should be_instance_of(Mongo::Cursor)
       end
 
       should "work with and normalize criteria" do
-        cursor = Query.new(@collection).find_many(:id.in => ['john'])
+        cursor = Query.new(@collection).find_each(:id.in => ['john'])
         cursor.to_a.should == [@john]
       end
 
       should "work with and normalize options" do
-        cursor = Query.new(@collection).find_many(:order => :name.asc)
+        cursor = Query.new(@collection).find_each(:order => :name.asc)
         cursor.to_a.should == [@chris, @john, @steve]
       end
     end
