@@ -504,6 +504,16 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#to_a" do
+      should "return all documents the query matches" do
+        Query.new(@collection).sort(:name).to_a.
+          should == [@chris, @john, @steve]
+
+        Query.new(@collection).where(:name => 'John').sort(:name).to_a.
+          should == [@john]
+      end
+    end
+
     context "#object_ids" do
       setup   { @query = Query.new(@collection) }
       subject { @query }
