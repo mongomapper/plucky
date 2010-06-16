@@ -514,6 +514,26 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#each" do
+      should "iterate through matching documents" do
+        docs = []
+        Query.new(@collection).sort(:name).each do |doc|
+          docs << doc
+        end
+        docs.should == [@chris, @john, @steve]
+      end
+    end
+
+    context "enumerables" do
+      should "work" do
+        query = Query.new(@collection).sort(:name)
+        query.map { |doc| doc['name'] }.should == %w(Chris John Steve)
+        query.collect { |doc| doc['name'] }.should == %w(Chris John Steve)
+        query.detect { |doc| doc['name'] == 'John' }.should == @john
+        query.min { |a, b| a['age'] <=> b['age'] }.should == @chris
+      end
+    end
+
     context "#object_ids" do
       setup   { @query = Query.new(@collection) }
       subject { @query }

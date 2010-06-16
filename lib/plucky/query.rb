@@ -2,6 +2,7 @@
 require 'forwardable'
 module Plucky
   class Query
+    include Enumerable
     extend Forwardable
 
     OptionKeys = [
@@ -12,6 +13,7 @@ module Plucky
     attr_reader   :criteria, :options, :collection
     def_delegator :criteria, :simple?
     def_delegator :options,  :fields?
+    def_delegators :to_a, :each
 
     def initialize(collection, opts={})
       @collection, @options, @criteria = collection, OptionsHash.new, CriteriaHash.new
