@@ -3,16 +3,16 @@ require 'forwardable'
 module Plucky
   class Query
     include Enumerable
-    extend Forwardable
+    extend  Forwardable
 
     OptionKeys = [
       :select, :offset, :order,                                              # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
     ]
 
-    attr_reader   :criteria, :options, :collection
-    def_delegator :criteria, :simple?
-    def_delegator :options,  :fields?
+    attr_reader    :criteria, :options, :collection
+    def_delegator  :criteria, :simple?
+    def_delegator  :options,  :fields?
     def_delegators :to_a, :each
 
     def initialize(collection, opts={})
