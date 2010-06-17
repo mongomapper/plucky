@@ -138,6 +138,7 @@ module Plucky
     def exists?(options={})
       !count(options).zero?
     end
+    alias :exist? :exists?
 
     def to_a
       all

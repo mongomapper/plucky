@@ -513,6 +513,16 @@ class QueryTest < Test::Unit::TestCase
         Query.new(@collection).exists?(:name => 'Billy Bob').should be(false)
       end
     end
+    
+    context "#exist?" do
+      should "be true if found" do
+        Query.new(@collection).exist?(:name => 'John').should be(true)
+      end
+
+      should "be false if not found" do
+        Query.new(@collection).exist?(:name => 'Billy Bob').should be(false)
+      end
+    end
 
     context "#to_a" do
       should "return all documents the query matches" do
