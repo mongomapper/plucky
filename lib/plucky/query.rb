@@ -135,6 +135,10 @@ module Plucky
       count.zero?
     end
 
+    def exists?(options={})
+      !count(options).zero?
+    end
+
     def to_a
       all
     end
