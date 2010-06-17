@@ -524,6 +524,16 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#include?" do
+      should "be true if included" do
+        Query.new(@collection).include?(@john).should be(true)
+      end
+
+      should "be false if not included" do
+        Query.new(@collection).include?(['_id', 'frankyboy']).should be(false)
+      end
+    end
+
     context "#to_a" do
       should "return all documents the query matches" do
         Query.new(@collection).sort(:name).to_a.
