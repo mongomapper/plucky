@@ -1,10 +1,18 @@
+require 'rubygems'
+gem 'shoulda',           '~> 2.10.2'
+gem 'jnunemaker-matchy', '~> 0.4.0'
+gem 'mocha',             '~> 0.9.8'
+
+$:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+require 'plucky'
+
+require 'fileutils'
+require 'logger'
 require 'pp'
+
 require 'shoulda'
 require 'matchy'
 require 'mocha'
-require 'logger'
-require 'fileutils'
-require File.expand_path('../../lib/plucky', __FILE__)
 
 log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir)
@@ -20,7 +28,7 @@ class Test::Unit::TestCase
       collection.drop_indexes
     end
   end
-  
+
   def oh(*args)
     BSON::OrderedHash.new.tap do |hash|
       args.each { |a| hash[a[0]] = a[1] }

@@ -3,11 +3,16 @@ require 'rake'
 require 'rake/testtask'
 require File.expand_path('../lib/plucky/version', __FILE__)
 
-Rake::TestTask.new(:test) do |test|
-  test.libs      << 'lib' << 'test'
-  test.ruby_opts << '-rubygems'
-  test.pattern   = 'test/**/test_*.rb'
-  test.verbose   = true
+namespace :test do
+  Rake::TestTask.new(:all) do |test|
+    test.libs      << 'lib' << 'test'
+    test.pattern   = 'test/**/test_*.rb'
+    test.verbose   = true
+  end
+end
+
+task :test do
+  Rake::Task['test:all'].invoke
 end
 
 task :default => :test
