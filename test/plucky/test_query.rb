@@ -421,6 +421,11 @@ class QueryTest < Test::Unit::TestCase
         new_query.should_not equal(subject)
         subject[:sort].should be_nil
       end
+      
+      should "be aliased to order" do
+        subject.order(:foo).options[:sort].should       == [['foo', 1]]
+        subject.order(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
+      end
     end
 
     context "#reverse" do

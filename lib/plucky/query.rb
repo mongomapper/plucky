@@ -124,6 +124,7 @@ module Plucky
     def sort(*args)
       clone.tap { |query| query.options[:sort] = *args }
     end
+    alias order sort
 
     def where(hash={})
       clone.tap do |query|
