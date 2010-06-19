@@ -102,7 +102,7 @@ module Plucky
     end
 
     def fields(*args)
-      clone.tap { |query| query.options[:fields] = args }
+      clone.tap { |query| query.options[:fields] = *args }
     end
 
     def limit(count=nil)

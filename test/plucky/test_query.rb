@@ -333,6 +333,12 @@ class QueryTest < Test::Unit::TestCase
         new_query.should_not equal(subject)
         subject[:fields].should be_nil
       end
+
+      should "work with hash" do
+        subject.fields(:name => 0).
+          first(:id => 'john').keys.sort.
+          should == ['_id', 'age']
+      end
     end
 
     context "#skip" do
