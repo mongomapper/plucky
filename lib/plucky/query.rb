@@ -120,6 +120,7 @@ module Plucky
     def skip(count=nil)
       clone.tap { |query| query.options[:skip] = count }
     end
+    alias offset skip
 
     def sort(*args)
       clone.tap { |query| query.options[:sort] = *args }

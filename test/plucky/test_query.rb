@@ -366,6 +366,10 @@ class QueryTest < Test::Unit::TestCase
         new_query.should_not equal(subject)
         subject[:skip].should be_nil
       end
+
+      should "alias to offset" do
+        subject.offset(5).options[:skip].should == 5
+      end
     end
 
     context "#limit" do
@@ -421,7 +425,7 @@ class QueryTest < Test::Unit::TestCase
         new_query.should_not equal(subject)
         subject[:sort].should be_nil
       end
-      
+
       should "be aliased to order" do
         subject.order(:foo).options[:sort].should       == [['foo', 1]]
         subject.order(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
@@ -524,7 +528,7 @@ class QueryTest < Test::Unit::TestCase
         Query.new(@collection).exists?(:name => 'Billy Bob').should be(false)
       end
     end
-    
+
     context "#exist?" do
       should "be true if found" do
         Query.new(@collection).exist?(:name => 'John').should be(true)
