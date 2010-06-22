@@ -120,7 +120,7 @@ module Plucky
         case value
           when Array, Set
             value.map! { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
-            parent_key == key ? {'$in' => value.to_a} : value.to_a
+            parent_key == key && key != :$or ? {'$in' => value.to_a} : value.to_a
           when Time
             value.utc
           when String

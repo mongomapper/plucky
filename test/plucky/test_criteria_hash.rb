@@ -150,6 +150,10 @@ class CriteriaHashTest < Test::Unit::TestCase
         CriteriaHash.new(:numbers => {'$all' => [1,2,3]})[:numbers].should == {'$all' => [1,2,3]}
         CriteriaHash.new(:numbers => {'$any' => [1,2,3]})[:numbers].should == {'$any' => [1,2,3]}
       end
+      
+      should "not turn value to $in with $or key" do
+        CriteriaHash.new(:$or => [{:numbers => 1}, {:numbers => 2}] )[:$or].should == [{:numbers=>1}, {:numbers=>2}]
+      end
     end
 
     context "with set value" do
