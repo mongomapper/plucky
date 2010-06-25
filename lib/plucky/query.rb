@@ -104,6 +104,14 @@ module Plucky
     def fields(*args)
       clone.tap { |query| query.options[:fields] = *args }
     end
+    
+    def ignore(*args)
+      set_fields(args,0)
+    end
+    
+    def only(*args)
+      set_fields(args,1)
+    end    
 
     def limit(count=nil)
       clone.tap { |query| query.options[:limit] = count }
@@ -180,5 +188,14 @@ module Plucky
       end.sort.join(",")
       "#<#{self.class}#{as_nice_string}>"
     end
+    
+    private
+    
+    def set_fields(field_list, value)
+      the_fields = {}
+      field_list.each {|field| the_fields[field.to_sym] = value}
+      clone.tap { |query| query.options[:fields] =  the_fields}
+    end
+    
   end
 end

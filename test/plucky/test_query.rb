@@ -340,6 +340,28 @@ class QueryTest < Test::Unit::TestCase
           should == ['_id', 'age']
       end
     end
+    
+    context "#ignore" do
+      setup {@query = Query.new(@collection)}
+      subject {@query}
+      
+      should "include a list of keys to ignore" do
+        new_query = subject.ignore(:name).first(:id => 'john')
+        new_query.keys.should == ['_id', 'age']
+      end
+      
+    end
+
+    context "#only" do
+      setup {@query = Query.new(@collection)}
+      subject {@query}
+      
+      should "inclue a list of keys with others excluded" do
+        new_query = subject.only(:name).first(:id => 'john')
+        new_query.keys.should == ['_id', 'name']
+      end
+      
+    end
 
     context "#skip" do
       setup   { @query = Query.new(@collection) }
