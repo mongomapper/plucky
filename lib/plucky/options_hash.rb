@@ -76,7 +76,11 @@ module Plucky
         return nil if value.respond_to?(:empty?) && value.empty?
         case value
           when Array
-            value.flatten
+            if value.size == 1 && value.first.is_a?(Hash)
+              value.first
+            else
+              value.flatten
+            end
           when Symbol
             [value]
           when String

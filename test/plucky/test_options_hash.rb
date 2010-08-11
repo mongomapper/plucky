@@ -80,6 +80,13 @@ class OptionsHashTest < Test::Unit::TestCase
           subject[:fields].should == %w[one two]
         end
 
+        # Ruby 1.9.1 was sending array [{:age => 20}],
+        # instead of hash.
+        should "work with array that has one hash" do
+          subject[:fields] = [{:age => 20}]
+          subject[:fields].should == {:age => 20}
+        end
+
         should "flatten multi-dimensional array" do
           subject[:fields] = [[:one, :two]]
           subject[:fields].should == [:one, :two]
