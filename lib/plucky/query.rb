@@ -182,6 +182,10 @@ module Plucky
       criteria.to_hash.merge(options.to_hash)
     end
 
+    def explain
+      collection.find(criteria.to_hash, options.to_hash).explain
+    end
+
     def inspect
       as_nice_string = to_hash.collect do |key, value|
         " #{key}: #{value.inspect}"

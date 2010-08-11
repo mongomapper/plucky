@@ -340,27 +340,26 @@ class QueryTest < Test::Unit::TestCase
           should == ['_id', 'age']
       end
     end
-    
+
     context "#ignore" do
       setup {@query = Query.new(@collection)}
       subject {@query}
-      
+
       should "include a list of keys to ignore" do
         new_query = subject.ignore(:name).first(:id => 'john')
         new_query.keys.should == ['_id', 'age']
       end
-      
     end
 
     context "#only" do
       setup {@query = Query.new(@collection)}
       subject {@query}
-      
+
       should "inclue a list of keys with others excluded" do
         new_query = subject.only(:name).first(:id => 'john')
         new_query.keys.should == ['_id', 'name']
       end
-      
+
     end
 
     context "#skip" do
@@ -722,6 +721,25 @@ class QueryTest < Test::Unit::TestCase
       query = Query.new(@collection)
       query.options.expects(:fields?)
       query.fields?
+    end
+
+    context "#explain" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
+      should "work" do
+        subject.where(:age.lt => 28).explain.should == {
+          'cursor'          => 'BasicCursor',
+          'nscanned'        => 3,
+          'nscannedObjects' => 3,
+          'n'               => 1,
+          'millis'          => 0,
+          'indexBounds'     => {},
+          'allPlans'        => [
+            {'cursor' => 'BasicCursor', 'indexBounds' => {}}
+          ]
+        }
+      end
     end
   end
 end
