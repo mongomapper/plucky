@@ -17,10 +17,10 @@ module Plucky
   def self.to_object_id(value)
     if value.nil? || (value.respond_to?(:empty?) && value.empty?)
       nil
-    elsif value.is_a?(BSON::ObjectID)
+    elsif value.is_a?(BSON::ObjectId)
       value
     else
-      BSON::ObjectID.from_string(value.to_s)
+      BSON::ObjectId.from_string(value.to_s)
     end
   end
 end

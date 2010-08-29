@@ -74,7 +74,7 @@ class CriteriaHashTest < Test::Unit::TestCase
       end
 
       should "convert string values to object ids for object id keys" do
-        id = BSON::ObjectID.new
+        id = BSON::ObjectId.new
         criteria = CriteriaHash.new({}, :object_ids => [:_id])
         criteria[:_id] = id.to_s
         criteria[:_id].should == id
@@ -117,14 +117,14 @@ class CriteriaHashTest < Test::Unit::TestCase
 
     context "with id key" do
       should "convert to _id" do
-        id = BSON::ObjectID.new
+        id = BSON::ObjectId.new
         criteria = CriteriaHash.new(:id => id)
         criteria[:_id].should == id
         criteria[:id].should be_nil
       end
 
       should "convert id with symbol operator to _id with modifier" do
-        id = BSON::ObjectID.new
+        id = BSON::ObjectId.new
         criteria = CriteriaHash.new(:id.ne => id)
         criteria[:_id].should == {'$ne' => id}
         criteria[:id].should be_nil
@@ -169,8 +169,8 @@ class CriteriaHashTest < Test::Unit::TestCase
 
     context "with string ids for string keys" do
       setup do
-        @id       = BSON::ObjectID.new
-        @room_id  = BSON::ObjectID.new
+        @id       = BSON::ObjectId.new
+        @room_id  = BSON::ObjectId.new
         @criteria = CriteriaHash.new(:_id => @id.to_s, :room_id => @room_id.to_s)
       end
 
@@ -184,16 +184,16 @@ class CriteriaHashTest < Test::Unit::TestCase
 
     context "with string ids for object id keys" do
       setup do
-        @id       = BSON::ObjectID.new
-        @room_id  = BSON::ObjectID.new
+        @id       = BSON::ObjectId.new
+        @room_id  = BSON::ObjectId.new
       end
 
       should "convert strings to object ids" do
         criteria = CriteriaHash.new({:_id => @id.to_s, :room_id => @room_id.to_s}, :object_ids => [:_id, :room_id])
         criteria[:_id].should     == @id
         criteria[:room_id].should == @room_id
-        criteria[:_id].should     be_instance_of(BSON::ObjectID)
-        criteria[:room_id].should be_instance_of(BSON::ObjectID)
+        criteria[:_id].should     be_instance_of(BSON::ObjectId)
+        criteria[:room_id].should be_instance_of(BSON::ObjectId)
       end
 
       should "convert :id with string value to object id value" do
@@ -204,8 +204,8 @@ class CriteriaHashTest < Test::Unit::TestCase
 
     context "with string ids for object id keys (nested)" do
       setup do
-        @id1      = BSON::ObjectID.new
-        @id2      = BSON::ObjectID.new
+        @id1      = BSON::ObjectId.new
+        @id2      = BSON::ObjectId.new
         @criteria = CriteriaHash.new({:_id => {'$in' => [@id1.to_s, @id2.to_s]}}, :object_ids => [:_id])
       end
 

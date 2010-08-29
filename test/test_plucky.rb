@@ -4,7 +4,7 @@ class PluckyTest < Test::Unit::TestCase
   context "Plucky" do
     context ".to_object_id" do
       setup do
-        @id = BSON::ObjectID.new
+        @id = BSON::ObjectId.new
       end
 
       should "convert nil to nil" do
