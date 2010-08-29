@@ -1,7 +1,7 @@
 require 'rubygems'
 gem 'jnunemaker-matchy', '~> 0.4.0'
 gem 'log_buddy'
-gem 'shoulda',           '~> 2.10.2'
+gem 'shoulda',           '~> 2.11'
 gem 'mocha',             '~> 0.9.8'
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
