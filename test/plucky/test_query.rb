@@ -437,6 +437,10 @@ class QueryTest < Test::Unit::TestCase
         subject.sort(:foo).options[:sort].should == [['foo', 1]]
       end
 
+      should "work with symbol descending" do
+        subject.sort(:foo.desc).options[:sort].should == [['foo', -1]]
+      end
+
       should "work with multiple symbols" do
         subject.sort(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
       end
