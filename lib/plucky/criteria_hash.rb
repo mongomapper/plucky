@@ -129,6 +129,8 @@ module Plucky
           when Hash
             value.each { |k, v| value[k] = normalized_value(key, k, v) }
             value
+          when Regexp
+            Regexp.new(value)
           else
             value
         end
