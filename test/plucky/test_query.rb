@@ -727,24 +727,24 @@ class QueryTest < Test::Unit::TestCase
       query.fields?
     end
 
-    #context "#explain" do
-    #  setup   { @query = Query.new(@collection) }
-    #  subject { @query }
+    context "#explain" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
 
-    #  should "work" do
-    #    subject.where(:age.lt => 28).explain.should == {
-    #      'cursor'          => 'BasicCursor',
-    #      'nscanned'        => 3,
-    #      'nscannedObjects' => 3,
-    #      'n'               => 1,
-    #      'millis'          => 0,
-    #      'indexBounds'     => {},
-    #      'allPlans'        => [
-    #        {'cursor' => 'BasicCursor', 'indexBounds' => {}}
-    #      ]
-    #    }
-    #  end
-    #end
+      should "work" do
+        subject.where(:age.lt => 28).explain.should == {
+          'cursor'          => 'BasicCursor',
+          'nscanned'        => 3,
+          'nscannedObjects' => 3,
+          'n'               => 1,
+          'millis'          => 0,
+          'indexBounds'     => {},
+          'allPlans'        => [
+            {'cursor' => 'BasicCursor', 'indexBounds' => {}}
+          ]
+        }
+      end
+    end
 
     context "#group" do
       setup do 
