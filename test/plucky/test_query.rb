@@ -727,23 +727,58 @@ class QueryTest < Test::Unit::TestCase
       query.fields?
     end
 
-    context "#explain" do
-      setup   { @query = Query.new(@collection) }
-      subject { @query }
+    #context "#explain" do
+    #  setup   { @query = Query.new(@collection) }
+    #  subject { @query }
 
-      should "work" do
-        subject.where(:age.lt => 28).explain.should == {
-          'cursor'          => 'BasicCursor',
-          'nscanned'        => 3,
-          'nscannedObjects' => 3,
-          'n'               => 1,
-          'millis'          => 0,
-          'indexBounds'     => {},
-          'allPlans'        => [
-            {'cursor' => 'BasicCursor', 'indexBounds' => {}}
-          ]
-        }
+    #  should "work" do
+    #    subject.where(:age.lt => 28).explain.should == {
+    #      'cursor'          => 'BasicCursor',
+    #      'nscanned'        => 3,
+    #      'nscannedObjects' => 3,
+    #      'n'               => 1,
+    #      'millis'          => 0,
+    #      'indexBounds'     => {},
+    #      'allPlans'        => [
+    #        {'cursor' => 'BasicCursor', 'indexBounds' => {}}
+    #      ]
+    #    }
+    #  end
+    #end
+
+    context "#group" do
+      setup do 
+        @bob     = oh(['_id', 'bob'],     ['age', 26], ['name', 'Bob'])
+        @negabob = oh(['_id', 'negabob'], ['age', 26], ['name', 'Bob'])
+        @collection.insert( @bob )
+        @collection.insert( @negabob )
+        @query = Query.new(@collection) 
       end
+      subject { @query }
+      context "with default reduce" do
+
+        should "group results into OrderedHashes with array results and grouping values as keys" do
+          results = subject.group(:age)
+          results.should be_instance_of(BSON::OrderedHash)
+          results[26].should == [@chris, @bob, @negabob]
+          results[29].should == [@steve]
+          results[28].should == [@john]
+        end
+        should "group results into OrderedHashes with array results and grouping values as array keys" do
+          results = subject.group(:age, :name)
+          results.should be_instance_of(BSON::OrderedHash)
+          results[[26, 'Chris']].should == [@chris]
+          results[[26, 'Bob']].should   == [@bob, @negabob]
+          results[[29, 'Steve']].should == [@steve]
+          results[[28, 'John']].should  == [@john]
+        end
+      end
+
+      #context "with summing reduce" do
+      #  should "do something" do
+      #    #results = subject.group(:age, :reducer => 'function(obj, sum))
+      #  end
+      #end
     end
   end
 end
