@@ -760,6 +760,7 @@ class QueryTest < Test::Unit::TestCase
         should "group results into OrderedHashes with array results and grouping values as keys" do
           results = subject.group(:age)
           results.should be_instance_of(BSON::OrderedHash)
+          results.keys.sort.should == [26, 28, 29]
           results[26].should == [@chris, @bob, @negabob]
           results[29].should == [@steve]
           results[28].should == [@john]
@@ -767,6 +768,7 @@ class QueryTest < Test::Unit::TestCase
         should "group results into OrderedHashes with array results and grouping values as array keys" do
           results = subject.group(:age, :name)
           results.should be_instance_of(BSON::OrderedHash)
+          results.keys.sort.should == [[26, 'Bob'], [26, 'Chris'], [28, 'John'], [29, 'Steve']]
           results[[26, 'Chris']].should == [@chris]
           results[[26, 'Bob']].should   == [@bob, @negabob]
           results[[29, 'Steve']].should == [@steve]
@@ -774,9 +776,26 @@ class QueryTest < Test::Unit::TestCase
         end
       end
 
+      context "with a criteria limitation" do
+        should "group results into OrderedHashes with array results and grouping values as keys" do
+          results = subject.where(:name => "Bob").group(:age)
+          results.should be_instance_of(BSON::OrderedHash)
+          results[26].should == [@bob, @negabob]
+          results.keys.should == [26]
+        end
+      end
+
+      # TODO for some reason this breaks because the initial integers aren't being interpreted correctly as integers inside Mongo.
+      #   I see these results:
+      #     [{"age"=>26, "count"=>NaN, "sum"=>"[object Object]262626"},
+      #      {"age"=>29, "count"=>NaN, "sum"=>"[object Object]29"},
+      #      {"age"=>28, "count"=>NaN, "sum"=>"[object Object]28"}]
+      #   -JS
+      #
       #context "with summing reduce" do
       #  should "do something" do
-      #    #results = subject.group(:age, :reducer => 'function(obj, sum))
+      #    results = subject.group(:age, :initial => {:count => 0, :sum => 0}, :reducer => 'function(obj, prev){ prev.count++; prev.sum += obj.age; }')
+      #    #pp results
       #  end
       #end
     end
