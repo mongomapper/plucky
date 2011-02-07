@@ -22,6 +22,11 @@ class PluckyTest < Test::Unit::TestCase
       should "convert string to object id" do
         Plucky.to_object_id(@id.to_s).should == @id
       end
+
+      should "not convert string that is not legal object id" do
+        Plucky.to_object_id('foo').should == 'foo'
+        Plucky.to_object_id(1).should == 1
+      end
     end
   end
 end

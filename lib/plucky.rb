@@ -20,7 +20,11 @@ module Plucky
     elsif value.is_a?(BSON::ObjectId)
       value
     else
-      BSON::ObjectId.from_string(value.to_s)
+      if BSON::ObjectId.legal?(value.to_s)
+        BSON::ObjectId.from_string(value.to_s)
+      else
+        value
+      end
     end
   end
 end
