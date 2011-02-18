@@ -96,6 +96,11 @@ module Plucky
       count
     end
 
+    def distinct(key, opts = {})
+      query = clone.update(opts)
+      query.collection.distinct(key, query.criteria.to_hash)
+    end
+
     def update(opts={})
       opts.each { |key, value| self[key] = value }
       self

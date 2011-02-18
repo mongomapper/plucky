@@ -269,6 +269,28 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#distinct" do
+      setup do
+        # same age as John
+        @mark = oh(['_id', 'mark'], ['age', 28], ['name', 'Mark'])
+        @collection.insert(@mark)
+      end
+
+      should "work with just a key" do
+        Query.new(@collection).distinct(:age).sort.should == [26, 28, 29]
+      end
+
+      should "work with criteria" do
+        Query.new(@collection).distinct(:age, :age.gt => 26).sort.should == [28, 29]
+      end
+
+      should "not modify the original query object" do
+        query = Query.new(@collection)
+        query.distinct(:age, :name => 'Mark').should == [28]
+        query[:name].should be_nil
+      end
+    end
+
     context "#remove" do
       should "work with no arguments" do
         lambda { Query.new(@collection).remove }.should change { @collection.count }.by(3)
