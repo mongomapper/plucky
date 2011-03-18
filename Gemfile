@@ -6,8 +6,9 @@ gem 'bson_ext', Plucky::MongoVersion
 gemspec
 
 gem 'rake'
-gem 'ruby-debug', :platform => :ruby_18
-gem 'ruby-debug19', :platform => :ruby_19, :require => 'ruby-debug'
+
+platforms(:mri_18) { gem 'ruby-debug' }
+platforms(:mri_19) { gem 'ruby-debug19' }
 
 group(:test) do
   gem 'shoulda',            '~> 2.11'
