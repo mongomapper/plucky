@@ -1,0 +1,53 @@
+PATH
+  remote: .
+  specs:
+    plucky (0.3.7)
+      mongo (~> 1.2.4)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    archive-tar-minitar (0.5.2)
+    bson (1.2.4)
+    bson_ext (1.2.4)
+    columnize (0.3.2)
+    jnunemaker-matchy (0.4.0)
+    linecache (0.43)
+    linecache19 (0.5.11)
+      ruby_core_source (>= 0.1.4)
+    log_buddy (0.6.0)
+    mocha (0.9.12)
+    mongo (1.2.4)
+      bson (>= 1.2.4)
+    rake (0.8.7)
+    ruby-debug (0.10.4)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.4.0)
+    ruby-debug-base (0.10.4)
+      linecache (>= 0.3)
+    ruby-debug-base19 (0.11.24)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby_core_source (>= 0.1.4)
+    ruby-debug19 (0.11.6)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby-debug-base19 (>= 0.11.19)
+    ruby_core_source (0.1.4)
+      archive-tar-minitar (>= 0.5.2)
+    shoulda (2.11.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bson_ext (~> 1.2.4)
+  jnunemaker-matchy (~> 0.4.0)
+  log_buddy
+  mocha (~> 0.9.8)
+  mongo (~> 1.2.4)
+  plucky!
+  rake
+  ruby-debug
+  ruby-debug19
+  shoulda (~> 2.11)
