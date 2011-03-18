@@ -12,5 +12,5 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.files        = Dir.glob("{bin,lib}/**/*") + %w[LICENSE README.rdoc]
 
-  s.add_dependency 'mongo', '~> 1.2.4'
+  s.add_dependency 'mongo', Plucky::MongoVersion
 end

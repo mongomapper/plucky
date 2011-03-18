@@ -1,5 +1,8 @@
 source :rubygems
-gem 'bson_ext', '~> 1.2.4'
+
+require File.expand_path('../lib/plucky/version', __FILE__)
+gem 'bson_ext', Plucky::MongoVersion
+
 gemspec
 
 gem 'rake'
