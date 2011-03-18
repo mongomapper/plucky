@@ -3,6 +3,9 @@ require 'rake'
 require 'rake/testtask'
 require File.expand_path('../lib/plucky/version', __FILE__)
 
+require 'bundler'
+Bundler::GemHelper.install_tasks
+
 namespace :test do
   Rake::TestTask.new(:all) do |test|
     test.libs      << 'lib' << 'test'
@@ -16,21 +19,3 @@ task :test do
 end
 
 task :default => :test
-
-desc 'Builds the gem'
-task :build do
-  sh "gem build plucky.gemspec"
-end
-
-desc 'Builds and installs the gem'
-task :install => :build do
-  sh "gem install plucky-#{Plucky::Version}"
-end
-
-desc 'Tags version, pushes to remote, and pushes gem'
-task :release => :build do
-  sh "git tag v#{Plucky::Version}"
-  sh "git push origin master"
-  sh "git push origin v#{Plucky::Version}"
-  sh "gem push plucky-#{Plucky::Version}.gem"
-end
