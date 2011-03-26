@@ -23,7 +23,7 @@ Log = Logger.new(File.join(log_dir, 'test.log'))
 LogBuddy.init :logger => Log
 
 connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => Log)
-DB = connection.db('plucky')
+DB = connection.db('test')
 
 class Test::Unit::TestCase
   def setup
