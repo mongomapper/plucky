@@ -6,8 +6,9 @@ module Plucky
     extend  Forwardable
 
     OptionKeys = [
-      :select, :offset, :order,                                              # MM
-      :fields, :skip, :limit, :sort, :hint, :snapshot, :batch_size, :timeout # Ruby Driver
+      :select, :offset, :order,                         # MM
+      :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
+      :batch_size, :timeout, :transformer               # Ruby Driver
     ]
 
     attr_reader    :criteria, :options, :collection

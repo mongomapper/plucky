@@ -763,5 +763,25 @@ class QueryTest < Test::Unit::TestCase
         explain['nscanned'].should == 3
       end
     end
+
+    context "Transforming documents" do
+      setup do
+        transformer = lambda { |doc| @user_class.new(doc['_id'], doc['name'], doc['age']) }
+        @user_class = Struct.new(:id, :name, :age)
+        @query = Query.new(@collection, :transformer => transformer)
+      end
+
+      should "work with find_one" do
+        result = @query.find_one('_id' => 'john')
+        result.should be_instance_of(@user_class)
+      end
+
+      should "work with find_each" do
+        results = @query.find_each
+        results.each do |result|
+          result.should be_instance_of(@user_class)
+        end
+      end
+    end
   end
 end
