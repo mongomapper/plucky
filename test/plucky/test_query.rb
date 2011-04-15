@@ -526,7 +526,7 @@ class QueryTest < Test::Unit::TestCase
       should "work" do
         subject.where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
       end
-      
+
       should "work with literal regexp" do
         subject.where(:name => /^c/i).all.should == [@chris]
       end
@@ -758,17 +758,9 @@ class QueryTest < Test::Unit::TestCase
       subject { @query }
 
       should "work" do
-        subject.where(:age.lt => 28).explain.should == {
-          'cursor'          => 'BasicCursor',
-          'nscanned'        => 3,
-          'nscannedObjects' => 3,
-          'n'               => 1,
-          'millis'          => 0,
-          'indexBounds'     => {},
-          'allPlans'        => [
-            {'cursor' => 'BasicCursor', 'indexBounds' => {}}
-          ]
-        }
+        explain = subject.where(:age.lt => 28).explain
+        explain['cursor'].should == 'BasicCursor'
+        explain['nscanned'].should == 3
       end
     end
   end
