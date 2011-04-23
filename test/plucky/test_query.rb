@@ -506,15 +506,15 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
-    context "#update" do
+    context "#amend" do
       should "normalize and update options" do
-        Query.new(@collection).update(:order => :age.desc).options[:sort].should == [['age', -1]]
+        Query.new(@collection).amend(:order => :age.desc).options[:sort].should == [['age', -1]]
       end
 
       should "work with simple stuff" do
         Query.new(@collection).
-          update(:foo => 'bar').
-          update(:baz => 'wick').
+          amend(:foo => 'bar').
+          amend(:baz => 'wick').
           criteria.should == CriteriaHash.new(:foo => 'bar', :baz => 'wick')
       end
     end

@@ -42,7 +42,7 @@ module Plucky
     def paginate(opts={})
       page          = opts.delete(:page)
       limit         = opts.delete(:per_page) || per_page
-      query         = clone.update(opts)
+      query         = clone.amend(opts)
       total         = query.count
       paginator     = Pagination::Paginator.new(total, page, limit)
       query[:limit] = paginator.limit
@@ -54,12 +54,12 @@ module Plucky
     end
 
     def find_each(opts={})
-      query = clone.update(opts)
+      query = clone.amend(opts)
       query.collection.find(query.criteria.to_hash, query.options.to_hash)
     end
 
     def find_one(opts={})
-      query = clone.update(opts)
+      query = clone.amend(opts)
       query.collection.find_one(query.criteria.to_hash, query.options.to_hash)
     end
 
@@ -81,7 +81,7 @@ module Plucky
     end
 
     def last(opts={})
-      clone.update(opts).reverse.find_one
+      clone.amend(opts).reverse.find_one
     end
 
     def each
@@ -89,7 +89,7 @@ module Plucky
     end
 
     def remove(opts={})
-      query = clone.update(opts)
+      query = clone.amend(opts)
       query.collection.remove(query.criteria.to_hash)
     end
 
@@ -102,11 +102,11 @@ module Plucky
     end
 
     def distinct(key, opts = {})
-      query = clone.update(opts)
+      query = clone.amend(opts)
       query.collection.distinct(key, query.criteria.to_hash)
     end
 
-    def update(opts={})
+    def amend(opts={})
       opts.each { |key, value| self[key] = value }
       self
     end
@@ -185,7 +185,7 @@ module Plucky
     def merge(other)
       merged_criteria = criteria.merge(other.criteria).to_hash
       merged_options  = options.merge(other.options).to_hash
-      clone.update(merged_criteria).update(merged_options)
+      clone.amend(merged_criteria).amend(merged_options)
     end
 
     def to_hash
