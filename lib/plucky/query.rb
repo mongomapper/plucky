@@ -147,6 +147,7 @@ module Plucky
         query.criteria.merge!(CriteriaHash.new(hash))
       end
     end
+    alias filter where
 
     def empty?
       count.zero?

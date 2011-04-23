@@ -559,6 +559,15 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#filter" do
+      setup   { @query = Query.new(@collection) }
+      subject { @query }
+
+      should "work the same as where" do
+        subject.filter(:age.lt => 29).filter(:name => 'Chris').all.should == [@chris]
+      end
+    end
+
     context "#empty?" do
       should "be true if empty" do
         @collection.remove
