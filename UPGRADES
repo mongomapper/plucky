@@ -1,0 +1,2 @@
+Apr 23, 2011 0.3.8 => 0.4
+  * Query#update was renamed to #amend.
