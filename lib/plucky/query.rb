@@ -40,14 +40,11 @@ module Plucky
     end
 
     def paginate(opts={})
-      page          = opts.delete(:page)
-      limit         = opts.delete(:per_page) || per_page
-      query         = clone.amend(opts)
-      total         = query.count
-      paginator     = Pagination::Paginator.new(total, page, limit)
-      query[:limit] = paginator.limit
-      query[:skip]  = paginator.skip
-      query.all.tap do |docs|
+      page      = opts.delete(:page)
+      limit     = opts.delete(:per_page) || per_page
+      query     = clone.amend(opts)
+      paginator = Pagination::Paginator.new(query.count, page, limit)
+      query.amend(:limit => paginator.limit, :skip => paginator.skip).all.tap do |docs|
         docs.extend(Pagination::Decorator)
         docs.paginator(paginator)
       end
