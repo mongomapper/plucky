@@ -14,7 +14,7 @@ module Plucky
     attr_reader    :criteria, :options, :collection
     def_delegator  :criteria, :simple?
     def_delegator  :options,  :fields?
-    def_delegators :to_a, :each, :include?
+    def_delegators :to_a, :include?
 
     def initialize(collection, opts={})
       @collection, @options, @criteria = collection, OptionsHash.new, CriteriaHash.new
@@ -82,6 +82,10 @@ module Plucky
 
     def last(opts={})
       clone.update(opts).reverse.find_one
+    end
+
+    def each
+      find_each.each { |doc| yield(doc) }
     end
 
     def remove(opts={})
@@ -157,7 +161,7 @@ module Plucky
     alias :exist? :exists?
 
     def to_a
-      all
+      find_each.to_a
     end
 
     def [](key)
