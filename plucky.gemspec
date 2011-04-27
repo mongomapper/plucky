@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email        = ['nunemaker@gmail.com']
   s.version      = Plucky::Version
   s.platform     = Gem::Platform::RUBY
-  s.files        = Dir.glob("{bin,lib}/**/*") + %w[LICENSE README.rdoc]
+  s.files        = Dir.glob("{bin,lib,test}/**/*") + %w[LICENSE README.rdoc UPGRADES]
 
   s.add_dependency 'mongo', Plucky::MongoVersion
 end
