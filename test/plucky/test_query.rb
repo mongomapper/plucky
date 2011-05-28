@@ -300,6 +300,10 @@ class QueryTest < Test::Unit::TestCase
         lambda { Query.new(@collection).remove(:age.lte => 28) }.should change { @collection.count }
       end
 
+      should "work with options" do
+        lambda { Query.new(@collection).remove({:age.lte => 28}, :safe => true) }.should change { @collection.count }
+      end
+
       should "not modify original query object" do
         query = Query.new(@collection)
         query.remove(:name => 'Steve')

@@ -85,9 +85,9 @@ module Plucky
       find_each.each { |doc| yield(doc) }
     end
 
-    def remove(opts={})
+    def remove(opts={}, driver_opts={})
       query = clone.amend(opts)
-      query.collection.remove(query.criteria.to_hash)
+      query.collection.remove(query.criteria.to_hash, driver_opts)
     end
 
     def count(opts={})
