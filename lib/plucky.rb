@@ -15,16 +15,13 @@ module Plucky
   end
 
   def self.to_object_id(value)
-    if value.nil? || (value.respond_to?(:empty?) && value.empty?)
-      nil
-    elsif value.is_a?(BSON::ObjectId)
-      value
+    return value if value.is_a?(BSON::ObjectId)
+    return nil   if value.nil? || (value.respond_to?(:empty?) && value.empty?)
+
+    if BSON::ObjectId.legal?(value.to_s)
+      BSON::ObjectId.from_string(value.to_s)
     else
-      if BSON::ObjectId.legal?(value.to_s)
-        BSON::ObjectId.from_string(value.to_s)
-      else
-        value
-      end
+      value
     end
   end
 end
