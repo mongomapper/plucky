@@ -28,5 +28,19 @@ class PluckyTest < Test::Unit::TestCase
         Plucky.to_object_id(1).should == 1
       end
     end
+
+    context "::Methods" do
+      should "return array of methods" do
+        Plucky::Methods.should == [
+          :where, :filter, :limit, :skip, :offset, :sort, :order,
+          :fields, :ignore, :only,
+          :each, :find_each,
+          :count, :size, :distinct,
+          :last, :first, :all, :paginate,
+          :exists?, :exist?, :empty?,
+          :to_a, :remove,
+        ]
+      end
+    end
   end
 end
