@@ -90,6 +90,11 @@ module Plucky
       query.collection.remove(query.criteria.to_hash, driver_opts)
     end
 
+    def update(document, driver_opts={})
+      query = clone
+      query.collection.update(query.criteria.to_hash, document, driver_opts)
+    end
+
     def count(opts={})
       find_each(opts).count
     end

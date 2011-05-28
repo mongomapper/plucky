@@ -311,6 +311,25 @@ class QueryTest < Test::Unit::TestCase
       end
     end
 
+    context "#update" do
+      setup do
+        @query = Query.new(@collection).where('_id' => 'john')
+      end
+
+      should "work with document" do
+        @query.update('$set' => {'age' => 29})
+        doc = @query.first('_id' => 'john')
+        doc['age'].should be(29)
+      end
+
+      should "work with document and driver options" do
+        @query.update({'$set' => {'age' => 30}}, :multi => true)
+        @query.each do |doc|
+          doc['age'].should be(30)
+        end
+      end
+    end
+
     context "#[]" do
       should "return value if key in criteria (symbol)" do
         Query.new(@collection, :count => 1)[:count].should == 1
