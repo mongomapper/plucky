@@ -2,18 +2,13 @@
 require 'set'
 require 'mongo'
 require 'plucky/extensions'
+require 'plucky/criteria_hash'
+require 'plucky/options_hash'
+require 'plucky/query'
+require 'plucky/pagination'
+require 'plucky/version'
 
 module Plucky
-  autoload :CriteriaHash, 'plucky/criteria_hash'
-  autoload :OptionsHash,  'plucky/options_hash'
-  autoload :Query,        'plucky/query'
-  autoload :Version,      'plucky/version'
-
-  module Pagination
-    autoload :Decorator,  'plucky/pagination/decorator'
-    autoload :Paginator,  'plucky/pagination/paginator'
-  end
-
   # Array of methods that actually perform queries
   Methods = [
     :where, :filter, :limit, :skip, :offset, :sort, :order,
