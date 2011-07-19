@@ -6,9 +6,10 @@ require 'plucky/criteria_hash'
 require 'plucky/options_hash'
 require 'plucky/query'
 require 'plucky/pagination'
-require 'plucky/version'
 
 module Plucky
+  autoload :Version, 'plucky/version'
+
   # Array of methods that actually perform queries
   Methods = [
     :where, :filter, :limit, :skip, :offset, :sort, :order,
