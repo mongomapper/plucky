@@ -63,7 +63,9 @@ module Plucky
 
     def find(*ids)
       return nil if ids.empty?
-      if ids.size == 1 && !ids[0].is_a?(Array)
+      if [:first, :last, :all].include? ids[0]
+        send(ids.shift, *ids)
+      elsif ids.size == 1 && !ids[0].is_a?(Array)
         first(:_id => ids[0])
       else
         all(:_id => ids.flatten)

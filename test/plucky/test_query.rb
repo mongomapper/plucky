@@ -89,7 +89,7 @@ class QueryTest < Test::Unit::TestCase
         @query = Query.new(@collection)
       end
       subject { @query }
-
+      
       should "work with single id" do
         @query.find('chris').should == @chris
       end
@@ -124,7 +124,68 @@ class QueryTest < Test::Unit::TestCase
         doc = @query.find(id.to_s)
         doc['name'].should == 'Frank'
       end
+      
+      
+      should "work with :first" do
+        @query.find(:first).should == @chris
+      end
+      
+      should "work with :first and conditions" do
+        @query.find(:first, :age.lte => 29).should == @chris
+      end
+      
+      should "work with :first, conditions and order" do
+        @query.find(:first, :age.lte => 29, :order => :name.desc).should == @steve
+      end  
+    
+      should "work with :first and not modify the original query object" do
+        @query.find(:first, :name => 'Steve')
+        @query[:name].should be_nil
+      end
+      
+#     No tests for the last element work, unless order is specified
+#
+#      should "work with :last" do
+#        @query.find(:last).should == @john
+#      end 
+      
+#      should "work with :last and conditions" do
+#        @query.find(:last, :age.lte => 29).should == @john
+#      end
+
+      should "work with :last, conditions and order" do
+        @query.find(:last, :age.lte => 29, :order => :name.asc).should == @steve
+      end 
+      
+      
+      should "work with :last, conditions and order" do
+        @query.find(:last, :age.lte => 29, :order => :name.desc).should == @chris
+      end 
+      
+      should "work with :last and not modify the original query object" do
+        @query.find(:last, :name => 'Steve')
+        @query[:name].should be_nil
+      end
+      
+      should "work with :all" do
+        @query.find(:all).should == [@chris, @steve, @john]
+      end
+      
+      should "work with :all and conditions" do
+        @query.find(:all, :age.lte => 28).should == [@chris, @john]
+      end
+      
+      should "work with :all, conditions and order" do
+        @query.find(:all, :age.lte => 29, :order => :name.asc).should == [@chris, @john, @steve]
+      end
+      
+      should "work with :all and not modify the original query object" do
+        @query.find(:all, :name => 'Steve')
+        @query[:name].should be_nil
+      end
+           
     end
+  
 
     context "#per_page" do
       should "default to 25" do
@@ -232,6 +293,7 @@ class QueryTest < Test::Unit::TestCase
     end
 
     context "#last" do
+      #this test will not pass if to remove the order condition
       should "work with and normalize criteria" do
         Query.new(@collection).last(:age.lte => 29, :order => :name.asc).should == @steve
       end
