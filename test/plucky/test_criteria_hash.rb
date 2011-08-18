@@ -150,9 +150,12 @@ class CriteriaHashTest < Test::Unit::TestCase
         CriteriaHash.new(:numbers => {'$all' => [1,2,3]})[:numbers].should == {'$all' => [1,2,3]}
         CriteriaHash.new(:numbers => {'$any' => [1,2,3]})[:numbers].should == {'$any' => [1,2,3]}
       end
-      
-      should "not turn value to $in with $or or $and key" do
+
+      should "not turn value to $in with $or key" do
         CriteriaHash.new(:$or => [{:numbers => 1}, {:numbers => 2}] )[:$or].should == [{:numbers=>1}, {:numbers=>2}]
+      end
+
+      should "not turn value to $in with $and key" do
         CriteriaHash.new(:$and => [{:numbers => 1}, {:numbers => 2}] )[:$and].should == [{:numbers=>1}, {:numbers=>2}]
       end
     end
@@ -258,7 +261,7 @@ class CriteriaHashTest < Test::Unit::TestCase
         c2 = CriteriaHash.new(:foo => {'$all' => [1, 4, 5]})
         c1.merge(c2).should == CriteriaHash.new(:foo => {'$in' => [1, 2, 3], '$all' => [1, 4, 5]})
       end
-      
+
       should "not update mergee" do
         c1 = CriteriaHash.new(:foo => 'bar')
         c2 = CriteriaHash.new(:foo => 'baz')
