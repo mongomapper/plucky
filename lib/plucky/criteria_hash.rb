@@ -119,7 +119,8 @@ module Plucky
       def normalized_value(parent_key, key, value)
         case value
           when Array, Set
-            value = value.to_a.map { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
+            value = value.map { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
+            value = value.to_a
 
             return value if parent_key != key or [:$or, :$and].include?(key)
 
