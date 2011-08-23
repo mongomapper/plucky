@@ -17,17 +17,23 @@ class SymbolOperatorTest < Test::Unit::TestCase
       should "be true if field and operator are equal" do
         SymbolOperator.new(:foo, 'in').should == SymbolOperator.new(:foo, 'in')
       end
-      
+
       should "be false if fields are equal but operators are not" do
         SymbolOperator.new(:foo, 'in').should_not == SymbolOperator.new(:foo, 'all')
       end
-      
+
       should "be false if operators are equal but fields are not" do
         SymbolOperator.new(:foo, 'in').should_not == SymbolOperator.new(:bar, 'in')
       end
-      
+
       should "be false if neither are equal" do
         SymbolOperator.new(:foo, 'in').should_not == SymbolOperator.new(:bar, 'all')
+      end
+
+      should "be false if other isn't an symbol operator" do
+        assert_nothing_raised do
+          SymbolOperator.new(:foo, 'in').should_not == 'foo.in'
+        end
       end
     end
 
