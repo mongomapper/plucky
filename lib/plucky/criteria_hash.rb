@@ -42,6 +42,20 @@ module Plucky
       source
     end
 
+    def to_query_hash
+      # Convert to final query form, just before passing to MongoDB
+      query_hash = {}
+      source.each do |key, value|
+        if value.is_a?(Hash) && value.keys[0] == :$exact
+          # Strip away the $exact operator
+          query_hash[key] = value[:$exact]
+        else
+          query_hash[key] = value
+        end
+      end
+      query_hash
+    end
+
     def merge(other)
       target = source.dup
       other.source.each_key do |key|

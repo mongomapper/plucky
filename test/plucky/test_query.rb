@@ -815,5 +815,34 @@ class QueryTest < Test::Unit::TestCase
         end
       end
     end
+    
+    context "Strip $exact operator" do
+      setup do @query = Query.new(@collection)
+        @array_collection = DB['array_test']
+        @array_a = @array_collection.insert({ :name => 'A', :items => [1, 2, 3] })
+        @array_b = @array_collection.insert({ :name => 'B', :items => [1, 2] })
+        @query = Query.new(@array_collection)
+      end
+      
+      should "work without $exact for partial match" do
+        # Test original functionality by querying { :items => [1, 2] } which should return both rows
+        @query.where(:items => [1, 2]).all.count.should == 2
+      end
+      
+      should "work without $exact for full match" do
+        # Test original functionality by querying { :items => [1, 2, 3] } which should return both rows
+        @query.where(:items => [1, 2, 3]).all.count.should == 2
+      end
+      
+      should "work with :$exact for three value array" do
+        # Test new querying with $exact operator { :items => { ;$exact => [1, 2] } } which should return one row
+        @query.where(:items => { :$exact => [1, 2, 3] }).all.count.should == 1
+      end
+      
+      should "work with :$exact for two value array" do
+        # Test new querying with $exact operator { :items => { ;$exact => [1, 2, 3] } } which should return one row
+        @query.where(:items => { :$exact => [1, 2] }).all.count.should == 1
+      end
+    end
   end
 end
