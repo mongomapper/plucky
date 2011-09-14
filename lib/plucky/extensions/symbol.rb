@@ -75,7 +75,7 @@ class SymbolOperator
   end
 
   def ==(other)
-    field == other.field && operator == other.operator
+    other.class == self.class && field == other.field && operator == other.operator
   end
 end
 
