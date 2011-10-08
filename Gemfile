@@ -1,7 +1,7 @@
 source :rubygems
 
 require File.expand_path('../lib/plucky/version', __FILE__)
-gem 'bson_ext', Plucky::MongoVersion
+gem 'bson_ext'
 
 gemspec
 
