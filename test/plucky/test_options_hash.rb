@@ -9,7 +9,7 @@ class OptionsHashTest < Test::Unit::TestCase
       options = OptionsHash.new(hash)
       options[:skip].should   == 1
       options[:limit].should  == 1
-      options.keys.should     == [:limit, :skip]
+      (options.keys - [:limit, :skip]).should == []
     end
 
     context "#initialize_copy" do
