@@ -12,5 +12,5 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.files        = Dir.glob("{bin,lib,test}/**/*") + %w[LICENSE README.rdoc UPGRADES]
 
-  s.add_dependency 'mongo', '~> 1.3'
+  s.add_dependency 'mongo', '~> 1.5'
 end

@@ -1,10 +1,7 @@
 source :rubygems
-
-require File.expand_path('../lib/plucky/version', __FILE__)
-gem 'bson_ext'
-
 gemspec
 
+gem 'bson_ext'
 gem 'rake'
 
 platforms(:mri_18) { gem 'ruby-debug' }
