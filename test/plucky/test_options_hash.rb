@@ -7,9 +7,9 @@ class OptionsHashTest < Test::Unit::TestCase
     should "delegate missing methods to the source hash" do
       hash = {:limit => 1, :skip => 1}
       options = OptionsHash.new(hash)
-      options[:skip].should   == 1
-      options[:limit].should  == 1
-      options.keys.should     == [:limit, :skip]
+      options[:skip].should      == 1
+      options[:limit].should     == 1
+      options.keys.to_set.should == [:limit, :skip].to_set
     end
 
     context "#initialize_copy" do
