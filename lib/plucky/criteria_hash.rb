@@ -3,6 +3,8 @@ module Plucky
   class CriteriaHash
     attr_reader :source, :options
 
+    NestingOperators = [:$or, :$and, :$nor]
+
     def initialize(hash={}, options={})
       @source, @options = {}, options
       hash.each { |key, value| self[key] = value }
@@ -120,7 +122,7 @@ module Plucky
         case value
           when Array, Set
             value.map! { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
-            parent_key == key && ![:$or, :$and].include?(key) ? {'$in' => value.to_a} : value.to_a
+            parent_key == key && !NestingOperators.include?(key) ? {'$in' => value.to_a} : value.to_a
           when Time
             value.utc
           when String

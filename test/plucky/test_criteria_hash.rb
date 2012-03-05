@@ -24,6 +24,12 @@ class CriteriaHashTest < Test::Unit::TestCase
       }
     end
 
+    context "::NestingOperators" do
+      should "return array of operators that take nested queries" do
+        CriteriaHash::NestingOperators.should == [:$or, :$and, :$nor]
+      end
+    end
+
     context "#initialize_copy" do
       setup do
         @original = CriteriaHash.new({
@@ -157,6 +163,10 @@ class CriteriaHashTest < Test::Unit::TestCase
 
       should "not turn value to $in with $and key" do
         CriteriaHash.new(:$and => [{:numbers => 1}, {:numbers => 2}] )[:$and].should == [{:numbers=>1}, {:numbers=>2}]
+      end
+
+      should "not turn value to $in with $nor key" do
+        CriteriaHash.new(:$nor => [{:numbers => 1}, {:numbers => 2}] )[:$nor].should == [{:numbers=>1}, {:numbers=>2}]
       end
     end
 
