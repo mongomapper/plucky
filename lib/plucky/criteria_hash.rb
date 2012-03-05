@@ -3,6 +3,8 @@ module Plucky
   class CriteriaHash
     attr_reader :source, :options
 
+    NestingOperators = [:$or, :$and, :$nor]
+
     def initialize(hash={}, options={})
       @source, @options = {}, options
       hash.each { |key, value| self[key] = value }
@@ -119,8 +121,15 @@ module Plucky
       def normalized_value(parent_key, key, value)
         case value
           when Array, Set
-            value.map! { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
-            parent_key == key && ![:$or, :$and].include?(key) ? {'$in' => value.to_a} : value.to_a
+            if object_id?(parent_key)
+              value.map! { |v| Plucky.to_object_id(v) }
+            elsif NestingOperators.include?(key)
+              value.map  { |v| CriteriaHash.new(v).to_hash }
+            elsif parent_key == key
+              {'$in' => value.to_a}
+            else
+              value.to_a
+            end
           when Time
             value.utc
           when String

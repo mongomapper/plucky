@@ -10,6 +10,7 @@ require 'plucky'
 require 'fileutils'
 require 'logger'
 require 'pp'
+require 'set'
 
 require 'log_buddy'
 require 'shoulda'
