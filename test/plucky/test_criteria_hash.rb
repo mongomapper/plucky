@@ -24,6 +24,44 @@ class CriteriaHashTest < Test::Unit::TestCase
       }
     end
 
+    context "nested clauses" do
+      context "::NestingOperators" do
+        should "return array of operators that take nested queries" do
+          CriteriaHash::NestingOperators.should == [:$or, :$and, :$nor]
+        end
+      end
+
+      CriteriaHash::NestingOperators.each do |operator|
+        context "#{operator}" do
+          should "work with symbol operators" do
+            nested1     = {:age.gt   => 12, :age.lt => 20}
+            translated1 = {:age      => {'$gt'  => 12, '$lt'  => 20 }}
+            nested2     = {:type.nin => ['friend', 'enemy']}
+            translated2 = {:type     => {'$nin' => ['friend', 'enemy']}}
+
+            given       = {operator.to_s => [nested1, nested2]}
+
+            CriteriaHash.new(given)[operator].should == [translated1, translated2]
+          end
+        end
+      end
+
+      context "doubly nested" do
+        should "work with symbol operators" do
+          nested1     = {:age.gt   => 12, :age.lt => 20}
+          translated1 = {:age      => {'$gt' => 12, '$lt' => 20}}
+          nested2     = {:type.nin => ['friend', 'enemy']}
+          translated2 = {:type     => {'$nin' => ['friend', 'enemy']}}
+          nested3     = {'$and'    => [nested2]}
+          translated3 = {:$and     => [translated2]}
+
+          given       = {'$or'     => [nested1, nested3]}
+
+          CriteriaHash.new(given)[:$or].should == [translated1, translated3]
+        end
+      end
+    end
+
     context "#initialize_copy" do
       setup do
         @original = CriteriaHash.new({
@@ -157,6 +195,10 @@ class CriteriaHashTest < Test::Unit::TestCase
 
       should "not turn value to $in with $and key" do
         CriteriaHash.new(:$and => [{:numbers => 1}, {:numbers => 2}] )[:$and].should == [{:numbers=>1}, {:numbers=>2}]
+      end
+
+      should "not turn value to $in with $nor key" do
+        CriteriaHash.new(:$nor => [{:numbers => 1}, {:numbers => 2}] )[:$nor].should == [{:numbers=>1}, {:numbers=>2}]
       end
     end
 
