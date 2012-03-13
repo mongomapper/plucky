@@ -43,6 +43,14 @@ class CriteriaHashTest < Test::Unit::TestCase
 
             CriteriaHash.new(given)[operator].should == [translated1, translated2]
           end
+
+          should "honor criteria hash options" do
+            nested     = {:post_id  => '4f5ead6378fca23a13000001'}
+            translated = {:post_id  => BSON::ObjectId.from_string('4f5ead6378fca23a13000001')}
+            given      = {operator.to_s => [nested]}
+
+            CriteriaHash.new(given, :object_ids => [:post_id])[operator].should == [translated]
+          end
         end
       end
 

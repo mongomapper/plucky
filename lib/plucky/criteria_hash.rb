@@ -124,7 +124,7 @@ module Plucky
             if object_id?(parent_key)
               value.map! { |v| Plucky.to_object_id(v) }
             elsif NestingOperators.include?(key)
-              value.map  { |v| CriteriaHash.new(v).to_hash }
+              value.map  { |v| CriteriaHash.new(v, options).to_hash }
             elsif parent_key == key
               {'$in' => value.to_a}
             else
