@@ -72,6 +72,18 @@ class QueryTest < Test::Unit::TestCase
         cursor = Query.new(@collection).find_each(:order => :name.asc)
         cursor.to_a.should == [@chris, @john, @steve]
       end
+
+      should "yield elements to a block if given" do
+        yielded_elements = Set.new
+        Query.new(@collection).find_each { |doc| yielded_elements << doc }
+        yielded_elements.should == [@chris, @john, @steve].to_set
+      end
+
+      should "be Ruby-like and return a reset cursor if a block is given" do
+        cursor = Query.new(@collection).find_each {}
+        cursor.should be_instance_of(Mongo::Cursor)
+        cursor.next.should be_instance_of(oh.class)
+      end
     end
 
     context "#find_one" do

@@ -51,9 +51,14 @@ module Plucky
       end
     end
 
-    def find_each(opts={})
+    def find_each(opts={}, &block)
       query = clone.amend(opts)
-      query.collection.find(query.criteria.to_hash, query.options.to_hash)
+      cursor = query.collection.find(query.criteria.to_hash, query.options.to_hash)
+      if block_given?
+        cursor.each { |doc| yield doc }
+        cursor.rewind!
+      end
+      cursor
     end
 
     def find_one(opts={})
