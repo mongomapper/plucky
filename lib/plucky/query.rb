@@ -87,8 +87,8 @@ module Plucky
       clone.amend(opts).reverse.find_one
     end
 
-    def each
-      find_each.each { |doc| yield(doc) }
+    def each(&block)
+      find_each(&block)
     end
 
     def remove(opts={}, driver_opts={})

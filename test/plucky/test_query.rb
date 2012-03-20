@@ -662,6 +662,18 @@ class QueryTest < Test::Unit::TestCase
         end
         docs.should == [@chris, @john, @steve]
       end
+
+      should "return a working enumerator" do
+        query = Query.new(@collection)
+        query.each.methods.map(&:to_sym).include?(:group_by).should be(true)
+        query.each.next.class.should == oh.class
+      end
+
+      should "be fulfilled by #find_each" do
+        query = Query.new(@collection)
+        query.expects(:find_each)
+        query.each
+      end
     end
 
     context "enumerables" do
