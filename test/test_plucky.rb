@@ -32,13 +32,15 @@ class PluckyTest < Test::Unit::TestCase
     context "::Methods" do
       should "return array of methods" do
         Plucky::Methods.should == [
-          :where, :filter, :limit, :skip, :offset, :sort, :order,
+          :where, :filter,
+          :sort, :order, :reverse,
+          :paginate, :per_page, :limit, :skip, :offset,
           :fields, :ignore, :only,
-          :each, :find_each,
+          :each, :find_each, :find_one, :find,
           :count, :size, :distinct,
-          :last, :first, :all, :paginate,
+          :last, :first, :all, :to_a,
           :exists?, :exist?, :empty?,
-          :to_a, :remove,
+          :remove,
         ]
       end
     end
