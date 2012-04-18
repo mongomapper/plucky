@@ -41,7 +41,7 @@ class PluckyTest < Test::Unit::TestCase
           :last, :first, :all, :to_a,
           :exists?, :exist?, :empty?,
           :remove,
-        ]
+        ].sort_by(&:to_s)
       end
     end
   end
