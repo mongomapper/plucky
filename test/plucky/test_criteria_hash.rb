@@ -260,11 +260,16 @@ class CriteriaHashTest < Test::Unit::TestCase
       setup do
         @id1      = BSON::ObjectId.new
         @id2      = BSON::ObjectId.new
-        @criteria = CriteriaHash.new({:_id => {'$in' => [@id1.to_s, @id2.to_s]}}, :object_ids => [:_id])
+        @ids      = [@id1.to_s, @id2.to_s]
+        @criteria = CriteriaHash.new({:_id => {'$in' => @ids}}, :object_ids => [:_id])
       end
 
       should "convert strings to object ids" do
         @criteria[:_id].should == {'$in' => [@id1, @id2]}
+      end
+
+      should "not modify original array of string ids" do
+        @ids.should == [@id1.to_s, @id2.to_s]
       end
     end
 
