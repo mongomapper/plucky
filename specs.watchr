@@ -41,6 +41,8 @@ watch('test/helper\.rb')  { system('clear'); run_all_tests }
 watch('test/.*test_.*\.rb') { |m| system('clear'); run_test_file(m[0]) }
 watch('lib/.*')             { |m| related_test_files(m[0]).each { |file| run_test_file(file) } }
 
+watch('examples/.*\.rb') { |m| system('clear'); run "bundle exec ruby #{m[0]}" }
+
 # Ctrl-\
 Signal.trap('QUIT') do
   puts " --- Running all tests ---\n\n"
