@@ -1,8 +1,7 @@
 require 'rubygems'
-gem 'jnunemaker-matchy', '~> 0.4.0'
-gem 'log_buddy'
-gem 'shoulda',           '~> 2.11'
-gem 'mocha',             '~> 0.9.8'
+require 'bundler'
+
+Bundler.require(:default, :test)
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 require 'plucky'
@@ -11,11 +10,6 @@ require 'fileutils'
 require 'logger'
 require 'pp'
 require 'set'
-
-require 'log_buddy'
-require 'shoulda'
-require 'matchy'
-require 'mocha'
 
 log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir)
