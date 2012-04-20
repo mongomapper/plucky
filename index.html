@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Plucky by jnunemaker</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Plucky</h1>
+        <p>Thin layer over the ruby driver that allows you to quickly grab hold of your data.</p>
+        <p class="view"><a href="https://github.com/jnunemaker/plucky">View the Project on GitHub <small>jnunemaker/plucky</small></a></p>
+        <ul>
+          <li><a href="https://github.com/jnunemaker/plucky/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/jnunemaker/plucky/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/jnunemaker/plucky">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>Install</h2>
+
+<pre><code>gem install plucky
+</code></pre>
+
+<h2>Examples</h2>
+
+<div class="highlight">
+<pre><span class="n">connection</span> <span class="o">=</span> <span class="no">Mongo</span><span class="o">::</span><span class="no">Connection</span><span class="o">.</span><span class="n">new</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">db</span><span class="p">(</span><span class="s1">'test'</span><span class="p">)</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">[</span><span class="s1">'users'</span><span class="o">]</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">remove</span> <span class="c1"># clear out the collection</span>
+
+<span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">({</span><span class="s1">'_id'</span> <span class="o">=&gt;</span> <span class="s1">'chris'</span><span class="p">,</span> <span class="s1">'age'</span> <span class="o">=&gt;</span> <span class="mi">26</span><span class="p">,</span> <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'Chris'</span><span class="p">})</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">({</span><span class="s1">'_id'</span> <span class="o">=&gt;</span> <span class="s1">'steve'</span><span class="p">,</span> <span class="s1">'age'</span> <span class="o">=&gt;</span> <span class="mi">29</span><span class="p">,</span> <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'Steve'</span><span class="p">})</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">({</span><span class="s1">'_id'</span> <span class="o">=&gt;</span> <span class="s1">'john'</span><span class="p">,</span>  <span class="s1">'age'</span> <span class="o">=&gt;</span> <span class="mi">28</span><span class="p">,</span> <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">})</span>
+
+<span class="c1"># initialize query with collection</span>
+<span class="n">query</span> <span class="o">=</span> <span class="no">Plucky</span><span class="o">::</span><span class="no">Query</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s1">'Querying'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span><span class="o">.</span><span class="n">all</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s1">'Find by _id'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'chris'</span><span class="p">)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'chris'</span><span class="p">,</span> <span class="s1">'steve'</span><span class="p">)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="o">[</span><span class="s1">'chris'</span><span class="p">,</span> <span class="s1">'steve'</span><span class="o">]</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="s1">'Sort'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">all</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="o">.</span><span class="n">asc</span><span class="p">)</span><span class="o">.</span><span class="n">all</span> <span class="c1"># same as above</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span><span class="o">.</span><span class="n">all</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">last</span> <span class="c1"># steve</span>
+
+<span class="nb">puts</span> <span class="s1">'Counting'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span> <span class="c1"># 3</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">size</span> <span class="c1"># 3</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span>       <span class="c1"># 1</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span><span class="o">.</span><span class="n">count</span> <span class="c1"># 1</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># 1</span>
+
+<span class="nb">puts</span> <span class="s1">'Distinct'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span> <span class="c1"># [26, 29, 28]</span>
+
+<span class="nb">puts</span> <span class="s1">'Select only certain fields'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'chris'</span><span class="p">)</span>   <span class="c1"># {"_id"=&gt;"chris", "age"=&gt;26}</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'chris'</span><span class="p">)</span>     <span class="c1"># {"_id"=&gt;"chris", "age"=&gt;26}</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">ignore</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'chris'</span><span class="p">)</span>  <span class="c1"># {"_id"=&gt;"chris", "age"=&gt;26}</span>
+
+<span class="nb">puts</span> <span class="s1">'Pagination, yeah we got that'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:per_page</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">:page</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">per_page</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="ss">:page</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>           <span class="c1"># [chris, john]</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>   <span class="c1"># [john, steve]</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span> <span class="c1"># [john, steve]</span>
+
+<span class="nb">puts</span> <span class="s1">'Using a cursor'</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">find_each</span><span class="p">(</span><span class="ss">:sort</span> <span class="o">=&gt;</span> <span class="ss">:age</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">doc</span><span class="o">|</span>
+  <span class="n">pp</span> <span class="n">doc</span>
+<span class="k">end</span>
+<span class="n">pp</span> <span class="n">cursor</span>
+
+<span class="nb">puts</span> <span class="s1">'Symbol Operators'</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:age</span><span class="o">.</span><span class="n">gt</span> <span class="o">=&gt;</span> <span class="mi">28</span><span class="p">)</span><span class="o">.</span><span class="n">count</span>       <span class="c1"># 1 (steve)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:age</span><span class="o">.</span><span class="n">lt</span> <span class="o">=&gt;</span> <span class="mi">28</span><span class="p">)</span><span class="o">.</span><span class="n">count</span>       <span class="c1"># 1 (chris)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:age</span><span class="o">.</span><span class="n">in</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">26</span><span class="p">,</span> <span class="mi">28</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [chris, john]</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:age</span><span class="o">.</span><span class="n">nin</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">26</span><span class="p">,</span> <span class="mi">28</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [steve]</span>
+
+<span class="nb">puts</span> <span class="s1">'Removing'</span>
+<span class="n">query</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">)</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span> <span class="c1"># 2</span>
+<span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'Chris'</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span> <span class="c1"># 1</span>
+<span class="n">query</span><span class="o">.</span><span class="n">remove</span>
+<span class="n">pp</span> <span class="n">query</span><span class="o">.</span><span class="n">count</span> <span class="c1"># 0</span>
+</pre>
+</div>
+
+
+<h2>Help</h2>
+
+<p><a href="https://groups.google.com/forum/#!forum/mongomapper">https://groups.google.com/forum/#!forum/mongomapper</a></p>
+
+<h2>Contributing</h2>
+
+<ul>
+<li>Fork the project.</li>
+<li>Make your feature addition or bug fix.</li>
+<li>Add tests for it. This is important so I don't break it in a future version unintentionally.</li>
+<li>Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)</li>
+<li>Send me a pull request. Bonus points for topic branches.</li>
+</ul><h2>Copyright</h2>
+
+<p>Copyright (c) 2010 John Nunemaker. See LICENSE for details.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/jnunemaker">jnunemaker</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
