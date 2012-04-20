@@ -210,6 +210,28 @@ module Plucky
       collection.find(criteria.to_hash, options.to_hash).explain
     end
 
+    def group(*args)
+      options = args.last.is_a?(Hash) ? args.pop : {} # basically extract_options!
+
+      reducer   = options.delete(:reducer)   || "function(obj, sum){ sum.results.push(obj); }"
+      initial   = options.delete(:initial)   || {:results => []}
+      finalizer = options.delete(:finalizer)
+      transform = options.delete(:transform) || Proc.new do |results|
+                                                  BSON::OrderedHash.new.tap do |hash|
+                                                    results.each do |result_hash| 
+                                                      key = args.collect {|key| result_hash[key.to_s] }
+                                                      key = key.first if key.size == 1
+
+                                                      hash[key] = result_hash['results']
+                                                    end
+                                                  end
+                                                end
+
+      query = clone.update(options)
+      results = query.collection.group(args, query.criteria.to_hash, initial, reducer, finalizer)
+      transform.call(results)
+    end
+
     def inspect
       as_nice_string = to_hash.collect do |key, value|
         " #{key}: #{value.inspect}"
