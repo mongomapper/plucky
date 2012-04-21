@@ -121,13 +121,14 @@ module Plucky
       def normalized_value(parent_key, key, value)
         case value
           when Array, Set
-            if object_id?(parent_key)
-              value.map { |v| Plucky.to_object_id(v) }
-            elsif NestingOperators.include?(key)
+            value = value.map { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
+            if NestingOperators.include?(key)
               value.map  { |v| CriteriaHash.new(v, options).to_hash }
             elsif parent_key == key
+              # we're not nested and not the value for a symbol operator
               {'$in' => value.to_a}
             else
+              # we are a value for a symbol operator or nested hash
               value.to_a
             end
           when Time

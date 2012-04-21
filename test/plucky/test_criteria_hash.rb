@@ -208,6 +208,10 @@ class CriteriaHashTest < Test::Unit::TestCase
       should "not turn value to $in with $nor key" do
         CriteriaHash.new(:$nor => [{:numbers => 1}, {:numbers => 2}] )[:$nor].should == [{:numbers=>1}, {:numbers=>2}]
       end
+
+      should "default to $in even with ObjectId keys" do
+        CriteriaHash.new({:mistake_id => [1,2,3]}, :object_ids => [:mistake_id])[:mistake_id].should == {'$in' => [1,2,3]}
+      end
     end
 
     context "with set value" do
