@@ -55,7 +55,11 @@ module Plucky
 
             if value_is_hash && other_is_hash
               value.update(other_value) do |key, old_value, new_value|
-                Array(old_value).concat(Array(new_value)).uniq
+                if old_value.is_a?(Hash) && new_value.is_a?(Hash)
+                  self.class.new(old_value).merge(self.class.new(new_value)).to_hash
+                else
+                  Array(old_value).concat(Array(new_value)).uniq
+                end
               end
             elsif value_is_hash && !other_is_hash
               if modifier_key = value.keys.detect { |k| k.to_s[0, 1] == '$' }

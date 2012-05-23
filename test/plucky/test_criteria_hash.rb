@@ -309,6 +309,12 @@ class CriteriaHashTest < Test::Unit::TestCase
         c1.merge(c2).should == CriteriaHash.new('$in' => [1, 2, 3])
       end
 
+      should "be able to merge two modifier hashes with hash values" do
+        c1 = CriteriaHash.new(:arr => {'$elemMatch' => {:foo => 'bar'}})
+        c2 = CriteriaHash.new(:arr => {'$elemMatch' => {:omg => 'ponies'}})
+        c1.merge(c2).should == CriteriaHash.new(:arr => {'$elemMatch' => {:foo => 'bar', :omg => 'ponies'}})
+      end
+
       should "merge matching keys with a single modifier" do
         c1 = CriteriaHash.new(:foo => {'$in' => [1, 2, 3]})
         c2 = CriteriaHash.new(:foo => {'$in' => [1, 4, 5]})
