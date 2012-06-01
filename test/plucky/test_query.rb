@@ -561,6 +561,10 @@ class QueryTest < Test::Unit::TestCase
       should "work" do
         subject.where(:age.lt => 29).where(:name => 'Chris').all.should == [@chris]
       end
+      
+      should "work with literal regexp" do
+        subject.where(:name => /^c/i).all.should == [@chris]
+      end
 
       should "work with literal regexp" do
         subject.where(:name => /^c/i).all.should == [@chris]
