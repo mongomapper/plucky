@@ -100,7 +100,9 @@ module Plucky
       end
 
       def count(opts={})
-        find_each(opts).count
+        query = clone.amend(opts)
+        cursor = query.collection.find(query.criteria.to_hash, query.options.to_hash)
+        cursor.count
       end
 
       def size
