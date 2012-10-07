@@ -55,8 +55,7 @@ module Plucky
       }
 
       def normalized_key(key)
-        NormalizedKeys.default = key
-        NormalizedKeys[key.to_sym]
+        NormalizedKeys[key.to_sym] || key
       end
 
       def normalized_value(key, value)
