@@ -7,3 +7,4 @@ rvm:
 notifications:
   email: false
 bundler_args: --without debug
+services: mongodb
