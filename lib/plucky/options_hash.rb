@@ -1,6 +1,14 @@
 # encoding: UTF-8
 module Plucky
   class OptionsHash
+
+    NormalizedKeys = {
+      :order  => :sort,
+      :select => :fields,
+      :offset => :skip,
+      :id     => :_id,
+    }
+
     attr_reader :source
 
     def initialize(hash={})
@@ -46,13 +54,6 @@ module Plucky
       def method_missing(method, *args, &block)
         @source.send(method, *args, &block)
       end
-
-      NormalizedKeys = {
-        :order  => :sort,
-        :select => :fields,
-        :offset => :skip,
-        :id     => :_id,
-      }
 
       def normalized_key(key)
         NormalizedKeys.fetch key.to_sym, key
