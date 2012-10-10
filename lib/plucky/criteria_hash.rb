@@ -14,6 +14,8 @@ module Plucky
     # criteria hash is simple.
     SimpleQueryMaxSize = [SimpleIdQueryKeys.size, SimpleIdAndTypeQueryKeys.size].max
 
+    # Internal: Used by normalized_value to determine if we need to run the
+    # value through another criteria hash to normalize it.
     NestingOperators = [:$or, :$and, :$nor]
 
     def initialize(hash={}, options={})
@@ -138,7 +140,7 @@ module Plucky
         case value
           when Array, Set
             value = value.map { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
-            if NestingOperators.include?(key)
+            if nesting_operator?(key)
               value.map  { |v| CriteriaHash.new(v, options).to_hash }
             elsif parent_key == key
               # we're not nested and not the value for a symbol operator
@@ -160,6 +162,10 @@ module Plucky
           else
             value
         end
+      end
+
+      def nesting_operator?(key)
+        NestingOperators.include?(key)
       end
   end
 end
