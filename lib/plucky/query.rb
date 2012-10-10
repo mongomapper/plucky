@@ -10,8 +10,9 @@ module Plucky
     OptionKeys = Set[
       :select, :offset, :order,                         # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
-      :batch_size, :timeout, :transformer,              # Ruby Driver
-      :max_scan, :show_disk_loc, :return_key,           # Ruby Driver
+      :batch_size, :timeout, :max_scan, :return_key,    # Ruby Driver
+      :transformer, :show_disk_loc, :comment, :read,    # Ruby Driver
+      :tag_sets, :acceptable_latency,                   # Ruby Driver
     ]
 
     attr_reader    :criteria, :options, :collection
