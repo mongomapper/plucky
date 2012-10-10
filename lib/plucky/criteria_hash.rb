@@ -3,6 +3,17 @@ module Plucky
   class CriteriaHash
     attr_reader :source, :options
 
+    # Internal: Used to determine if criteria keys match simple id lookup.
+    SimpleIdQueryKeys = [:_id]
+
+    # Internal: Used to determine if criteria keys match simple id and type
+    # lookup (for single collection inheritance).
+    SimpleIdAndTypeQueryKeys = [:_id, :_type]
+
+    # Internal: Used to quickly check if it is possible that the
+    # criteria hash is simple.
+    SimpleQueryMaxSize = [SimpleIdQueryKeys.size, SimpleIdAndTypeQueryKeys.size].max
+
     NestingOperators = [:$or, :$and, :$nor]
 
     def initialize(hash={}, options={})
@@ -102,8 +113,9 @@ module Plucky
     # If this is the case, you can use IdentityMap in library to not perform
     # query and instead just return from map.
     def simple?
-      key_set = keys.to_set
-      key_set == [:_id].to_set || key_set == [:_id, :_type].to_set
+      return false if keys.size > SimpleQueryMaxSize
+      sorted_keys = keys.sort
+      sorted_keys == SimpleIdQueryKeys || sorted_keys == SimpleIdAndTypeQueryKeys
     end
 
     private

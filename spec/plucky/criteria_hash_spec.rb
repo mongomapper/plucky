@@ -348,6 +348,11 @@ describe Plucky::CriteriaHash do
 
     it "returns true if only filtering by Sci" do
       described_class.new(:_id => 'id', :_type => 'Foo').should be_simple
+      described_class.new(:_type => 'Foo', :_id => 'id').should be_simple # reverse order
+    end
+
+    it "returns false if querying by more than max number of simple keys" do
+      described_class.new(:one => 1, :two => 2, :three => 3).should_not be_simple
     end
 
     it "returns false if querying by anthing other than _id/Sci" do
