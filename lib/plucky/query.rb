@@ -64,7 +64,7 @@ module Plucky
 
       def find_each(opts={}, &block)
         query = clone.amend(opts)
-        cursor = query.collection.find(query.criteria.to_hash, query.options.to_hash)
+        cursor = query.cursor
 
         if block_given?
           cursor.each { |doc| yield doc }
@@ -76,7 +76,7 @@ module Plucky
 
       def find_one(opts={})
         query = clone.amend(opts)
-        query.collection.find_one(query.criteria.to_hash, query.options.to_hash)
+        query.collection.find_one(query.criteria_hash, query.options_hash)
       end
 
       def find(*ids)
@@ -109,12 +109,12 @@ module Plucky
 
       def remove(opts={}, driver_opts={})
         query = clone.amend(opts)
-        query.collection.remove(query.criteria.to_hash, driver_opts)
+        query.collection.remove(query.criteria_hash, driver_opts)
       end
 
       def count(opts={})
         query = clone.amend(opts)
-        cursor = query.collection.find(query.criteria.to_hash, query.options.to_hash)
+        cursor = query.cursor
         cursor.count
       end
 
@@ -124,7 +124,7 @@ module Plucky
 
       def distinct(key, opts = {})
         query = clone.amend(opts)
-        query.collection.distinct(key, query.criteria.to_hash)
+        query.collection.distinct(key, query.criteria_hash)
       end
 
       def fields(*args)
@@ -184,7 +184,7 @@ module Plucky
 
     def update(document, driver_opts={})
       query = clone
-      query.collection.update(query.criteria.to_hash, document, driver_opts)
+      query.collection.update(query.criteria_hash, document, driver_opts)
     end
 
     def amend(opts={})
@@ -194,22 +194,14 @@ module Plucky
 
     def [](key)
       key = normalized_key(key)
-
-      if options_key?(key)
-        @options[key]
-      else
-        @criteria[key]
-      end
+      source = hash_for_key(key)
+      source[key]
     end
 
     def []=(key, value)
       key = normalized_key(key)
-
-      if options_key?(key)
-        @options[key] = value
-      else
-        @criteria[key] = value
-      end
+      source = hash_for_key(key)
+      source[key] = value
     end
 
     def merge(other)
@@ -219,11 +211,11 @@ module Plucky
     end
 
     def to_hash
-      criteria.to_hash.merge(options.to_hash)
+      criteria_hash.merge(options_hash)
     end
 
     def explain
-      collection.find(criteria.to_hash, options.to_hash).explain
+      collection.find(criteria_hash, options_hash).explain
     end
 
     def inspect
@@ -233,7 +225,23 @@ module Plucky
       "#<#{self.class}#{as_nice_string}>"
     end
 
+    def criteria_hash
+      criteria.to_hash
+    end
+
+    def options_hash
+      options.to_hash
+    end
+
+    def cursor
+      collection.find(criteria_hash, options_hash)
+    end
+
   private
+
+    def hash_for_key(key)
+      options_key?(key) ? @options : @criteria
+    end
 
     def normalized_key(key)
       if key.respond_to?(:to_sym)
