@@ -306,6 +306,12 @@ describe Plucky::CriteriaHash do
       c1.merge(c2).should == described_class.new('$in' => [1, 2, 3])
     end
 
+    it "is able to merge two modifier hashes with hash values" do
+      c1 = CriteriaHash.new(:arr => {'$elemMatch' => {:foo => 'bar'}})
+      c2 = CriteriaHash.new(:arr => {'$elemMatch' => {:omg => 'ponies'}})
+      c1.merge(c2).should == CriteriaHash.new(:arr => {'$elemMatch' => {:foo => 'bar', :omg => 'ponies'}})
+    end
+
     it "merges matching keys with a single modifier" do
       c1 = described_class.new(:foo => {'$in' => [1, 2, 3]})
       c2 = described_class.new(:foo => {'$in' => [1, 4, 5]})
