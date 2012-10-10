@@ -26,7 +26,7 @@ module Plucky
       query_options.each { |key, value| self[key] = value }
     end
 
-    def initialize_copy(source)
+    def initialize_copy(original)
       super
       @criteria = @criteria.dup
       @options  = @options.dup
