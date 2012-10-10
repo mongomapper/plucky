@@ -1,14 +1,16 @@
 # encoding: UTF-8
+require 'set'
+
 module Plucky
   class CriteriaHash
     attr_reader :source, :options
 
     # Internal: Used to determine if criteria keys match simple id lookup.
-    SimpleIdQueryKeys = [:_id]
+    SimpleIdQueryKeys = [:_id].to_set
 
     # Internal: Used to determine if criteria keys match simple id and type
     # lookup (for single collection inheritance).
-    SimpleIdAndTypeQueryKeys = [:_id, :_type]
+    SimpleIdAndTypeQueryKeys = [:_id, :_type].to_set
 
     # Internal: Used to quickly check if it is possible that the
     # criteria hash is simple.
@@ -116,8 +118,8 @@ module Plucky
     # query and instead just return from map.
     def simple?
       return false if keys.size > SimpleQueryMaxSize
-      sorted_keys = keys.sort
-      sorted_keys == SimpleIdQueryKeys || sorted_keys == SimpleIdAndTypeQueryKeys
+      key_set = keys.to_set
+      key_set == SimpleIdQueryKeys || key_set == SimpleIdAndTypeQueryKeys
     end
 
     private
