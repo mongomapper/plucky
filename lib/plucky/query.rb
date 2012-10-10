@@ -1,11 +1,13 @@
 # encoding: UTF-8
+require 'set'
 require 'forwardable'
+
 module Plucky
   class Query
     include Enumerable
     extend  Forwardable
 
-    OptionKeys = [
+    OptionKeys = Set[
       :select, :offset, :order,                         # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
       :batch_size, :timeout, :transformer,              # Ruby Driver
