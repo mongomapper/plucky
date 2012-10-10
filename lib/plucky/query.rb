@@ -119,11 +119,11 @@ module Plucky
       end
 
       def ignore(*args)
-        set_fields(args, 0)
+        set_field_inclusion(args, 0)
       end
 
       def only(*args)
-        set_fields(args, 1)
+        set_field_inclusion(args, 1)
       end
 
       def limit(count=nil)
@@ -220,10 +220,11 @@ module Plucky
     end
 
   private
-    def set_fields(field_list, value)
-      the_fields = {}
-      field_list.each {|field| the_fields[field.to_sym] = value}
-      clone.tap { |query| query.options[:fields] =  the_fields}
+
+    def set_field_inclusion(fields, value)
+      fields_option = {}
+      fields.each { |field| fields_option[field.to_sym] = value }
+      clone.tap { |query| query.options[:fields] = fields_option }
     end
   end
 end
