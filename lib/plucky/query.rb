@@ -13,6 +13,7 @@ module Plucky
     ]
 
     attr_reader    :criteria, :options, :collection
+
     def_delegator  :criteria, :simple?
     def_delegator  :options,  :fields?
     def_delegators :to_a, :include?
@@ -48,19 +49,25 @@ module Plucky
         limit     = opts.delete(:per_page) || per_page
         query     = clone.amend(opts)
         paginator = Pagination::Paginator.new(query.count, page, limit)
-        query.amend(:limit => paginator.limit, :skip => paginator.skip).all.tap do |docs|
-          docs.extend(Pagination::Decorator)
-          docs.paginator(paginator)
-        end
+        docs      = query.amend({
+          :limit => paginator.limit,
+          :skip  => paginator.skip,
+        }).all
+
+        docs.extend(Pagination::Decorator)
+        docs.paginator(paginator)
+        docs
       end
 
       def find_each(opts={}, &block)
         query = clone.amend(opts)
         cursor = query.collection.find(query.criteria.to_hash, query.options.to_hash)
+
         if block_given?
           cursor.each { |doc| yield doc }
           cursor.rewind!
         end
+
         cursor
       end
 
@@ -71,7 +78,10 @@ module Plucky
 
       def find(*ids)
         return nil if ids.empty?
-        if ids.size == 1 && !ids[0].is_a?(Array)
+
+        single_id_find = ids.size == 1 && !ids[0].is_a?(Array)
+
+        if single_id_find
           first(:_id => ids[0])
         else
           all(:_id => ids.flatten)
@@ -132,9 +142,10 @@ module Plucky
 
       def reverse
         clone.tap do |query|
-          query[:sort] = query[:sort].map do |s|
-            [s[0], -s[1]]
-          end unless query.options[:sort].nil?
+          sort = query[:sort]
+          unless sort.nil?
+            query.options[:sort] = sort.map { |s| [s[0], -s[1]] }
+          end
         end
       end
 
@@ -149,9 +160,7 @@ module Plucky
       alias order sort
 
       def where(hash={})
-        clone.tap do |query|
-          query.criteria.merge!(CriteriaHash.new(hash))
-        end
+        clone.tap { |query| query.criteria.merge!(CriteriaHash.new(hash)) }
       end
       alias filter where
 
@@ -182,6 +191,7 @@ module Plucky
 
     def [](key)
       key = key.to_sym if key.respond_to?(:to_sym)
+
       if OptionKeys.include?(key)
         @options[key]
       else
@@ -191,6 +201,7 @@ module Plucky
 
     def []=(key, value)
       key = key.to_sym if key.respond_to?(:to_sym)
+
       if OptionKeys.include?(key)
         @options[key] = value
       else
