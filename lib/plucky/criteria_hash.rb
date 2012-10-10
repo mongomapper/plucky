@@ -139,7 +139,10 @@ module Plucky
       def normalized_value(parent_key, key, value)
         case value
           when Array, Set
-            value = value.map { |v| Plucky.to_object_id(v) } if object_id?(parent_key)
+            if object_id?(parent_key)
+              value = value.map { |v| Plucky.to_object_id(v) }
+            end
+
             if nesting_operator?(key)
               value.map  { |v| CriteriaHash.new(v, options).to_hash }
             elsif parent_key == key
