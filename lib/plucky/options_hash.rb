@@ -66,7 +66,7 @@ module Plucky
           when :sort
             normalized_sort(value)
           when :limit, :skip
-            value.nil? ? nil : value.to_i
+            normalized_integer(value)
           else
             value
         end
@@ -101,6 +101,10 @@ module Plucky
           else
             normalized_sort_piece(value)
         end
+      end
+
+      def normalized_integer(value)
+        value.nil? ? nil : value.to_i
       end
 
       def normalized_sort_piece(value)
