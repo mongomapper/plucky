@@ -192,9 +192,9 @@ module Plucky
     end
 
     def [](key)
-      key = key.to_sym if key.respond_to?(:to_sym)
+      key = normalized_key(key)
 
-      if OptionKeys.include?(key)
+      if options_key?(key)
         @options[key]
       else
         @criteria[key]
@@ -202,9 +202,9 @@ module Plucky
     end
 
     def []=(key, value)
-      key = key.to_sym if key.respond_to?(:to_sym)
+      key = normalized_key(key)
 
-      if OptionKeys.include?(key)
+      if options_key?(key)
         @options[key] = value
       else
         @criteria[key] = value
@@ -234,9 +234,21 @@ module Plucky
 
   private
 
+    def normalized_key(key)
+      if key.respond_to?(:to_sym)
+        key.to_sym
+      else
+        key
+      end
+    end
+
+    def options_key?(key)
+      OptionKeys.include?(key)
+    end
+
     def set_field_inclusion(fields, value)
       fields_option = {}
-      fields.each { |field| fields_option[field.to_sym] = value }
+      fields.each { |field| fields_option[normalized_key(field)] = value }
       clone.tap { |query| query.options[:fields] = fields_option }
     end
   end
