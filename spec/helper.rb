@@ -28,10 +28,15 @@ module OrderedHashHelpers
   end
 end
 
-RSpec.configure do |c|
-  c.include OrderedHashHelpers
+RSpec.configure do |config|
+  config.filter_run :focused => true
+  config.alias_example_to :fit, :focused => true
+  config.alias_example_to :xit, :pending => true
+  config.run_all_when_everything_filtered = true
 
-  c.before(:each) do
+  config.include OrderedHashHelpers
+
+  config.before(:each) do
     DB.collections.map do |collection|
       collection.remove
       collection.drop_indexes
