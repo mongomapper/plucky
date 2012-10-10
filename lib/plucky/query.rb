@@ -20,9 +20,9 @@ module Plucky
     def_delegator  :options,  :fields?
     def_delegators :to_a, :include?
 
-    def initialize(collection, opts={})
+    def initialize(collection, query_options = {})
       @collection, @options, @criteria = collection, OptionsHash.new, CriteriaHash.new
-      opts.each { |key, value| self[key] = value }
+      query_options.each { |key, value| self[key] = value }
     end
 
     def initialize_copy(source)
