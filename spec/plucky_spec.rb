@@ -28,6 +28,28 @@ describe Plucky do
     end
   end
 
+  describe ".modifier?" do
+    context "with a string" do
+      it "returns true if modifier" do
+        Plucky.modifier?('$in').should be_true
+      end
+
+      it "returns false if not modifier" do
+        Plucky.modifier?('nope').should be_false
+      end
+    end
+
+    context "with a symbol" do
+      it "returns true if modifier" do
+        Plucky.modifier?(:$in).should be_true
+      end
+
+      it "returns false if not modifier" do
+        Plucky.modifier?(:nope).should be_false
+      end
+    end
+  end
+
   describe "::Methods" do
     it "returns array of methods" do
       Plucky::Methods.should == [
