@@ -9,12 +9,6 @@ describe Plucky::CriteriaHash do
     criteria.keys.to_set.should == [:baz, :foo].to_set
   end
 
-  SymbolOperators.each do |operator|
-    it "works with #{operator} symbol operator" do
-      described_class.new(:age.send(operator) => 21)[:age].should == {"$#{operator}" => 21}
-    end
-  end
-
   it "handles multiple symbol operators on the same field" do
     described_class.new(:age.gt => 12, :age.lt => 20)[:age].should == {
       '$gt' => 12, '$lt' => 20
@@ -64,40 +58,11 @@ describe Plucky::CriteriaHash do
   end
 
   context "#[]=" do
-    it "converts :id to :_id" do
-      criteria = described_class.new
-      criteria[:id] = 1
-      criteria[:_id].should == 1
-      criteria[:id].should be_nil
-    end
-
-    it "works with symbol operators" do
-      criteria = described_class.new
-      criteria[:_id.in] = ['foo']
-      criteria[:_id].should == {'$in' => ['foo']}
-    end
-
     it "sets each of the conditions pairs" do
       criteria = described_class.new
       criteria[:conditions] = {:_id => 'john', :foo => 'bar'}
       criteria[:_id].should == 'john'
       criteria[:foo].should == 'bar'
-    end
-  end
-
-  context "with id key" do
-    it "converts to _id" do
-      id = BSON::ObjectId.new
-      criteria = described_class.new(:id => id)
-      criteria[:_id].should == id
-      criteria[:id].should be_nil
-    end
-
-    it "converts id with symbol operator to _id with modifier" do
-      id = BSON::ObjectId.new
-      criteria = described_class.new(:id.ne => id)
-      criteria[:_id].should == {'$ne' => id}
-      criteria[:id].should be_nil
     end
   end
 

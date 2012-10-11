@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require 'set'
 require 'plucky/normalizers/criteria_hash_value'
+require 'plucky/normalizers/criteria_hash_key'
 
 module Plucky
   class CriteriaHash
@@ -33,6 +34,7 @@ module Plucky
 
     def []=(key, value)
       normalized_key = normalized_key(key)
+
       if key.is_a?(SymbolOperator)
         operator = "$#{key.operator}"
         normalized_value = normalized_value(normalized_key, operator, value)
@@ -128,10 +130,13 @@ module Plucky
     end
 
     def normalized_key(key)
-      key = key.to_sym                 if key.respond_to?(:to_sym)
-      return normalized_key(key.field) if key.respond_to?(:field)
-      return :_id                      if key == :id
-      key
+      key_normalizer.call(key)
+    end
+
+    def key_normalizer
+      @key_normalizer ||= options.fetch(:key_normalizer) {
+        Normalizers::CriteriaHashKey.new
+      }
     end
 
     def normalized_value(parent_key, key, value)
