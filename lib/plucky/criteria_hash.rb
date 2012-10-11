@@ -27,9 +27,13 @@ module Plucky
       super
       @options = @options.dup
       @source  = @source.dup
-      each do |key, value|
+      @source.each do |key, value|
         self[key] = value.clone if value.duplicable?
       end
+    end
+
+    def [](key)
+      @source[key]
     end
 
     def []=(key, value)
@@ -38,28 +42,32 @@ module Plucky
       if key.is_a?(SymbolOperator)
         operator = :"$#{key.operator}"
         normalized_value = normalized_value(normalized_key, operator, value)
-        source[normalized_key] ||= {}
-        source[normalized_key][operator] = normalized_value
+        @source[normalized_key] ||= {}
+        @source[normalized_key][operator] = normalized_value
       else
         if key == :conditions
           value.each { |k, v| self[k] = v }
         else
           normalized_value = normalized_value(normalized_key, normalized_key, value)
-          source[normalized_key] = normalized_value
+          @source[normalized_key] = normalized_value
         end
       end
     end
 
+    def keys
+      @source.keys
+    end
+
     def ==(other)
-      source == other.source
+      @source == other.source
     end
 
     def to_hash
-      source
+      @source
     end
 
     def merge(other)
-      target = source.dup
+      target = @source.dup
       other.source.each_key do |key|
         value, other_value = target[key], other[key]
         target[key] =
@@ -122,10 +130,6 @@ module Plucky
       key_set == SimpleIdQueryKeys || key_set == SimpleIdAndTypeQueryKeys
     end
 
-    def method_missing(method, *args, &block)
-      @source.send(method, *args, &block)
-    end
-
     def object_id?(key)
       object_ids.include?(key.to_sym)
     end
@@ -135,7 +139,7 @@ module Plucky
     end
 
     def key_normalizer
-      @key_normalizer ||= options.fetch(:key_normalizer) {
+      @key_normalizer ||= @options.fetch(:key_normalizer) {
         Normalizers::CriteriaHashKey.new
       }
     end
@@ -145,7 +149,7 @@ module Plucky
     end
 
     def value_normalizer
-      @value_normalizer ||= options.fetch(:value_normalizer) {
+      @value_normalizer ||= @options.fetch(:value_normalizer) {
         Normalizers::CriteriaHashValue.new(self)
       }
     end

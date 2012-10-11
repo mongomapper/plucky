@@ -1,14 +1,6 @@
 require 'helper'
 
 describe Plucky::CriteriaHash do
-  it "delegates missing methods to the source hash" do
-    hash = {:baz => 'wick', :foo => 'bar'}
-    criteria = described_class.new(hash)
-    criteria[:foo].should == 'bar'
-    criteria[:baz].should == 'wick'
-    criteria.keys.to_set.should == [:baz, :foo].to_set
-  end
-
   context "#initialize_copy" do
     before do
       @original = described_class.new({
