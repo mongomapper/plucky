@@ -76,13 +76,13 @@ module Plucky
                 end
               end
             elsif value_is_hash && !other_is_hash
-              if modifier_key = value.keys.detect { |k| k.to_s[0, 1] == '$' }
+              if modifier_key = value.keys.detect { |k| Plucky.modifier?(k) }
                 value[modifier_key].concat(Array(other_value)).uniq!
               else
                 # kaboom! Array(value).concat(Array(other_value)).uniq
               end
             elsif other_is_hash && !value_is_hash
-              if modifier_key = other_value.keys.detect { |k| k.to_s[0, 1] == '$' }
+              if modifier_key = other_value.keys.detect { |k| Plucky.modifier?(k) }
                 other_value[modifier_key].concat(Array(value)).uniq!
               else
                 # kaboom! Array(value).concat(Array(other_value)).uniq
