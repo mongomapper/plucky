@@ -1,18 +1,15 @@
 # encoding: UTF-8
+
+require 'plucky/normalizers/options_hash_key'
+
 module Plucky
   class OptionsHash
 
-    NormalizedKeys = {
-      :order  => :sort,
-      :select => :fields,
-      :offset => :skip,
-      :id     => :_id,
-    }
+    attr_reader :source, :options
 
-    attr_reader :source
-
-    def initialize(hash={})
+    def initialize(hash={}, options={})
       @source = {}
+      @options = options
       hash.each { |key, value| self[key] = value }
     end
 
@@ -50,13 +47,19 @@ module Plucky
       self
     end
 
+    def key_normalizer
+      @key_normalizer ||= options.fetch(:key_normalizer) {
+        Normalizers::OptionsHashKey.new
+      }
+    end
+
     private
       def method_missing(method, *args, &block)
         @source.send(method, *args, &block)
       end
 
       def normalized_key(key)
-        NormalizedKeys.fetch key.to_sym, key
+        key_normalizer.call(key)
       end
 
       def normalized_value(key, value)

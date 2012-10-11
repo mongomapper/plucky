@@ -36,23 +36,6 @@ describe Plucky::OptionsHash do
   end
 
   describe "#[]=" do
-    it "converts order to sort" do
-      options = described_class.new(:order => :foo)
-      options[:order].should be_nil
-      options[:sort].should == [['foo', 1]]
-    end
-
-    it "converts select to fields" do
-      options = described_class.new(:select => 'foo')
-      options[:select].should be_nil
-      options[:fields].should == ['foo']
-    end
-
-    it "converts offset to skip" do
-      options = described_class.new(:offset => 1)
-      options[:offset].should be_nil
-      options[:skip].should == 1
-    end
 
     context ":fields" do
       before  { @options = described_class.new }
