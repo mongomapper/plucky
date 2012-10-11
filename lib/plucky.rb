@@ -27,6 +27,6 @@ module Plucky
   ModifierString = '$'
 
   def self.modifier?(key)
-    key.to_s[0] == ModifierString
+    key.to_s[0, 1] == ModifierString
   end
 end
