@@ -1,14 +1,6 @@
 require 'helper'
 
 describe Plucky::OptionsHash do
-  it "delegates missing methods to the source hash" do
-    hash = {:limit => 1, :skip => 1}
-    options = described_class.new(hash)
-    options[:skip].should      == 1
-    options[:limit].should     == 1
-    options.keys.to_set.should == [:limit, :skip].to_set
-  end
-
   describe "#initialize_copy" do
     before do
       @original = described_class.new(:fields => {:name => true}, :sort => :name, :limit => 10)

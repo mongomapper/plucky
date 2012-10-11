@@ -17,14 +17,22 @@ module Plucky
     def initialize_copy(source)
       super
       @source = @source.dup
-      each do |key, value|
+      @source.each do |key, value|
         self[key] = value.clone if value.duplicable?
       end
+    end
+
+    def [](key)
+      @source[key]
     end
 
     def []=(key, value)
       key = normalized_key(key)
       source[key] = normalized_value(key, value)
+    end
+
+    def keys
+      @source.keys
     end
 
     def ==(other)
@@ -72,10 +80,6 @@ module Plucky
           :key_normalizer => key_normalizer,
         })
       }
-    end
-
-    def method_missing(method, *args, &block)
-      @source.send(method, *args, &block)
     end
   end
 end
