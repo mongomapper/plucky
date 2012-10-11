@@ -193,13 +193,13 @@ module Plucky
     end
 
     def [](key)
-      key = normalized_key(key)
+      key = symbolized_key(key)
       source = hash_for_key(key)
       source[key]
     end
 
     def []=(key, value)
-      key = normalized_key(key)
+      key = symbolized_key(key)
       source = hash_for_key(key)
       source[key] = value
     end
@@ -243,7 +243,7 @@ module Plucky
       options_key?(key) ? @options : @criteria
     end
 
-    def normalized_key(key)
+    def symbolized_key(key)
       if key.respond_to?(:to_sym)
         key.to_sym
       else
@@ -257,7 +257,7 @@ module Plucky
 
     def set_field_inclusion(fields, value)
       fields_option = {}
-      fields.each { |field| fields_option[normalized_key(field)] = value }
+      fields.each { |field| fields_option[symbolized_key(field)] = value }
       clone.tap { |query| query.options[:fields] = fields_option }
     end
   end
