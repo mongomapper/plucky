@@ -6,8 +6,13 @@ require 'plucky/normalizers/options_hash_value'
 module Plucky
   class OptionsHash
 
-    attr_reader :source, :options
+    # Private: The Hash that stores the query options
+    attr_reader :source
 
+    # Private: The Hash that stores instance options
+    attr_reader :options
+
+    # Public
     def initialize(hash={}, options={})
       @source = {}
       @options = options
@@ -22,35 +27,43 @@ module Plucky
       end
     end
 
+    # Public
     def [](key)
       @source[key]
     end
 
+    # Public
     def []=(key, value)
       key = normalized_key(key)
       @source[key] = normalized_value(key, value)
     end
 
+    # Public
     def keys
       @source.keys
     end
 
+    # Public
     def ==(other)
       @source == other.source
     end
 
+    # Public
     def to_hash
       @source
     end
 
+    # Public
     def fields?
       !self[:fields].nil?
     end
 
+    # Public
     def merge(other)
       self.class.new(to_hash.merge(other.to_hash))
     end
 
+    # Public
     def merge!(other)
       other.to_hash.each { |key, value| self[key] = value }
       self

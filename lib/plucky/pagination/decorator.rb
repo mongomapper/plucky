@@ -8,9 +8,10 @@ module Plucky
                       :total_entries, :total_pages,
                       :current_page,  :per_page,
                       :previous_page, :next_page,
-                      :skip,          :limit, 
+                      :skip,          :limit,
                       :offset,        :out_of_bounds?
 
+      # Public
       def paginator(p=nil)
         return @paginator if p.nil?
         @paginator = p

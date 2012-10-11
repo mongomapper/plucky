@@ -7,6 +7,7 @@ module Plucky
     include Enumerable
     extend  Forwardable
 
+    # Private
     OptionKeys = Set[
       :select, :offset, :order,                         # MM
       :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
@@ -21,6 +22,7 @@ module Plucky
     def_delegator  :@options,  :fields?
     def_delegators :to_a, :include?
 
+    # Public
     def initialize(collection, query_options = {})
       @collection, @options, @criteria = collection, OptionsHash.new, CriteriaHash.new
       query_options.each { |key, value| self[key] = value }
@@ -32,6 +34,7 @@ module Plucky
       @options  = @options.dup
     end
 
+    # Public
     def object_ids(*keys)
       return @criteria.object_ids if keys.empty?
       @criteria.object_ids = *keys
@@ -239,10 +242,12 @@ module Plucky
 
   private
 
+    # Private
     def hash_for_key(key)
       options_key?(key) ? @options : @criteria
     end
 
+    # Private
     def symbolized_key(key)
       if key.respond_to?(:to_sym)
         key.to_sym
@@ -251,10 +256,12 @@ module Plucky
       end
     end
 
+    # Private
     def options_key?(key)
       OptionKeys.include?(key)
     end
 
+    # Private
     def set_field_inclusion(fields, value)
       fields_option = {}
       fields.each { |field| fields_option[symbolized_key(field)] = value }

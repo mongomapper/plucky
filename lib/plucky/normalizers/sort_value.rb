@@ -2,8 +2,16 @@ module Plucky
   module Normalizers
     class SortValue
 
+      # Public: Initializes a Plucky::Normalizers::SortValue
+      #
+      # args - The hash of arguments
+      #        :key_normalizer - What to use to normalize keys, must
+      #                          respond to call.
+      #
       def initialize(args = {})
-        @key_normalizer = args.fetch(:key_normalizer) { raise ArgumentError, "Missing required key :key_normalizer" }
+        @key_normalizer = args.fetch(:key_normalizer) {
+          raise ArgumentError, "Missing required key :key_normalizer"
+        }
       end
 
       # Public: Given a value returns it normalized for Mongo's sort option
