@@ -547,7 +547,7 @@ describe Plucky::Query do
       described_class.new(@collection).
         amend(:foo => 'bar').
         amend(:baz => 'wick').
-        criteria.should == Plucky::CriteriaHash.new(:foo => 'bar', :baz => 'wick')
+        criteria.source.should eq(:foo => 'bar', :baz => 'wick')
     end
   end
 
@@ -567,21 +567,21 @@ describe Plucky::Query do
       subject.
         where(:moo => 'cow').
         where(:foo => 'bar').
-        criteria.should == Plucky::CriteriaHash.new(:foo => 'bar', :moo => 'cow')
+        criteria.source.should eq(:foo => 'bar', :moo => 'cow')
     end
 
     it "gets normalized" do
       subject.
         where(:moo => 'cow').
         where(:foo.in => ['bar']).
-        criteria.should == Plucky::CriteriaHash.new(:moo => 'cow', :foo => {:$in => ['bar']})
+        criteria.source.should eq(:moo => 'cow', :foo => {:$in => ['bar']})
     end
 
     it "normalizes merged criteria" do
       subject.
         where(:foo => 'bar').
         where(:foo => 'baz').
-        criteria.should == Plucky::CriteriaHash.new(:foo => {:$in => %w[bar baz]})
+        criteria.source.should eq(:foo => {:$in => %w[bar baz]})
     end
 
     it "returns new instance of query" do
@@ -729,7 +729,7 @@ describe Plucky::Query do
   context "Criteria/option auto-detection" do
     it "knows :conditions are criteria" do
       query = described_class.new(@collection, :conditions => {:foo => 'bar'})
-      query.criteria.should == Plucky::CriteriaHash.new(:foo => 'bar')
+      query.criteria.source.should eq(:foo => 'bar')
       query.options.keys.should_not include(:conditions)
     end
 
@@ -779,8 +779,8 @@ describe Plucky::Query do
         :limit  => 10,
         :skip   => 10,
       })
-      query.criteria.should == Plucky::CriteriaHash.new(:foo => 'bar', :baz => true)
-      query.options.should == Plucky::OptionsHash.new({
+      query.criteria.source.should eq(:foo => 'bar', :baz => true)
+      query.options.source.should eq({
         :sort   => [['foo', 1]],
         :fields => ['foo', 'baz'],
         :limit  => 10,
