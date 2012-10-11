@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'plucky/normalizers/options_hash_key'
+require 'plucky/normalizers/options_hash_value'
 
 module Plucky
   class OptionsHash
@@ -47,88 +48,34 @@ module Plucky
       self
     end
 
+    # Private
+    def normalized_key(key)
+      key_normalizer.call(key)
+    end
+
+    # Private
+    def normalized_value(key, value)
+      value_normalizer.call(key, value)
+    end
+
+    # Private
     def key_normalizer
-      @key_normalizer ||= options.fetch(:key_normalizer) {
+      @key_normalizer ||= @options.fetch(:key_normalizer) {
         Normalizers::OptionsHashKey.new
       }
     end
 
-    private
-      def method_missing(method, *args, &block)
-        @source.send(method, *args, &block)
-      end
+    # Private
+    def value_normalizer
+      @value_normalizer ||= @options.fetch(:value_normalizer) {
+        Normalizers::OptionsHashValue.new({
+          :key_normalizer => key_normalizer,
+        })
+      }
+    end
 
-      def normalized_key(key)
-        key_normalizer.call(key)
-      end
-
-      def normalized_value(key, value)
-        case key
-          when :fields
-            normalized_fields(value)
-          when :sort
-            normalized_sort(value)
-          when :limit, :skip
-            normalized_integer(value)
-          else
-            value
-        end
-      end
-
-      def normalized_fields(value)
-        return nil if value.respond_to?(:empty?) && value.empty?
-        case value
-          when Array
-            if value.size == 1 && value.first.is_a?(Hash)
-              value.first
-            else
-              value.flatten
-            end
-          when Symbol
-            [value]
-          when String
-            value.split(',').map { |v| v.strip }
-          else
-            value
-        end
-      end
-
-      def normalized_sort(value)
-        case value
-          when Array
-            if value.size == 1 && value[0].is_a?(String)
-              normalized_sort_piece(value[0])
-            else
-              value.compact.map { |v| normalized_sort_piece(v).flatten }
-            end
-          else
-            normalized_sort_piece(value)
-        end
-      end
-
-      def normalized_integer(value)
-        value.nil? ? nil : value.to_i
-      end
-
-      def normalized_sort_piece(value)
-        case value
-          when SymbolOperator
-            [normalized_direction(value.field, value.operator)]
-          when String
-            value.split(',').map do |piece|
-              normalized_direction(*piece.split(' '))
-            end
-          when Symbol
-            [normalized_direction(value)]
-          else
-            value
-        end
-      end
-
-      def normalized_direction(field, direction=nil)
-        direction ||= 'ASC'
-        direction = direction.upcase == 'ASC' ? 1 : -1
-        [normalized_key(field).to_s, direction]
-      end
+    def method_missing(method, *args, &block)
+      @source.send(method, *args, &block)
+    end
   end
 end
