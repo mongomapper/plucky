@@ -23,7 +23,7 @@ module Plucky
       hash.each { |key, value| self[key] = value }
     end
 
-    def initialize_copy(source)
+    def initialize_copy(original)
       super
       @options = @options.dup
       @source  = @source.dup
