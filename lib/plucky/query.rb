@@ -17,8 +17,8 @@ module Plucky
 
     attr_reader    :criteria, :options, :collection
 
-    def_delegator  :criteria, :simple?
-    def_delegator  :options,  :fields?
+    def_delegator  :@criteria, :simple?
+    def_delegator  :@options,  :fields?
     def_delegators :to_a, :include?
 
     def initialize(collection, query_options = {})
@@ -33,8 +33,8 @@ module Plucky
     end
 
     def object_ids(*keys)
-      return criteria.object_ids if keys.empty?
-      criteria.object_ids = *keys
+      return @criteria.object_ids if keys.empty?
+      @criteria.object_ids = *keys
       self
     end
 
@@ -171,8 +171,8 @@ module Plucky
         count.zero?
       end
 
-      def exists?(options={})
-        !count(options).zero?
+      def exists?(query_options={})
+        !count(query_options).zero?
       end
       alias :exist? :exists?
 
@@ -205,8 +205,8 @@ module Plucky
     end
 
     def merge(other)
-      merged_criteria = criteria.merge(other.criteria).to_hash
-      merged_options  = options.merge(other.options).to_hash
+      merged_criteria = @criteria.merge(other.criteria).to_hash
+      merged_options  = @options.merge(other.options).to_hash
       clone.amend(merged_criteria).amend(merged_options)
     end
 
@@ -215,7 +215,7 @@ module Plucky
     end
 
     def explain
-      collection.find(criteria_hash, options_hash).explain
+      @collection.find(criteria_hash, options_hash).explain
     end
 
     def inspect
@@ -226,15 +226,15 @@ module Plucky
     end
 
     def criteria_hash
-      criteria.to_hash
+      @criteria.to_hash
     end
 
     def options_hash
-      options.to_hash
+      @options.to_hash
     end
 
     def cursor
-      collection.find(criteria_hash, options_hash)
+      @collection.find(criteria_hash, options_hash)
     end
 
   private
