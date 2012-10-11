@@ -36,7 +36,7 @@ module Plucky
       normalized_key = normalized_key(key)
 
       if key.is_a?(SymbolOperator)
-        operator = "$#{key.operator}"
+        operator = :"$#{key.operator}"
         normalized_value = normalized_value(normalized_key, operator, value)
         source[normalized_key] ||= {}
         source[normalized_key][operator] = normalized_value

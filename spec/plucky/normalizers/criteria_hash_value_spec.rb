@@ -44,8 +44,14 @@ describe Plucky::Normalizers::CriteriaHashValue do
   context "with an array" do
     it "defaults to $in" do
       actual = [1,2,3]
-      expected = {'$in' => [1,2,3]}
+      expected = {:$in => [1,2,3]}
       subject.call(:foo, :foo, actual).should eq(expected)
+    end
+
+    it "does not double up $in" do
+      actual = [1, 2, 3]
+      expected = [1, 2, 3]
+      subject.call(:$in, :$in, actual).should eq(expected)
     end
 
     it "uses existing modifier if present" do
@@ -78,7 +84,7 @@ describe Plucky::Normalizers::CriteriaHashValue do
 
     it "defaults to $in even with ObjectId keys" do
       actual = [1,2,3]
-      expected = {'$in' => [1,2,3]}
+      expected = {:$in => [1,2,3]}
       criteria_hash.object_ids = [:mistake_id]
       subject.call(:mistake_id, :mistake_id, actual).should eq(expected)
     end
@@ -87,7 +93,7 @@ describe Plucky::Normalizers::CriteriaHashValue do
   context "with a set" do
     it "defaults to $in and convert to array" do
       actual = [1,2,3].to_set
-      expected = {'$in' => [1,2,3]}
+      expected = {:$in => [1,2,3]}
       subject.call(:numbers, :numbers, actual).should eq(expected)
     end
 
@@ -129,13 +135,13 @@ describe Plucky::Normalizers::CriteriaHashValue do
       let(:oids) { [oid1.to_s, oid2.to_s] }
 
       it "converts strings to object ids" do
-        actual = {'$in' => oids}
-        expected = {'$in' => [oid1, oid2]}
+        actual = {:$in => oids}
+        expected = {:$in => [oid1, oid2]}
         subject.call(:_id, :_id, actual).should eq(expected)
       end
 
       it "does not modify original array of string ids" do
-        subject.call(:_id, :_id, {'$in' => oids})
+        subject.call(:_id, :_id, {:$in => oids})
         oids.should == [oid1.to_s, oid2.to_s]
       end
     end
@@ -150,9 +156,9 @@ describe Plucky::Normalizers::CriteriaHashValue do
       context "with #{operator}" do
         it "works with symbol operators" do
           nested1     = {:age.gt   => 12, :age.lt => 20}
-          translated1 = {:age      => {'$gt'  => 12, '$lt'  => 20 }}
+          translated1 = {:age      => {:$gt  => 12, :$lt  => 20 }}
           nested2     = {:type.nin => ['friend', 'enemy']}
-          translated2 = {:type     => {'$nin' => ['friend', 'enemy']}}
+          translated2 = {:type     => {:$nin => ['friend', 'enemy']}}
           value       = [nested1, nested2]
           expected    = [translated1, translated2]
 
@@ -173,9 +179,9 @@ describe Plucky::Normalizers::CriteriaHashValue do
     context "doubly nested" do
       it "works with symbol operators" do
         nested1     = {:age.gt   => 12, :age.lt => 20}
-        translated1 = {:age      => {'$gt' => 12, '$lt' => 20}}
+        translated1 = {:age      => {:$gt => 12, :$lt => 20}}
         nested2     = {:type.nin => ['friend', 'enemy']}
-        translated2 = {:type     => {'$nin' => ['friend', 'enemy']}}
+        translated2 = {:type     => {:$nin => ['friend', 'enemy']}}
         nested3     = {'$and'    => [nested2]}
         translated3 = {:$and     => [translated2]}
         expected    = [translated1, translated3]

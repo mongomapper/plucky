@@ -574,14 +574,14 @@ describe Plucky::Query do
       subject.
         where(:moo => 'cow').
         where(:foo.in => ['bar']).
-        criteria.should == Plucky::CriteriaHash.new(:moo => 'cow', :foo => {'$in' => ['bar']})
+        criteria.should == Plucky::CriteriaHash.new(:moo => 'cow', :foo => {:$in => ['bar']})
     end
 
     it "normalizes merged criteria" do
       subject.
         where(:foo => 'bar').
         where(:foo => 'baz').
-        criteria.should == Plucky::CriteriaHash.new(:foo => {'$in' => %w[bar baz]})
+        criteria.should == Plucky::CriteriaHash.new(:foo => {:$in => %w[bar baz]})
     end
 
     it "returns new instance of query" do
@@ -712,7 +712,7 @@ describe Plucky::Query do
       query2 = described_class.new(@collection, :foo => 'baz', :fent => 'wick')
       new_query = query1.merge(query2)
       new_query.criteria[:fent].should == 'wick'
-      new_query.criteria[:foo].should == {'$in' => %w[bar baz]}
+      new_query.criteria[:foo].should == {:$in => %w[bar baz]}
     end
 
     it "does not affect either of the merged queries" do

@@ -77,7 +77,7 @@ describe Plucky::CriteriaHash do
         criteria = described_class.new
         criteria[:age.gt] = 20
         criteria[:age.lt] = 10
-        criteria.source[:age].should eq({'$gt' => 20, '$lt' => 10})
+        criteria.source[:age].should eq({:$gt => 20, :$lt => 10})
       end
     end
   end
@@ -86,50 +86,50 @@ describe Plucky::CriteriaHash do
     it "works when no keys match" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:baz => 'wick')
-      c1.merge(c2).should == described_class.new(:foo => 'bar', :baz => 'wick')
+      c1.merge(c2).source.should eq(:foo => 'bar', :baz => 'wick')
     end
 
     it "turns matching keys with simple values into array" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => 'baz')
-      c1.merge(c2).should == described_class.new(:foo => {'$in' => %w[bar baz]})
+      c1.merge(c2).source.should eq(:foo => {:$in => %w[bar baz]})
     end
 
     it "uniques matching key values" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => 'bar')
-      c1.merge(c2).should == described_class.new(:foo => {'$in' => %w[bar]})
+      c1.merge(c2).source.should eq(:foo => {:$in => %w[bar]})
     end
 
     it "correctly merges arrays and non-arrays" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => %w[bar baz])
-      c1.merge(c2).should == described_class.new(:foo => {'$in' => %w[bar baz]})
-      c2.merge(c1).should == described_class.new(:foo => {'$in' => %w[bar baz]})
+      c1.merge(c2).source.should eq(:foo => {:$in => %w[bar baz]})
+      c2.merge(c1).source.should eq(:foo => {:$in => %w[bar baz]})
     end
 
     it "is able to merge two modifier hashes" do
-      c1 = described_class.new('$in' => [1, 2])
-      c2 = described_class.new('$in' => [2, 3])
-      c1.merge(c2).should == described_class.new('$in' => [1, 2, 3])
+      c1 = described_class.new(:$in => [1, 2])
+      c2 = described_class.new(:$in => [2, 3])
+      c1.merge(c2).source.should eq(:$in => [1, 2, 3])
     end
 
     it "is able to merge two modifier hashes with hash values" do
-      c1 = described_class.new(:arr => {'$elemMatch' => {:foo => 'bar'}})
-      c2 = described_class.new(:arr => {'$elemMatch' => {:omg => 'ponies'}})
-      c1.merge(c2).should == described_class.new(:arr => {'$elemMatch' => {:foo => 'bar', :omg => 'ponies'}})
+      c1 = described_class.new(:arr => {:$elemMatch => {:foo => 'bar'}})
+      c2 = described_class.new(:arr => {:$elemMatch => {:omg => 'ponies'}})
+      c1.merge(c2).source.should eq(:arr => {:$elemMatch => {:foo => 'bar', :omg => 'ponies'}})
     end
 
     it "merges matching keys with a single modifier" do
-      c1 = described_class.new(:foo => {'$in' => [1, 2, 3]})
-      c2 = described_class.new(:foo => {'$in' => [1, 4, 5]})
-      c1.merge(c2).should == described_class.new(:foo => {'$in' => [1, 2, 3, 4, 5]})
+      c1 = described_class.new(:foo => {:$in => [1, 2, 3]})
+      c2 = described_class.new(:foo => {:$in => [1, 4, 5]})
+      c1.merge(c2).source.should eq(:foo => {:$in => [1, 2, 3, 4, 5]})
     end
 
     it "merges matching keys with multiple modifiers" do
-      c1 = described_class.new(:foo => {'$in' => [1, 2, 3]})
-      c2 = described_class.new(:foo => {'$all' => [1, 4, 5]})
-      c1.merge(c2).should == described_class.new(:foo => {'$in' => [1, 2, 3], '$all' => [1, 4, 5]})
+      c1 = described_class.new(:foo => {:$in => [1, 2, 3]})
+      c2 = described_class.new(:foo => {:$all => [1, 4, 5]})
+      c1.merge(c2).source.should eq(:foo => {:$in => [1, 2, 3], :$all => [1, 4, 5]})
     end
 
     it "does not update mergee" do
@@ -141,11 +141,11 @@ describe Plucky::CriteriaHash do
   end
 
   context "#merge!" do
-    it "merges and replace" do
+    it "updates mergee" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => 'baz')
       c1.merge!(c2)
-      c1[:foo].should == {'$in' => ['bar', 'baz']}
+      c1[:foo].should == {:$in => ['bar', 'baz']}
     end
   end
 
