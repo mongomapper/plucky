@@ -58,11 +58,33 @@ describe Plucky::CriteriaHash do
   end
 
   context "#[]=" do
-    it "sets each of the conditions pairs" do
-      criteria = described_class.new
-      criteria[:conditions] = {:_id => 'john', :foo => 'bar'}
-      criteria[:_id].should == 'john'
-      criteria[:foo].should == 'bar'
+    context "with key and value" do
+      let(:key_normalizer)   { lambda { |*args| :normalized_key    } }
+      let(:value_normalizer) { lambda { |*args| 'normalized_value' } }
+
+      it "sets normalized key to normalized value in source" do
+        criteria = described_class.new({}, :value_normalizer => value_normalizer, :key_normalizer => key_normalizer)
+        criteria[:foo] = 'bar'
+        criteria.source[:normalized_key].should eq('normalized_value')
+      end
+    end
+
+    context "with conditions" do
+      it "sets each of conditions keys in source" do
+        criteria = described_class.new
+        criteria[:conditions] = {:_id => 'john', :foo => 'bar'}
+        criteria.source[:_id].should eq('john')
+        criteria.source[:foo].should eq('bar')
+      end
+    end
+
+    context "with symbol operators" do
+      it "sets nests key with operator and value" do
+        criteria = described_class.new
+        criteria[:age.gt] = 20
+        criteria[:age.lt] = 10
+        criteria.source[:age].should eq({'$gt' => 20, '$lt' => 10})
+      end
     end
   end
 
