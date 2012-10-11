@@ -3,7 +3,7 @@ module Plucky
     class SortValue
 
       def initialize(args = {})
-        @key_normalizer = args.fetch(:key_normalizer) { raise KeyError, "Missing required argument :key_normalizer" }
+        @key_normalizer = args.fetch(:key_normalizer) { raise ArgumentError, "Missing required key :key_normalizer" }
       end
 
       # Public: Given a value returns it normalized for Mongo's sort option

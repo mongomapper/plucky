@@ -28,7 +28,7 @@ describe Plucky::Normalizers::OptionsHashValue do
   it "raises exception if missing key normalizer" do
     expect {
       described_class.new
-    }.to raise_error(KeyError, "Missing required argument :key_normalizer")
+    }.to raise_error(ArgumentError, "Missing required key :key_normalizer")
   end
 
   it "allows injecting a new value normalizer" do

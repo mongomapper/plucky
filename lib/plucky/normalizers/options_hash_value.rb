@@ -7,7 +7,7 @@ module Plucky
     class OptionsHashValue
       def initialize(args = {})
         @key_normalizer = args.fetch(:key_normalizer) {
-          raise KeyError, "Missing required argument :key_normalizer"
+          raise ArgumentError, "Missing required key :key_normalizer"
         }
 
         @value_normalizers = {
