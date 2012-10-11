@@ -101,6 +101,7 @@ module Plucky
       merge(other).to_hash.each do |key, value|
         self[key] = value
       end
+      self
     end
 
     def object_ids

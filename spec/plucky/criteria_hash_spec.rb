@@ -144,7 +144,7 @@ describe Plucky::CriteriaHash do
     it "updates mergee" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => 'baz')
-      c1.merge!(c2)
+      c1.merge!(c2).should equal(c1)
       c1[:foo].should == {:$in => ['bar', 'baz']}
     end
   end
