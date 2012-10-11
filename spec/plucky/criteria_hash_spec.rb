@@ -9,12 +9,6 @@ describe Plucky::CriteriaHash do
     criteria.keys.to_set.should == [:baz, :foo].to_set
   end
 
-  it "handles multiple symbol operators on the same field" do
-    described_class.new(:age.gt => 12, :age.lt => 20)[:age].should == {
-      '$gt' => 12, '$lt' => 20
-    }
-  end
-
   context "#initialize_copy" do
     before do
       @original = described_class.new({
