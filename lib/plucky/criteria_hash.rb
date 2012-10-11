@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'set'
+require 'plucky/normalizers/criteria_hash_value'
 
 module Plucky
   class CriteriaHash
@@ -15,10 +16,6 @@ module Plucky
     # Internal: Used to quickly check if it is possible that the
     # criteria hash is simple.
     SimpleQueryMaxSize = [SimpleIdQueryKeys.size, SimpleIdAndTypeQueryKeys.size].max
-
-    # Internal: Used by normalized_value to determine if we need to run the
-    # value through another criteria hash to normalize it.
-    NestingOperators = [:$or, :$and, :$nor]
 
     def initialize(hash={}, options={})
       @source, @options = {}, options
@@ -122,55 +119,29 @@ module Plucky
       key_set == SimpleIdQueryKeys || key_set == SimpleIdAndTypeQueryKeys
     end
 
-    private
-      def method_missing(method, *args, &block)
-        @source.send(method, *args, &block)
-      end
+    def method_missing(method, *args, &block)
+      @source.send(method, *args, &block)
+    end
 
-      def object_id?(key)
-        object_ids.include?(key.to_sym)
-      end
+    def object_id?(key)
+      object_ids.include?(key.to_sym)
+    end
 
-      def normalized_key(key)
-        key = key.to_sym                 if key.respond_to?(:to_sym)
-        return normalized_key(key.field) if key.respond_to?(:field)
-        return :_id                      if key == :id
-        key
-      end
+    def normalized_key(key)
+      key = key.to_sym                 if key.respond_to?(:to_sym)
+      return normalized_key(key.field) if key.respond_to?(:field)
+      return :_id                      if key == :id
+      key
+    end
 
-      def normalized_value(parent_key, key, value)
-        case value
-          when Array, Set
-            if object_id?(parent_key)
-              value = value.map { |v| Plucky.to_object_id(v) }
-            end
+    def normalized_value(parent_key, key, value)
+      value_normalizer.call(parent_key, key, value)
+    end
 
-            if nesting_operator?(key)
-              value.map  { |v| CriteriaHash.new(v, options).to_hash }
-            elsif parent_key == key
-              # we're not nested and not the value for a symbol operator
-              {'$in' => value.to_a}
-            else
-              # we are a value for a symbol operator or nested hash
-              value.to_a
-            end
-          when Time
-            value.utc
-          when String
-            return Plucky.to_object_id(value) if object_id?(key)
-            value
-          when Hash
-            value.each { |k, v| value[k] = normalized_value(key, k, v) }
-            value
-          when Regexp
-            Regexp.new(value)
-          else
-            value
-        end
-      end
-
-      def nesting_operator?(key)
-        NestingOperators.include?(key)
-      end
+    def value_normalizer
+      @value_normalizer ||= options.fetch(:value_normalizer) {
+        Normalizers::CriteriaHashValue.new(self)
+      }
+    end
   end
 end
