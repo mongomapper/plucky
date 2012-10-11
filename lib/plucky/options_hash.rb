@@ -28,7 +28,7 @@ module Plucky
 
     def []=(key, value)
       key = normalized_key(key)
-      source[key] = normalized_value(key, value)
+      @source[key] = normalized_value(key, value)
     end
 
     def keys
@@ -36,11 +36,11 @@ module Plucky
     end
 
     def ==(other)
-      source == other.source
+      @source == other.source
     end
 
     def to_hash
-      source
+      @source
     end
 
     def fields?
