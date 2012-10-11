@@ -15,6 +15,8 @@ module Plucky
       # parent_key - The parent key if nested, otherwise same as key
       # key - The key we are currently normalizing
       # value - The value that should be normalized
+      #
+      # Returns value normalized for Mongo
       def call(parent_key, key, value)
         case value
           when Array, Set
