@@ -36,10 +36,15 @@ RSpec.configure do |config|
 
   config.include OrderedHashHelpers
 
+  config.before(:suite) do
+    DB.collections.map do |collection|
+      collection.drop_indexes
+    end
+  end
+
   config.before(:each) do
     DB.collections.map do |collection|
       collection.remove
-      collection.drop_indexes
     end
   end
 end
