@@ -79,7 +79,7 @@ describe Plucky::Query do
     it "is Ruby-like and returns a reset cursor if a block is given" do
       cursor = described_class.new(@collection).find_each {}
       cursor.should be_instance_of(Mongo::Cursor)
-      cursor.next.should be_instance_of(oh.class)
+      cursor.next.should be_instance_of(BSON::OrderedHash)
     end
   end
 
@@ -281,7 +281,7 @@ describe Plucky::Query do
   context "#distinct" do
     before do
       # same age as John
-      @mark = oh(['_id', 'mark'], ['age', 28], ['name', 'Mark'])
+      @mark = BSON::OrderedHash['_id', 'mark', 'age', 28, 'name', 'Mark']
       @collection.insert(@mark)
     end
 
@@ -663,7 +663,7 @@ describe Plucky::Query do
     it "returns a working enumerator" do
       query = described_class.new(@collection)
       query.each.methods.map(&:to_sym).include?(:group_by).should be(true)
-      query.each.next.class.should == oh.class
+      query.each.next.should be_instance_of(BSON::OrderedHash)
     end
 
     it "uses #find_each" do

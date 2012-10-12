@@ -20,21 +20,11 @@ LogBuddy.init :logger => Log
 connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => Log)
 DB = connection.db('test')
 
-module OrderedHashHelpers
-  def oh(*args)
-    BSON::OrderedHash.new.tap do |hash|
-      args.each { |a| hash[a[0]] = a[1] }
-    end
-  end
-end
-
 RSpec.configure do |config|
   config.filter_run :focused => true
   config.alias_example_to :fit, :focused => true
   config.alias_example_to :xit, :pending => true
   config.run_all_when_everything_filtered = true
-
-  config.include OrderedHashHelpers
 
   config.before(:suite) do
     DB.collections.map do |collection|
