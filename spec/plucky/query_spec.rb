@@ -2,9 +2,9 @@ require 'helper'
 
 describe Plucky::Query do
   before do
-    @chris      = oh(['_id', 'chris'],  ['age', 26], ['name', 'Chris'])
-    @steve      = oh(['_id', 'steve'],  ['age', 29], ['name', 'Steve'])
-    @john       = oh(['_id', 'john'],   ['age', 28], ['name', 'John'])
+    @chris      = BSON::OrderedHash['_id', 'chris', 'age', 26, 'name', 'Chris']
+    @steve      = BSON::OrderedHash['_id', 'steve', 'age', 29, 'name', 'Steve']
+    @john       = BSON::OrderedHash['_id', 'john',  'age', 28, 'name', 'John']
     @collection = DB['users']
     @collection.insert(@chris)
     @collection.insert(@steve)
