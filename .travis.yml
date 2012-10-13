@@ -5,5 +5,5 @@ rvm:
   - 1.9.3
 notifications:
   email: false
-bundler_args: --without debug
+bundler_args: --without debug guard performance
 services: mongodb
