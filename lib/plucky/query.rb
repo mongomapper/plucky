@@ -65,7 +65,7 @@ module Plucky
         docs
       end
 
-      def find_each(opts={}, &block)
+      def find_each(opts={})
         query = clone.amend(opts)
         cursor = query.cursor
 
@@ -95,19 +95,13 @@ module Plucky
       end
 
       def all(opts={})
-        find_each(opts).to_a
-      end
-
-      def first(opts={})
-        find_one(opts)
+        [].tap do |docs|
+          find_each(opts) {|doc| docs << doc }
+        end
       end
 
       def last(opts={})
         clone.amend(opts).reverse.find_one
-      end
-
-      def each(&block)
-        find_each(&block)
       end
 
       def remove(opts={}, driver_opts={})
@@ -119,10 +113,6 @@ module Plucky
         query = clone.amend(opts)
         cursor = query.cursor
         cursor.count
-      end
-
-      def size
-        count
       end
 
       def distinct(key, opts = {})
@@ -158,17 +148,14 @@ module Plucky
       def skip(count=nil)
         clone.tap { |query| query.options[:skip] = count }
       end
-      alias offset skip
 
       def sort(*args)
         clone.tap { |query| query.options[:sort] = *args }
       end
-      alias order sort
 
       def where(hash={})
         clone.tap { |query| query.criteria.merge!(CriteriaHash.new(hash)) }
       end
-      alias filter where
 
       def empty?
         count.zero?
@@ -177,11 +164,18 @@ module Plucky
       def exists?(query_options={})
         !count(query_options).zero?
       end
-      alias :exist? :exists?
 
       def to_a
         find_each.to_a
       end
+
+      alias_method :each,   :find_each
+      alias_method :first,  :find_one
+      alias_method :size,   :count
+      alias_method :offset, :skip
+      alias_method :order,  :sort
+      alias_method :exist?, :exists?
+      alias_method :filter, :where
     end
     include DSL
 

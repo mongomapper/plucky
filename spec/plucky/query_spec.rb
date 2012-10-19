@@ -665,12 +665,6 @@ describe Plucky::Query do
       query.each.methods.map(&:to_sym).include?(:group_by).should be(true)
       query.each.next.should be_instance_of(BSON::OrderedHash)
     end
-
-    it "uses #find_each" do
-      query = described_class.new(@collection)
-      query.should_receive(:find_each)
-      query.each
-    end
   end
 
   context "enumerables" do
