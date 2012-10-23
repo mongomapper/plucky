@@ -249,6 +249,10 @@ describe Plucky::Query do
       described_class.new(@collection).last(:age.lte => 26, :order => :name.desc).should == @chris
     end
 
+    it "uses _id if a sort key is not specified" do
+      described_class.new(@collection).last.should == [@steve, @chris, @john].sort {|a, b| a["_id"] <=> b["_id"] }.last
+    end
+
     it "does not modify original query object" do
       query = described_class.new(@collection)
       query.last(:name => 'Steve')

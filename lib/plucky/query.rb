@@ -139,7 +139,9 @@ module Plucky
       def reverse
         clone.tap do |query|
           sort = query[:sort]
-          unless sort.nil?
+          if sort.nil?
+            query.options[:sort] = [[:_id, -1]]
+          else
             query.options[:sort] = sort.map { |s| [s[0], -s[1]] }
           end
         end
