@@ -158,15 +158,11 @@ module Plucky
       end
 
       def empty?
-        count.zero?
+        count == 0
       end
 
       def exists?(query_options={})
-        !count(query_options).zero?
-      end
-
-      def to_a
-        find_each.to_a
+        !fields(:_id => 1).find_one(query_options).nil?
       end
 
       alias_method :each,   :find_each
@@ -176,6 +172,7 @@ module Plucky
       alias_method :order,  :sort
       alias_method :exist?, :exists?
       alias_method :filter, :where
+      alias_method :to_a,   :all
     end
     include DSL
 
