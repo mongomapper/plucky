@@ -7,7 +7,7 @@ lib_path  = root_path.join('lib')
 $:.unshift(lib_path)
 require 'plucky'
 
-connection = Mongo::Connection.new
+connection = Mongo::MongoClient.new
 db = connection.db('test')
 collection = db['users']
 collection.remove # clear out the collection

@@ -11,7 +11,7 @@ gem install plucky
 ## Examples
 
 ```ruby
-connection = Mongo::Connection.new
+connection = Mongo::MongoClient.new
 db = connection.db('test')
 collection = db['users']
 collection.remove # clear out the collection
