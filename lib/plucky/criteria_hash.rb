@@ -92,29 +92,43 @@ module Plucky
                 if old_value.is_a?(Hash) && new_value.is_a?(Hash)
                   self.class.new(old_value).merge(self.class.new(new_value)).to_hash
                 else
-                  Array(old_value).concat(Array(new_value)).uniq
+                  merge_values_into_array(old_value, new_value)
                 end
               end
             elsif value_is_hash && !other_is_hash
               if modifier_key = value.keys.detect { |k| Plucky.modifier?(k) }
-                value[modifier_key].concat(Array(other_value)).uniq!
+                current_value = value[modifier_key]
+                value[modifier_key] = current_value.concat(array(other_value)).uniq
               else
                 # kaboom! Array(value).concat(Array(other_value)).uniq
               end
             elsif other_is_hash && !value_is_hash
               if modifier_key = other_value.keys.detect { |k| Plucky.modifier?(k) }
-                other_value[modifier_key].concat(Array(value)).uniq!
+                current_value = other_value[modifier_key]
+                other_value[modifier_key] = current_value.concat(array(value)).uniq
               else
                 # kaboom! Array(value).concat(Array(other_value)).uniq
               end
             else
-              Array(value).concat(Array(other_value)).uniq
+              merge_values_into_array(value, other_value)
             end
           else
             other_value
           end
       end
       self.class.new(target)
+    end
+
+    # Private
+    def merge_values_into_array(value, other_value)
+      array(value).concat(array(other_value)).uniq
+    end
+
+    # Private: Array(BSON::ObjectId) returns the byte array or what not instead
+    # of the object id. This makes sure it is an array of object ids, not the
+    # guts of the object id.
+    def array(value)
+      value.is_a?(BSON::ObjectId) ? [value] : Array(value)
     end
 
     # Public
