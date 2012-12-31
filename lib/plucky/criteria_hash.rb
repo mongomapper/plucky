@@ -92,7 +92,7 @@ module Plucky
                 if old_value.is_a?(Hash) && new_value.is_a?(Hash)
                   self.class.new(old_value).merge(self.class.new(new_value)).to_hash
                 else
-                  Array(old_value).concat(Array(new_value)).uniq
+                  merge_values_into_array(old_value, new_value)
                 end
               end
             elsif value_is_hash && !other_is_hash
@@ -108,13 +108,30 @@ module Plucky
                 # kaboom! Array(value).concat(Array(other_value)).uniq
               end
             else
-              Array(value).concat(Array(other_value)).uniq
+              merge_values_into_array(value, other_value)
             end
           else
             other_value
           end
       end
       self.class.new(target)
+    end
+
+    # Private
+    def merge_values_into_array(value, other_value)
+      value_array = if value.is_a?(BSON::ObjectId)
+        [value]
+      else
+        Array(value)
+      end
+
+      other_value_array = if other_value.is_a?(BSON::ObjectId)
+        [other_value]
+      else
+        Array(other_value)
+      end
+
+      value_array.concat(other_value_array).uniq
     end
 
     # Public
