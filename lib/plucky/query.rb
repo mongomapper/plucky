@@ -164,7 +164,7 @@ module Plucky
       end
 
       def exists?(query_options={})
-        !fields(:_id => 1).find_one(query_options).nil?
+        !only(:_id).find_one(query_options).nil?
       end
 
       alias_method :each,   :find_each
