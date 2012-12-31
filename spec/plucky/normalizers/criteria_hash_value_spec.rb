@@ -64,6 +64,12 @@ describe Plucky::Normalizers::CriteriaHashValue do
       subject.call(:foo, :foo, actual).should eq(expected)
     end
 
+    it "does not turn value to $in with an empty array value" do
+      actual = []
+      expected = []
+      subject.call(:foo, :foo, actual).should eq(expected)
+    end
+
     it "does not turn value to $in with $or key" do
       actual = [{:numbers => 1}, {:numbers => 2}]
       expected = [{:numbers => 1}, {:numbers => 2}]
