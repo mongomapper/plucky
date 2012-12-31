@@ -108,6 +108,15 @@ describe Plucky::CriteriaHash do
       c1.merge(c2).source.should eq(:foo => {:$in => [id1, id2]})
     end
 
+    it "correctly merges array and an object id" do
+      id1 = BSON::ObjectId.new
+      id2 = BSON::ObjectId.new
+      c1 = described_class.new(:foo => [id1])
+      c2 = described_class.new(:foo => id2)
+      c1.merge(c2).source.should eq(:foo => {:$in => [id1, id2]})
+      c2.merge(c1).source.should eq(:foo => {:$in => [id1, id2]})
+    end
+
     it "is able to merge two modifier hashes" do
       c1 = described_class.new(:$in => [1, 2])
       c2 = described_class.new(:$in => [2, 3])

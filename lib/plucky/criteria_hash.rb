@@ -97,13 +97,15 @@ module Plucky
               end
             elsif value_is_hash && !other_is_hash
               if modifier_key = value.keys.detect { |k| Plucky.modifier?(k) }
-                value[modifier_key].concat(Array(other_value)).uniq!
+                current_value = value[modifier_key]
+                value[modifier_key] = current_value.concat(array(other_value)).uniq
               else
                 # kaboom! Array(value).concat(Array(other_value)).uniq
               end
             elsif other_is_hash && !value_is_hash
               if modifier_key = other_value.keys.detect { |k| Plucky.modifier?(k) }
-                other_value[modifier_key].concat(Array(value)).uniq!
+                current_value = other_value[modifier_key]
+                other_value[modifier_key] = current_value.concat(array(value)).uniq
               else
                 # kaboom! Array(value).concat(Array(other_value)).uniq
               end
@@ -119,19 +121,14 @@ module Plucky
 
     # Private
     def merge_values_into_array(value, other_value)
-      value_array = if value.is_a?(BSON::ObjectId)
-        [value]
-      else
-        Array(value)
-      end
+      array(value).concat(array(other_value)).uniq
+    end
 
-      other_value_array = if other_value.is_a?(BSON::ObjectId)
-        [other_value]
-      else
-        Array(other_value)
-      end
-
-      value_array.concat(other_value_array).uniq
+    # Private: Array(BSON::ObjectId) returns the byte array or what not instead
+    # of the object id. This makes sure it is an array of object ids, not the
+    # guts of the object id.
+    def array(value)
+      value.is_a?(BSON::ObjectId) ? [value] : Array(value)
     end
 
     # Public
