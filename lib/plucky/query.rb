@@ -175,7 +175,7 @@ module Plucky
       end
 
       def exists?(query_options={})
-        !count(query_options).zero?
+        !!only(:_id).find_one(query_options)
       end
       alias :exist? :exists?
 
