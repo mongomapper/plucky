@@ -249,6 +249,10 @@ describe Plucky::Query do
       described_class.new(@collection).last(:age.lte => 26, :order => :name.desc).should == @chris
     end
 
+    it "uses _id if a sort key is not specified" do
+      described_class.new(@collection).last.should == [@steve, @chris, @john].sort {|a, b| a["_id"] <=> b["_id"] }.last
+    end
+
     it "does not modify original query object" do
       query = described_class.new(@collection)
       query.last(:name => 'Steve')
@@ -664,12 +668,6 @@ describe Plucky::Query do
       query = described_class.new(@collection)
       query.each.methods.map(&:to_sym).include?(:group_by).should be(true)
       query.each.next.should be_instance_of(BSON::OrderedHash)
-    end
-
-    it "uses #find_each" do
-      query = described_class.new(@collection)
-      query.should_receive(:find_each)
-      query.each
     end
   end
 
