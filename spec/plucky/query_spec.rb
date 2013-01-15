@@ -182,6 +182,11 @@ describe Plucky::Query do
       subject[:name].should     be_nil
     end
 
+    it "allows total_entries overrides" do
+      docs = subject.paginate(:total_entries => 1)
+      docs.total_entries.should == 1
+    end
+
     context "with options" do
       before do
         @result = @query.sort(:age).paginate(:age.gt => 27, :per_page => 10)
