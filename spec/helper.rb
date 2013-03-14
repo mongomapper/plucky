@@ -17,7 +17,7 @@ Log = Logger.new(File.join(log_dir, 'test.log'))
 
 LogBuddy.init :logger => Log
 
-connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => Log)
+connection = Mongo::MongoClient.new('127.0.0.1', 27017, :logger => Log)
 DB = connection.db('test')
 
 RSpec.configure do |config|
@@ -27,15 +27,15 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:suite) do
-    DB.collections.map do |collection|
-      collection.drop_indexes
-    end
+    DB.collections.reject { |collection|
+      collection.name =~ /system\./
+    }.map(&:drop_indexes)
   end
 
   config.before(:each) do
-    DB.collections.map do |collection|
-      collection.remove
-    end
+    DB.collections.reject { |collection|
+      collection.name =~ /system\./
+    }.map(&:remove)
   end
 end
 
