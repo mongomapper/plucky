@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 gemspec
 
 gem 'bson_ext', '~> 1.5'
