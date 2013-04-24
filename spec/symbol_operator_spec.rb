@@ -43,6 +43,15 @@ describe SymbolOperator do
       
     end
     
+    context 'eql?' do
+      
+      it 'uses #== for equality comparison' do
+        subject.should_receive(:"==").with("dummy_value")
+        subject.eql?("dummy_value")
+      end
+      
+    end
+    
     context "<=>" do
       it "returns string comparison of operator for same field, different operator" do
         (SymbolOperator.new(:foo, 'in') <=> SymbolOperator.new(:foo, 'all')).should ==  1
