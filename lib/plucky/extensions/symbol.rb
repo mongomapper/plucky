@@ -73,6 +73,14 @@ class SymbolOperator
       field.to_s <=> other.field.to_s
     end
   end
+  
+  def hash
+    field.hash + operator.hash
+  end
+  
+  def eql?(other)
+    self == other
+  end
 
   def ==(other)
     other.class == self.class && field == other.field && operator == other.operator
