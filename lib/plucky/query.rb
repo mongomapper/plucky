@@ -61,9 +61,7 @@ module Plucky
           :skip  => paginator.skip,
         }).all
 
-        docs.extend(Pagination::Decorator)
-        docs.paginator(paginator)
-        docs
+        Pagination::Collection.new(docs, paginator)
       end
 
       def find_each(opts={})
