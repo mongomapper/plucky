@@ -1,15 +1,13 @@
 require 'helper'
 
-describe Plucky::Pagination::Decorator do
-  context "Object decorated with Decorator with paginator set" do
+describe Plucky::Pagination::Collection do
+  context "Object decorated with Collection with paginator set" do
     before do
       @object    = [1, 2, 3, 4]
       @object_id = @object.object_id
       @paginator = Plucky::Pagination::Paginator.new(20, 2, 10)
-      @object.extend(described_class)
-      @object.paginator(@paginator)
     end
-    subject { @object }
+    subject { Plucky::Pagination::Collection.new(@object, @paginator) }
 
     it "knows paginator" do
       subject.paginator.should == @paginator

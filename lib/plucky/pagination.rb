@@ -1,4 +1,4 @@
-require 'plucky/pagination/decorator'
+require 'plucky/pagination/collection'
 require 'plucky/pagination/paginator'
 
 module Plucky
