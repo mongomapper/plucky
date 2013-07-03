@@ -4,3 +4,4 @@ log
 Gemfile.lock
 bin
 vendor
+.bundle
