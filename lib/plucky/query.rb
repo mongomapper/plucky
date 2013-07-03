@@ -66,14 +66,18 @@ module Plucky
 
       def find_each(opts={})
         query = clone.amend(opts)
-        cursor = query.cursor
 
         if block_given?
-          cursor.each { |doc| yield doc }
-          cursor.rewind!
+          result = nil
+          query.cursor do |cursor|
+            result = cursor
+            cursor.each { |doc| yield doc }
+            cursor.rewind!
+          end
+          result
+        else
+          query.cursor
         end
-
-        cursor
       end
 
       def find_one(opts={})
@@ -228,8 +232,8 @@ module Plucky
       @options.to_hash
     end
 
-    def cursor
-      @collection.find(criteria_hash, options_hash)
+    def cursor(&block)
+      @collection.find(criteria_hash, options_hash, &block)
     end
 
   private
