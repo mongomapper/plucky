@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require 'plucky/normalizers/options_hash_key'
+require 'plucky/normalizers/hash_key'
 require 'plucky/normalizers/options_hash_value'
 
 module Plucky
@@ -82,7 +82,12 @@ module Plucky
     # Private
     def key_normalizer
       @key_normalizer ||= @options.fetch(:key_normalizer) {
-        Normalizers::OptionsHashKey.new
+        Normalizers::HashKey.new({
+          :order  => :sort,
+          :select => :fields,
+          :offset => :skip,
+          :id     => :_id,
+        })
       }
     end
 
