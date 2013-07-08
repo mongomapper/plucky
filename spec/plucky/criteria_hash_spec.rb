@@ -147,6 +147,40 @@ describe Plucky::CriteriaHash do
       c1.merge(c2).should_not equal(c1)
       c1[:foo].should == 'bar'
     end
+
+    context "given multiple $or clauses" do
+      before do
+        @c1 = described_class.new(:$or => [{:a => 1}, {:b => 2}])
+        @c2 = described_class.new(:$or => [{:a => 3}, {:b => 4}])
+        @c3 = described_class.new(:$or => [{:a => 4}, {:b => 4}])
+      end
+
+      it "merges two $ors into a compound $and" do
+        merged = @c1.merge(@c2)
+        merged[:$and].should == [
+          {:$or => [{:a => 1}, {:b => 2}]},
+          {:$or => [{:a => 3}, {:b => 4}]}
+        ]
+      end
+
+      it "merges an $and and a $or into a compound $and" do
+        merged = @c1.merge(@c2).merge(@c3)
+        merged[:$and].should == [
+          {:$or => [{:a => 1}, {:b => 2}]},
+          {:$or => [{:a => 3}, {:b => 4}]},
+          {:$or => [{:a => 4}, {:b => 4}]}
+        ]
+      end
+
+      it "merges an $or and an $and into a compound $and" do
+        merged = @c3.merge @c1.merge(@c2)
+        merged[:$and].should == [
+          {:$or => [{:a => 1}, {:b => 2}]},
+          {:$or => [{:a => 3}, {:b => 4}]},
+          {:$or => [{:a => 4}, {:b => 4}]}
+        ]
+      end
+    end
   end
 
   context "#merge!" do
