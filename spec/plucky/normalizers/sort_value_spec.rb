@@ -3,7 +3,7 @@ require 'plucky/normalizers/sort_value'
 
 describe Plucky::Normalizers::SortValue do
   let(:key_normalizer) {
-    lambda { |key| key == :id ? :_id : key.to_sym }
+    Plucky::Normalizers::HashKey.new({:id => :_id})
   }
 
   subject {
@@ -86,6 +86,10 @@ describe Plucky::Normalizers::SortValue do
 
   it "converts keys based on key normalizer" do
     subject.call([:id.asc]).should eq([['_id', 1]])
+  end
+
+  it "doesn't convert keys like :sort to :order via key normalizer" do
+    subject.call(:order.asc).should eq([['order', 1]])
   end
 
   it "converts string with $natural correctly" do
