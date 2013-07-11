@@ -66,7 +66,7 @@ module Plucky
 
       # Private
       def default_sort_value_normalizer
-        Normalizers::SortValue.new(:key_normalizer => Normalizers::HashKey.new({:_id => :id}))
+        Normalizers::SortValue.new(:key_normalizer => Normalizers::HashKey.new({:id => :_id}))
       end
 
       # Private

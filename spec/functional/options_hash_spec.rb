@@ -10,6 +10,11 @@ describe Plucky::OptionsHash do
       subject[:order].should be_nil
     end
 
+    it "changes sort(id) to sort(_id)" do
+      subject[:sort] = "id asc"
+      subject[:sort].should == [["_id", 1]]
+    end
+
     it "changes select to fields" do
       subject[:select] = [:foo]
       subject[:fields].should == [:foo]
