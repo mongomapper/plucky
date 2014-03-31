@@ -572,6 +572,14 @@ describe Plucky::Query do
       subject.where(:name => /^c/i).all.should == [@chris]
     end
 
+    it "works with range value" do
+      subject.where(:age => (28..29)).all.should =~ [@steve, @john]
+    end
+
+    it "works with exclusive end range value" do
+      subject.where(:age => (28...29)).all.should == [@john]
+    end
+
     it "updates criteria" do
       subject.
         where(:moo => 'cow').

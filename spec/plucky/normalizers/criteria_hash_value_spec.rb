@@ -114,6 +114,24 @@ describe Plucky::Normalizers::CriteriaHashValue do
     end
   end
 
+  context 'with a range' do
+    context 'with end' do
+      it 'convert to comapre operator' do
+        actual = 1...3
+        expected = { :$gte => 1, :$lt => 3 }
+        subject.call(:numbers, :numbers, actual).should eq(expected)
+      end
+    end
+
+    context 'exclusive end' do
+      it 'convert to comapre operator' do
+        actual = 1..3
+        expected = { :$gte => 1, :$lte => 3 }
+        subject.call(:numbers, :numbers, actual).should eq(expected)
+      end
+    end
+  end
+
   context "with string object ids for string keys" do
     let(:object_id) { BSON::ObjectId.new }
 

@@ -45,6 +45,12 @@ module Plucky
             value
           when Regexp
             Regexp.new(value)
+          when Range
+            if value.exclude_end?
+              { :$gte => value.first, :$lt  => value.last }
+            else
+              { :$gte => value.first, :$lte => value.last }
+            end
           else
             value
         end
