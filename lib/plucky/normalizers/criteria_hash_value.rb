@@ -1,10 +1,12 @@
+require 'set'
+
 module Plucky
   module Normalizers
     class CriteriaHashValue
 
       # Internal: Used by normalized_value to determine if we need to run the
       # value through another criteria hash to normalize it.
-      NestingOperators = [:$or, :$and, :$nor]
+      NestingOperators = Set[:$or, :$and, :$nor]
 
       def initialize(criteria_hash)
         @criteria_hash = criteria_hash

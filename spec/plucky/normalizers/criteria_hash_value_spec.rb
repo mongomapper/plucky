@@ -155,7 +155,7 @@ describe Plucky::Normalizers::CriteriaHashValue do
 
   context "nested clauses" do
     it "knows constant array of operators that take nested queries" do
-      described_class::NestingOperators.should == [:$or, :$and, :$nor]
+      described_class::NestingOperators.should == Set[:$or, :$and, :$nor]
     end
 
     described_class::NestingOperators.each do |operator|
