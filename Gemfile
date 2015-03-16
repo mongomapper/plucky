@@ -1,11 +1,11 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'bson_ext', '~> 1.5'
+gem 'bson_ext', '~> 1.5', :platform => :mri
 gem 'rake'
 
-group :performance do
-  gem 'perftools.rb', :require => 'perftools'
+group :performance  do
+  gem 'perftools.rb', :require => 'perftools', :platform => :mri
 end
 
 group(:test) do
