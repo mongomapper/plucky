@@ -31,21 +31,21 @@ describe Plucky do
   describe ".modifier?" do
     context "with a string" do
       it "returns true if modifier" do
-        Plucky.modifier?('$in').should be_true
+        Plucky.modifier?('$in').should == true
       end
 
       it "returns false if not modifier" do
-        Plucky.modifier?('nope').should be_false
+        Plucky.modifier?('nope').should == false
       end
     end
 
     context "with a symbol" do
       it "returns true if modifier" do
-        Plucky.modifier?(:$in).should be_true
+        Plucky.modifier?(:$in).should == true
       end
 
       it "returns false if not modifier" do
-        Plucky.modifier?(:nope).should be_false
+        Plucky.modifier?(:nope).should == false
       end
     end
   end
