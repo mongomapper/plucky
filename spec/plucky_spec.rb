@@ -61,7 +61,7 @@ describe Plucky do
         :count, :size, :distinct,
         :last, :first, :all, :to_a,
         :exists?, :exist?, :empty?,
-        :remove,
+        :remove, :hint
       ].sort_by(&:to_s)
     end
   end
