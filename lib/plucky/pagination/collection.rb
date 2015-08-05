@@ -17,7 +17,7 @@ module Plucky
       end
 
       def method_missing(method, *args)
-        @query.send method, *args
+        @paginator.send method, *args
       end
 
       # Public

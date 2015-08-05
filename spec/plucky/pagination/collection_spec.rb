@@ -26,5 +26,10 @@ describe Plucky::Pagination::Collection do
       @object.size.should       == 4
       @object.select { |o| o > 2 }.should == [3, 4]
     end
+
+    it "delegates missing methods to the paginator" do
+      @paginator.should_receive(:blather_matter).with('hello', :xyz, 4)
+      subject.blather_matter('hello', :xyz, 4)
+    end
   end
 end
