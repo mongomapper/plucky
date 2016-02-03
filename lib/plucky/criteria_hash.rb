@@ -171,7 +171,12 @@ module Plucky
     # of the object id. This makes sure it is an array of object ids, not the
     # guts of the object id.
     def array(value)
-      value.is_a?(BSON::ObjectId) ? [value] : Array(value)
+      case value
+      when nil, BSON::ObjectId
+        [value]
+      else
+        Array(value)
+      end
     end
 
     # Private
