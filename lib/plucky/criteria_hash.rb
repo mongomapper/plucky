@@ -164,14 +164,12 @@ module Plucky
 
     # Private
     def merge_values_into_array(value, other_value)
-      array(value).concat(array(other_value)).uniq
+      array(value).concat(array(other_value)).flatten.uniq
     end
 
-    # Private: Array(BSON::ObjectId) returns the byte array or what not instead
-    # of the object id. This makes sure it is an array of object ids, not the
-    # guts of the object id.
+    # Private
     def array(value)
-      value.is_a?(BSON::ObjectId) ? [value] : Array(value)
+      value.is_a?(Array) ? value : [value]
     end
 
     # Private

@@ -148,6 +148,30 @@ describe Plucky::CriteriaHash do
       c1[:foo].should == 'bar'
     end
 
+    it "merges two hashes with the same key, but nil values as nil" do
+      c1 = described_class.new(:foo => nil)
+      c2 = described_class.new(:foo => nil)
+      c1.merge(c2).source.should == { :foo => {:'$in' => [nil] } }
+    end
+
+    it "merges two hashes with the same key, but false values as false" do
+      c1 = described_class.new(:foo => false)
+      c2 = described_class.new(:foo => false)
+      c1.merge(c2).source.should == { :foo => { :'$in' => [false] } }
+    end
+
+    it "merges two hashes with the same key, but different values with $in" do
+      c1 = described_class.new(:foo => false)
+      c2 = described_class.new(:foo => true)
+      c1.merge(c2).source.should == { :foo => { :'$in' => [false, true] } }
+    end
+
+    it "merges two hashes with different keys and different values properly" do
+      c1 = described_class.new(:foo => 1)
+      c2 = described_class.new(:bar => 2)
+      c1.merge(c2).source.should == { :foo => 1, :bar => 2 }
+    end
+
     context "given multiple $or clauses" do
       before do
         @c1 = described_class.new(:$or => [{:a => 1}, {:b => 2}])
