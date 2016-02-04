@@ -125,7 +125,9 @@ module Plucky
         old_is_hash = oldval.instance_of? Hash
         new_is_hash = newval.instance_of? Hash
 
-        if old_is_hash && new_is_hash
+        if oldval == newval
+          oldval
+        elsif old_is_hash && new_is_hash
           hash_merge(oldval, newval)
         elsif old_is_hash
           modifier_merge(oldval, newval)
