@@ -90,7 +90,7 @@ describe Plucky::CriteriaHash do
     it "uniques matching key values" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => 'bar')
-      c1.merge(c2).source.should eq(:foo => {:$in => %w[bar]})
+      c1.merge(c2).source.should eq(:foo => 'bar')
     end
 
     it "correctly merges arrays and non-arrays" do
@@ -151,13 +151,13 @@ describe Plucky::CriteriaHash do
     it "merges two hashes with the same key, but nil values as nil" do
       c1 = described_class.new(:foo => nil)
       c2 = described_class.new(:foo => nil)
-      c1.merge(c2).source.should == { :foo => {:'$in' => [nil] } }
+      c1.merge(c2).source.should == { :foo => nil }
     end
 
     it "merges two hashes with the same key, but false values as false" do
       c1 = described_class.new(:foo => false)
       c2 = described_class.new(:foo => false)
-      c1.merge(c2).source.should == { :foo => { :'$in' => [false] } }
+      c1.merge(c2).source.should == { :foo => false }
     end
 
     it "merges two hashes with the same key, but different values with $in" do
