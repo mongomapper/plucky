@@ -90,7 +90,7 @@ describe Plucky::CriteriaHash do
     it "uniques matching key values" do
       c1 = described_class.new(:foo => 'bar')
       c2 = described_class.new(:foo => 'bar')
-      c1.merge(c2).source.should eq(:foo => {:$in => %w[bar]})
+      c1.merge(c2).source.should eq(:foo => 'bar')
     end
 
     it "correctly merges arrays and non-arrays" do
@@ -146,6 +146,30 @@ describe Plucky::CriteriaHash do
       c2 = described_class.new(:foo => 'baz')
       c1.merge(c2).should_not equal(c1)
       c1[:foo].should == 'bar'
+    end
+
+    it "merges two hashes with the same key, but nil values as nil" do
+      c1 = described_class.new(:foo => nil)
+      c2 = described_class.new(:foo => nil)
+      c1.merge(c2).source.should == { :foo => nil }
+    end
+
+    it "merges two hashes with the same key, but false values as false" do
+      c1 = described_class.new(:foo => false)
+      c2 = described_class.new(:foo => false)
+      c1.merge(c2).source.should == { :foo => false }
+    end
+
+    it "merges two hashes with the same key, but different values with $in" do
+      c1 = described_class.new(:foo => false)
+      c2 = described_class.new(:foo => true)
+      c1.merge(c2).source.should == { :foo => { :'$in' => [false, true] } }
+    end
+
+    it "merges two hashes with different keys and different values properly" do
+      c1 = described_class.new(:foo => 1)
+      c2 = described_class.new(:bar => 2)
+      c1.merge(c2).source.should == { :foo => 1, :bar => 2 }
     end
 
     context "given multiple $or clauses" do
