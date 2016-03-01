@@ -6,36 +6,36 @@ describe Plucky::OptionsHash do
   describe "#[]=" do
     it "changes order to sort" do
       subject[:order] = "foo asc"
-      subject[:sort].should == [["foo", 1]]
-      subject[:order].should be_nil
+      expect(subject[:sort]).to eql({"foo" => 1})
+      expect(subject[:order]).to be_nil
     end
 
     it "changes sort(id) to sort(_id)" do
       subject[:sort] = "id asc"
-      subject[:sort].should == [["_id", 1]]
+      expect(subject[:sort]).to eql({"_id" => 1})
     end
 
     it "changes select to fields" do
       subject[:select] = [:foo]
-      subject[:fields].should == [:foo]
-      subject[:select].should be_nil
+      expect(subject[:fields]).to eql([:foo])
+      expect(subject[:select]).to be_nil
     end
 
     it "changes offset to skip" do
       subject[:offset] = 10
-      subject[:skip].should == 10
-      subject[:offset].should be_nil
+      expect(subject[:skip]).to eql(10)
+      expect(subject[:offset]).to be_nil
     end
 
     it "changes id to _id" do
       subject[:id] = :foo
-      subject[:_id].should == :foo
-      subject[:id].should be_nil
+      expect(subject[:_id]).to eql(:foo)
+      expect(subject[:id]).to be_nil
     end
 
     it "does not change the sort field" do
       subject[:order] = :order.asc
-      subject[:sort].should == [["order", 1]]
+      expect(subject[:sort]).to eql({"order" => 1})
     end
   end
 end

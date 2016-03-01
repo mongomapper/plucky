@@ -28,7 +28,7 @@ describe Plucky::Pagination::Collection do
     end
 
     it "delegates missing methods to the paginator" do
-      @paginator.should_receive(:blather_matter).with('hello', :xyz, 4)
+      expect(@paginator).to receive(:blather_matter).with('hello', :xyz, 4)
       subject.blather_matter('hello', :xyz, 4)
     end
   end
