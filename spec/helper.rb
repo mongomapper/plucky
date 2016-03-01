@@ -18,8 +18,7 @@ Log = Logger.new(File.join(log_dir, 'test.log'))
 LogBuddy.init :logger => Log
 
 port = ENV.fetch "BOXEN_MONGODB_PORT", 27017
-connection = Mongo::MongoClient.new('127.0.0.1', port.to_i, :logger => Log)
-DB = connection.db('test')
+CLIENT = Mongo::Client.new([ "127.0.0.1:#{port}"], :logger => Log, :db => 'test')
 
 RSpec.configure do |config|
   config.filter_run :focused => true
@@ -28,15 +27,15 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:suite) do
-    DB.collections.reject { |collection|
+    CLIENT.collections.reject { |collection|
       collection.name =~ /system\./
-    }.map(&:drop_indexes)
+    }.map{|collection| collection.indexes.drop_all}
   end
 
   config.before(:each) do
-    DB.collections.reject { |collection|
+    CLIENT.collections.reject { |collection|
       collection.name =~ /system\./
-    }.map(&:remove)
+    }.map(&:drop)
   end
 end
 

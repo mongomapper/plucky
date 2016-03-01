@@ -10,9 +10,9 @@ module Plucky
     # Private
     OptionKeys = Set[
       :select, :offset, :order,                         # MM
-      :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
+      :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
       :batch_size, :timeout, :max_scan, :return_key,    # Ruby Driver
-      :transformer, :show_disk_loc, :comment, :read,    # Ruby Driver
+      :show_disk_loc, :comment, :read,    # Ruby Driver
       :tag_sets, :acceptable_latency,                   # Ruby Driver
     ]
 
@@ -66,14 +66,9 @@ module Plucky
 
       def find_each(opts={})
         query = clone.amend(opts)
-
         if block_given?
-          result = nil
-          query.cursor do |cursor|
-            result = cursor
-            cursor.each { |doc| yield doc }
-            cursor.rewind!
-          end
+          result = query.cursor
+          query.cursor.each { |doc| yield doc }
           result
         else
           query.cursor
@@ -82,7 +77,7 @@ module Plucky
 
       def find_one(opts={})
         query = clone.amend(opts)
-        query.collection.find_one(query.criteria_hash, query.options_hash)
+        query.collection.find(query.criteria_hash, query.options_hash).limit(1).first
       end
 
       def find(*ids)
@@ -93,7 +88,7 @@ module Plucky
         if single_id_find
           first(:_id => ids[0])
         else
-          all(:_id => ids.flatten)
+          all(:_id.in => ids.flatten)
         end
       end
 
@@ -108,8 +103,16 @@ module Plucky
       end
 
       def remove(opts={}, driver_opts={})
+        # driver_opts are no longer supported on a remove command,
+        # write concern should be defined in the driver or used when querying
+        # mongo directly and then deleting
         query = clone.amend(opts)
-        query.collection.remove(query.criteria_hash, driver_opts)
+        number_of_documents_to_delete = query.count
+        if number_of_documents_to_delete > 1
+          query.cursor.delete_many
+        elsif number_of_documents_to_delete == 1
+          query.cursor.delete_one
+        end
       end
 
       def count(opts={})
@@ -124,7 +127,13 @@ module Plucky
       end
 
       def fields(*args)
-        clone.tap { |query| query.options[:fields] = *args }
+        clone.tap do |query|
+          if args[0].is_a? Hash
+            query.options[:projection] = args[0]
+          elsif args.is_a? Array
+            query.options[:projection] = args.inject({}) {|hash, key| hash[key] = 1; hash}
+          end
+        end
       end
 
       def ignore(*args)
@@ -143,9 +152,9 @@ module Plucky
         clone.tap do |query|
           sort = query[:sort]
           if sort.nil?
-            query.options[:sort] = [[:_id, -1]]
+            query.options[:sort] = {"_id" => -1}
           else
-            query.options[:sort] = sort.map { |s| [s[0], -s[1]] }
+            query.options[:sort] = sort.each { |k,v| sort[k] = v*-1 }
           end
         end
       end
@@ -182,8 +191,15 @@ module Plucky
     include DSL
 
     def update(document, driver_opts={})
+      # driver_opts are no longer supported on a remove command,
+      # write concern should be defined in the driver or used when querying
+      # mongo directly and then deleting
       query = clone
-      query.collection.update(query.criteria_hash, document, driver_opts)
+      if driver_opts[:multi]
+        query.cursor.update_many(document)
+      else
+        query.cursor.update_one(document)
+      end
     end
 
     def amend(opts={})
@@ -261,7 +277,7 @@ module Plucky
     def set_field_inclusion(fields, value)
       fields_option = {}
       fields.each { |field| fields_option[symbolized_key(field)] = value }
-      clone.tap { |query| query.options[:fields] = fields_option }
+      clone.tap { |query| query.options[:projection] = fields_option }
     end
   end
 end
