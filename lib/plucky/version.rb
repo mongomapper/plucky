@@ -1,4 +1,4 @@
 # encoding: UTF-8
 module Plucky
-  Version = '0.6.6'
+  Version = '0.7.0'
 end
