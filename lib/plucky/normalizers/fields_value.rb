@@ -11,12 +11,12 @@ module Plucky
             if value.size == 1 && value.first.is_a?(Hash)
               value.first
             else
-              value.flatten
+              value.flatten.inject({}) {|acc, field| acc.merge(field => 1)}
             end
           when Symbol
-            [value]
+            {value => 1}
           when String
-            value.split(',').map { |v| v.strip }
+            value.split(',').inject({}) { |acc, v| acc.merge(v.strip => 1) }
           else
             value
         end

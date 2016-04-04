@@ -10,7 +10,7 @@ module Plucky
     # Private
     OptionKeys = Set[
       :select, :offset, :order,                         # MM
-      :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
+      :projection, :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
       :batch_size, :timeout, :max_scan, :return_key,    # Ruby Driver
       :transformer, :show_disk_loc, :comment, :read,    # Ruby Driver
       :tag_sets, :acceptable_latency,                   # Ruby Driver
@@ -119,9 +119,11 @@ module Plucky
         query.collection.distinct(key, query.criteria_hash)
       end
 
-      def fields(*args)
-        clone.tap { |query| query.options[:fields] = *args }
+      def projection(*args)
+        clone.tap { |query| query.options[:projection] = *args }
       end
+
+
 
       def ignore(*args)
         set_field_inclusion(args, 0)
@@ -174,6 +176,7 @@ module Plucky
       alias_method :exist?, :exists?
       alias_method :filter, :where
       alias_method :to_a,   :all
+      alias_method :fields, :projection
     end
     include DSL
 
@@ -261,7 +264,7 @@ module Plucky
     def set_field_inclusion(fields, value)
       fields_option = {}
       fields.each { |field| fields_option[symbolized_key(field)] = value }
-      clone.tap { |query| query.options[:fields] = fields_option }
+      clone.tap { |query| query.options[:projection] = fields_option }
     end
   end
 end

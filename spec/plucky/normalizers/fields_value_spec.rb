@@ -15,7 +15,7 @@ describe Plucky::Normalizers::FieldsValue do
   end
 
   it "works with array" do
-    subject.call(['one', 'two']).should eq(['one', 'two'])
+    subject.call(['one', 'two']).should eq({'one' => 1, 'two' => 1})
   end
 
   # Ruby 1.9.x was sending array [{:age => 20}], instead of hash.
@@ -24,15 +24,15 @@ describe Plucky::Normalizers::FieldsValue do
   end
 
   it "flattens multi-dimensional array" do
-    subject.call([[:one, :two]]).should eq([:one, :two])
+    subject.call([[:one, :two]]).should eq({:one => 1, :two => 1})
   end
 
   it "works with symbol" do
-    subject.call(:one).should eq([:one])
+    subject.call(:one).should eq({:one => 1})
   end
 
   it "works with array of symbols" do
-    subject.call([:one, :two]).should eq([:one, :two])
+    subject.call([:one, :two]).should eq({:one => 1, :two => 1})
   end
 
   it "works with hash" do
@@ -40,6 +40,6 @@ describe Plucky::Normalizers::FieldsValue do
   end
 
   it "converts comma separated list to array" do
-    subject.call('one, two').should eq(['one', 'two'])
+    subject.call('one, two').should eq({'one' => 1, 'two' => 1})
   end
 end

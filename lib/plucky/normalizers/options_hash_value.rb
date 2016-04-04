@@ -34,7 +34,7 @@ module Plucky
         }
 
         @value_normalizers = {
-          :fields => default_fields_value_normalizer,
+          :projection => default_fields_value_normalizer,
           :sort   => default_sort_value_normalizer,
           :limit  => default_limit_value_normalizer,
           :skip   => default_skip_value_normalizer,

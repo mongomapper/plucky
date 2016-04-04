@@ -737,7 +737,7 @@ describe Plucky::Query do
     end
 
     {
-      :fields     => ['foo'],
+      :projection => {'foo' => 1},
       :sort       => {'foo' => 1},
       :hint       => '',
       :skip       => 0,
@@ -754,7 +754,7 @@ describe Plucky::Query do
 
     it "knows select is an option and remove it from options" do
       query = described_class.new(@collection, :select => 'foo')
-      query.options[:fields].should == ['foo']
+      query.options[:projection].should == {'foo' => 1}
       query.criteria.keys.should_not include(:select)
       query.options.keys.should_not  include(:select)
     end
@@ -785,7 +785,7 @@ describe Plucky::Query do
       query.criteria.source.should eq(:foo => 'bar', :baz => true)
       query.options.source.should eq({
         :sort   => {"foo" => 1},
-        :fields => ['foo', 'baz'],
+        :projection => {'foo' => 1, 'baz' => 1},
         :limit  => 10,
         :skip   => 10,
       })

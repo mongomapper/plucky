@@ -17,7 +17,7 @@ describe Plucky::OptionsHash do
 
     it "changes select to fields" do
       subject[:select] = [:foo]
-      subject[:fields].should == [:foo]
+      subject[:projection].should == {:foo => 1}
       subject[:select].should be_nil
     end
 
