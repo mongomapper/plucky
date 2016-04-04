@@ -128,7 +128,7 @@ describe Plucky::Query do
     end
 
     it "normalizes if using object id" do
-      id = @collection.insert_one(:name => 'Frank')
+      id = @collection.insert_one(:name => 'Frank').inserted_id
       @query.object_ids([:_id])
       doc = @query.find(id.to_s)
       doc['name'].should == 'Frank'
