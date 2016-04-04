@@ -6,9 +6,9 @@ describe Plucky::Query do
     @steve      = Hash['_id', 'steve', 'age', 29, 'name', 'Steve']
     @john       = Hash['_id', 'john',  'age', 28, 'name', 'John']
     @collection = DB['users']
-    @collection.insert(@chris)
-    @collection.insert(@steve)
-    @collection.insert(@john)
+    @collection.insert_one(@chris)
+    @collection.insert_one(@steve)
+    @collection.insert_one(@john)
   end
 
   context "#initialize" do
@@ -128,7 +128,7 @@ describe Plucky::Query do
     end
 
     it "normalizes if using object id" do
-      id = @collection.insert(:name => 'Frank')
+      id = @collection.insert_one(:name => 'Frank')
       @query.object_ids([:_id])
       doc = @query.find(id.to_s)
       doc['name'].should == 'Frank'
@@ -290,8 +290,8 @@ describe Plucky::Query do
   context "#distinct" do
     before do
       # same age as John
-      @mark = BSON::OrderedHash['_id', 'mark', 'age', 28, 'name', 'Mark']
-      @collection.insert(@mark)
+      @mark = Hash['_id', 'mark', 'age', 28, 'name', 'Mark']
+      @collection.insert_one(@mark)
     end
 
     it "works with just a key" do
@@ -672,7 +672,7 @@ describe Plucky::Query do
     it "returns a working enumerator" do
       query = described_class.new(@collection)
       query.each.methods.map(&:to_sym).include?(:group_by).should be(true)
-      query.each.next.should be_instance_of(BSON::OrderedHash)
+      query.each.next.should be_instance_of(Hash)
     end
   end
 

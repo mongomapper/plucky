@@ -16,9 +16,9 @@ db = connection.db('test')
 collection = db['users']
 collection.remove # clear out the collection
 
-collection.insert({'_id' => 'chris', 'age' => 26, 'name' => 'Chris'})
-collection.insert({'_id' => 'steve', 'age' => 29, 'name' => 'Steve'})
-collection.insert({'_id' => 'john',  'age' => 28, 'name' => 'John'})
+collection.insert_one({'_id' => 'chris', 'age' => 26, 'name' => 'Chris'})
+collection.insert_one({'_id' => 'steve', 'age' => 29, 'name' => 'Steve'})
+collection.insert_one({'_id' => 'john',  'age' => 28, 'name' => 'John'})
 
 # initialize query with collection
 query = Plucky::Query.new(collection)
