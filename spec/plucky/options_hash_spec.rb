@@ -3,7 +3,7 @@ require 'helper'
 describe Plucky::OptionsHash do
   describe "#initialize_copy" do
     before do
-      @original = described_class.new(:fields => {:name => true}, :sort => :name, :limit => 10)
+      @original = described_class.new(:projection => {:name => true}, :sort => :name, :limit => 10)
       @cloned   = @original.clone
     end
 
@@ -12,7 +12,7 @@ describe Plucky::OptionsHash do
     end
 
     it "clones duplicable? values" do
-      @cloned[:fields].should_not equal(@original[:fields])
+      @cloned[:projection].should_not equal(@original[:projection])
       @cloned[:sort].should_not equal(@original[:sort])
     end
   end

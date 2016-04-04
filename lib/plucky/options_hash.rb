@@ -55,7 +55,7 @@ module Plucky
 
     # Public
     def fields?
-      !self[:fields].nil?
+      !self[:projection].nil?
     end
 
     # Public
@@ -84,7 +84,8 @@ module Plucky
       @key_normalizer ||= @options.fetch(:key_normalizer) {
         Normalizers::HashKey.new({
           :order  => :sort,
-          :select => :fields,
+          :select => :projection,
+          :fields => :projection,
           :offset => :skip,
           :id     => :_id,
         })

@@ -56,7 +56,7 @@ describe Plucky do
         :where, :filter,
         :sort, :order, :reverse,
         :paginate, :per_page, :limit, :skip, :offset,
-        :fields, :ignore, :only,
+        :fields, :projection, :ignore, :only,
         :each, :find_each, :find_one, :find,
         :count, :size, :distinct,
         :last, :first, :all, :to_a,
