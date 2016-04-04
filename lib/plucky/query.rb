@@ -68,13 +68,9 @@ module Plucky
         query = clone.amend(opts)
 
         if block_given?
-          result = nil
-          query.cursor do |cursor|
-            result = cursor
-            cursor.each { |doc| yield doc }
-            cursor.rewind!
+          query.cursor.each do |doc|
+            yield doc
           end
-          result
         else
           query.cursor
         end
@@ -233,7 +229,7 @@ module Plucky
     end
 
     def cursor(&block)
-      @collection.find(criteria_hash, options_hash, &block)
+      @collection.find(criteria_hash, options_hash)
     end
 
   private
