@@ -611,7 +611,7 @@ describe Plucky::Query do
 
   context "#empty?" do
     it "returns true if empty" do
-      @collection.remove
+      @collection.drop
       described_class.new(@collection).should be_empty
     end
 
