@@ -179,7 +179,11 @@ module Plucky
 
     def update(document, driver_opts={})
       query = clone
-      query.collection.update(query.criteria_hash, document, driver_opts)
+      if driver_opts[:multi]
+        query.collection.find(query.criteria_hash).update_many(document, driver_opts)
+      else
+        query.collection.find(query.criteria_hash).update_one(document, driver_opts)
+      end
     end
 
     def amend(opts={})
