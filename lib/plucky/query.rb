@@ -105,7 +105,7 @@ module Plucky
 
       def remove(opts={}, driver_opts={})
         query = clone.amend(opts)
-        query.collection.remove(query.criteria_hash, driver_opts)
+        query.collection.find(query.criteria_hash, driver_opts).delete_many
       end
 
       def count(opts={})
