@@ -2,9 +2,9 @@ require 'helper'
 
 describe Plucky::Query do
   before do
-    @chris      = BSON::OrderedHash['_id', 'chris', 'age', 26, 'name', 'Chris']
-    @steve      = BSON::OrderedHash['_id', 'steve', 'age', 29, 'name', 'Steve']
-    @john       = BSON::OrderedHash['_id', 'john',  'age', 28, 'name', 'John']
+    @chris      = Hash['_id', 'chris', 'age', 26, 'name', 'Chris']
+    @steve      = Hash['_id', 'steve', 'age', 29, 'name', 'Steve']
+    @john       = Hash['_id', 'john',  'age', 28, 'name', 'John']
     @collection = DB['users']
     @collection.insert(@chris)
     @collection.insert(@steve)
@@ -79,7 +79,7 @@ describe Plucky::Query do
     it "is Ruby-like and returns a reset cursor if a block is given" do
       cursor = described_class.new(@collection).find_each {}
       cursor.should be_instance_of(Mongo::Cursor)
-      cursor.next.should be_instance_of(BSON::OrderedHash)
+      cursor.next.should be_instance_of(Hash)
     end
   end
 
