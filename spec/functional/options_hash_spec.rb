@@ -6,13 +6,13 @@ describe Plucky::OptionsHash do
   describe "#[]=" do
     it "changes order to sort" do
       subject[:order] = "foo asc"
-      subject[:sort].should == [["foo", 1]]
+      subject[:sort].should == {"foo" => 1}
       subject[:order].should be_nil
     end
 
     it "changes sort(id) to sort(_id)" do
       subject[:sort] = "id asc"
-      subject[:sort].should == [["_id", 1]]
+      subject[:sort].should == {"_id" => 1}
     end
 
     it "changes select to fields" do
@@ -35,7 +35,7 @@ describe Plucky::OptionsHash do
 
     it "does not change the sort field" do
       subject[:order] = :order.asc
-      subject[:sort].should == [["order", 1]]
+      subject[:sort].should == {"order" => 1}
     end
   end
 end

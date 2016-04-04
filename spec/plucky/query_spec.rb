@@ -489,23 +489,23 @@ describe Plucky::Query do
     end
 
     it "works with symbol operators" do
-      subject.sort(:foo.asc, :bar.desc).options[:sort].should == [['foo', 1], ['bar', -1]]
+      subject.sort(:foo.asc, :bar.desc).options[:sort].should == {"foo" => 1, "bar" => -1}
     end
 
     it "works with string" do
-      subject.sort('foo, bar desc').options[:sort].should == [['foo', 1], ['bar', -1]]
+      subject.sort('foo, bar desc').options[:sort].should == {"foo" => 1, "bar" => -1}
     end
 
     it "works with just a symbol" do
-      subject.sort(:foo).options[:sort].should == [['foo', 1]]
+      subject.sort(:foo).options[:sort].should == {"foo" => 1}
     end
 
     it "works with symbol descending" do
-      subject.sort(:foo.desc).options[:sort].should == [['foo', -1]]
+      subject.sort(:foo.desc).options[:sort].should == {"foo" => -1}
     end
 
     it "works with multiple symbols" do
-      subject.sort(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
+      subject.sort(:foo, :bar).options[:sort].should == {"foo" => 1, "bar" => 1}
     end
 
     it "returns new instance of query" do
@@ -515,8 +515,8 @@ describe Plucky::Query do
     end
 
     it "is aliased to order" do
-      subject.order(:foo).options[:sort].should       == [['foo', 1]]
-      subject.order(:foo, :bar).options[:sort].should == [['foo', 1], ['bar', 1]]
+      subject.order(:foo).options[:sort].should       == {"foo" => 1}
+      subject.order(:foo, :bar).options[:sort].should == {"foo" => 1, "bar" => 1}
     end
   end
 
@@ -536,20 +536,20 @@ describe Plucky::Query do
 
     it "reverses the sort order" do
       subject.sort('foo asc, bar desc').
-        reverse.options[:sort].should == [['foo', -1], ['bar', 1]]
+        reverse.options[:sort].should == {"foo" => -1, "bar" => 1}
     end
 
     it "returns new instance of query" do
       sorted_query = subject.sort(:name)
       new_query = sorted_query.reverse
       new_query.should_not equal(sorted_query)
-      sorted_query[:sort].should == [['name', 1]]
+      sorted_query[:sort].should == {'name' => 1}
     end
   end
 
   context "#amend" do
     it "normalizes and update options" do
-      described_class.new(@collection).amend(:order => :age.desc).options[:sort].should == [['age', -1]]
+      described_class.new(@collection).amend(:order => :age.desc).options[:sort].should == {'age' => -1}
     end
 
     it "works with simple stuff" do
@@ -738,7 +738,7 @@ describe Plucky::Query do
 
     {
       :fields     => ['foo'],
-      :sort       => [['foo', 1]],
+      :sort       => {'foo' => 1},
       :hint       => '',
       :skip       => 0,
       :limit      => 0,
@@ -761,7 +761,7 @@ describe Plucky::Query do
 
     it "knows order is an option and remove it from options" do
       query = described_class.new(@collection, :order => 'foo')
-      query.options[:sort].should == [['foo', 1]]
+      query.options[:sort].should == {'foo' => 1}
       query.criteria.keys.should_not include(:order)
       query.options.keys.should_not  include(:order)
     end
@@ -777,14 +777,14 @@ describe Plucky::Query do
       query = described_class.new(@collection, {
         :foo    => 'bar',
         :baz    => true,
-        :sort   => [['foo', 1]],
+        :sort   => {"foo" => 1},
         :fields => ['foo', 'baz'],
         :limit  => 10,
         :skip   => 10,
       })
       query.criteria.source.should eq(:foo => 'bar', :baz => true)
       query.options.source.should eq({
-        :sort   => [['foo', 1]],
+        :sort   => {"foo" => 1},
         :fields => ['foo', 'baz'],
         :limit  => 10,
         :skip   => 10,

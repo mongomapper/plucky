@@ -21,7 +21,7 @@ module Plucky
             if value.size == 1 && value[0].is_a?(String)
               normalized_sort_piece(value[0])
             else
-              value.compact.map { |v| normalized_sort_piece(v).flatten }
+              value.compact.inject({}) { |acc, v| acc.merge(normalized_sort_piece(v)) }
             end
           else
             normalized_sort_piece(value)
@@ -32,13 +32,15 @@ module Plucky
       def normalized_sort_piece(value)
         case value
           when SymbolOperator
-            [normalized_direction(value.field, value.operator)]
+            normalized_direction(value.field, value.operator)
           when String
-            value.split(',').map do |piece|
-              normalized_direction(*piece.split(' '))
+            value.split(',').inject({}) do |acc, piece|
+              acc.merge(normalized_direction(*piece.split(' ')))
             end
           when Symbol
-            [normalized_direction(value)]
+            normalized_direction(value)
+          when Array
+            Hash[*value]
           else
             value
         end
@@ -48,7 +50,7 @@ module Plucky
       def normalized_direction(field, direction=nil)
         direction ||= 'ASC'
         direction = direction.upcase == 'ASC' ? 1 : -1
-        [@key_normalizer.call(field).to_s, direction]
+        {@key_normalizer.call(field).to_s => direction}
       end
     end
   end
