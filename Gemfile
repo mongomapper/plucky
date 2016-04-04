@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'bson_ext', '~> 1.5', :platform => :mri
 gem 'rake'
 
 group(:test) do
