@@ -78,7 +78,7 @@ module Plucky
 
       def find_one(opts={})
         query = clone.amend(opts)
-        query.collection.find(query.criteria_hash, query.options_hash).first
+        query.collection.find(query.criteria_hash, query.options_hash).limit(-1).first
       end
 
       def find(*ids)
