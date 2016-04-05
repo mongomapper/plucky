@@ -68,19 +68,19 @@ module Plucky
         query = clone.amend(opts)
 
         if block_given?
-          cursor = query.cursor
-          cursor.each do |doc|
+          enumerator = query.enumerator
+          enumerator.each do |doc|
             yield doc
           end
-          cursor
+          enumerator
         else
-          query.cursor
+          query.enumerator
         end
       end
 
       def find_one(opts={})
         query = clone.amend(opts.merge(limit: -1))
-        query.cursor.first
+        query.enumerator.first
       end
 
       def find(*ids)
@@ -112,7 +112,7 @@ module Plucky
 
       def count(opts={})
         query = clone.amend(opts)
-        cursor = query.cursor
+        cursor = query.view
         cursor.count
       end
 
@@ -237,10 +237,12 @@ module Plucky
       @options.to_hash
     end
 
-    def cursor(&block)
-      options = options_hash
-      view = @collection.find(criteria_hash, options)
-      if transformer = options[:transformer]
+    def view
+      @collection.find(criteria_hash, options_hash)
+    end
+
+    def enumerator
+      if transformer = options_hash[:transformer]
         Transformer.new(view, transformer).to_enum
       else
         view.to_enum
