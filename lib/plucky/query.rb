@@ -72,13 +72,12 @@ module Plucky
             yield doc
           end
         else
-          query.cursor
+          query.cursor.each
         end
       end
 
       def find_one(opts={})
-        query = clone.amend(opts)
-        query.collection.find(query.criteria_hash, query.options_hash).limit(-1).first
+        find_each(opts.merge(limit: -1)).first
       end
 
       def find(*ids)
