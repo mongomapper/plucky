@@ -68,11 +68,13 @@ module Plucky
         query = clone.amend(opts)
 
         if block_given?
+          cursor = query.cursor
           query.cursor.each do |doc|
             yield doc
           end
+          cursor
         else
-          query.cursor.each
+          query.cursor
         end
       end
 
@@ -239,7 +241,7 @@ module Plucky
       if transformer = options_hash[:transformer]
         Transformer.new(view, transformer).to_enum
       else
-        view
+        view.to_enum
       end
     end
 
