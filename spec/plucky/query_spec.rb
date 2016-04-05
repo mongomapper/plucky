@@ -672,7 +672,7 @@ describe Plucky::Query do
     it "returns a working enumerator" do
       query = described_class.new(@collection)
       query.each.methods.map(&:to_sym).include?(:group_by).should be(true)
-      query.each.next.should be_instance_of(Hash)
+      query.each.next.should be_instance_of(BSON::Document)
     end
   end
 
