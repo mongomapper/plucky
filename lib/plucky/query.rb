@@ -79,7 +79,8 @@ module Plucky
       end
 
       def find_one(opts={})
-        find_each(opts.merge(limit: -1)).first
+        query = clone.amend(opts.merge(limit: -1))
+        query.cursor.first
       end
 
       def find(*ids)
