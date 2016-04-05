@@ -279,6 +279,11 @@ describe Plucky::Query do
       query.count(:name => 'Steve')
       query[:name].should be_nil
     end
+
+    it 'counts the result set and not the enumerator' do
+      described_class.new(@collection).limit(1).count.should == 3
+    end
+    
   end
 
   context "#size" do
