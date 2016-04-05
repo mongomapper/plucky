@@ -1,12 +1,12 @@
 module Plucky
   class Transformer
-    def initialize(iterable, transformer)
-      @iterable = iterable
+    def initialize(view, transformer)
+      @view = view
       @transformer = transformer
     end
 
     def each
-      @iterable.each do |doc|
+      @view.each do |doc|
         yield @transformer.call(doc)
       end
     end
