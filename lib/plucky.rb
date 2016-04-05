@@ -5,6 +5,7 @@ require 'plucky/extensions'
 require 'plucky/criteria_hash'
 require 'plucky/options_hash'
 require 'plucky/query'
+require 'plucky/transformer'
 require 'plucky/pagination'
 
 module Plucky
