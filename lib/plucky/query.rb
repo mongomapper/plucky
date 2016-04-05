@@ -238,8 +238,9 @@ module Plucky
     end
 
     def cursor(&block)
-      view = @collection.find(criteria_hash, options_hash)
-      if transformer = options_hash[:transformer]
+      options = options_hash
+      view = @collection.find(criteria_hash, options)
+      if transformer = options[:transformer]
         Transformer.new(view, transformer).to_enum
       else
         view.to_enum
