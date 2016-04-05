@@ -69,7 +69,7 @@ module Plucky
 
         if block_given?
           cursor = query.cursor
-          query.cursor.each do |doc|
+          cursor.each do |doc|
             yield doc
           end
           cursor
