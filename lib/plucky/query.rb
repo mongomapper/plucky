@@ -64,6 +64,17 @@ module Plucky
         Pagination::Collection.new(docs, paginator)
       end
 
+      def find_in_batches(opts={})
+        batch_size = opts[:batch_size] || 1000
+        if block_given?
+          find_each(opts).each_slice(batch_size) do |documents|
+            yield documents
+          end
+        else
+          find_each(opts).each_slice(batch_size)
+        end
+      end
+
       def find_each(opts={})
         query = clone.amend(opts)
 
