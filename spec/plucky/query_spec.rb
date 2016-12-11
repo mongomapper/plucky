@@ -815,8 +815,14 @@ describe Plucky::Query do
 
     it "works" do
       explain = subject.where(:age.lt => 28).explain
-      explain['cursor'].should == 'BasicCursor'
-      explain['nscanned'].should == 3
+
+      if explain['cursor']
+        explain['cursor'].should == 'BasicCursor'
+        explain['nscanned'].should == 3
+      elsif explain['executionStats']
+        explain['executionStats']['executionSuccess'].should == true
+        explain['executionStats']['totalDocsExamined'].should == 3
+      end
     end
   end
 
