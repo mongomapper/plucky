@@ -54,6 +54,29 @@ describe Plucky::Query do
     end
   end
 
+  context "#find_in_batches" do
+    it "returns an enumerator" do
+      documents_arrays = described_class.new(@collection).find_in_batches
+      documents_arrays.should be_instance_of(Enumerator)
+    end
+
+    it "works with and normalize criteria" do
+      documents_arrays = described_class.new(@collection).find_in_batches(:id.in => ['john'])
+      documents_arrays.first.should == [@john]
+    end
+
+    it "works with and normalize options" do
+      documents_arrays = described_class.new(@collection).find_in_batches(:order => :name.asc)
+      documents_arrays.to_a.flatten.should == [@chris, @john, @steve]
+    end
+
+    it "yields elements to a block if given" do
+      yielded_elements = Set.new
+      described_class.new(@collection).find_in_batches(batch_size: 2, order: :name.asc) { |doc| yielded_elements << doc }
+      yielded_elements.should == [[@chris, @john], [@steve]].to_set
+    end
+  end
+
   context "#find_each" do
     it "returns a cursor" do
       cursor = described_class.new(@collection).find_each
