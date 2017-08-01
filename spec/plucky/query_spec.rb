@@ -203,6 +203,29 @@ describe Plucky::Query do
     end
   end
 
+  context "#view" do
+    it 'returns a mongo::collection::view' do
+      described_class.new(@collection).view.should be_a(Mongo::Collection::View)
+    end
+
+    it 'converts criteria into the view' do
+      view = described_class.new(@collection).where(:name => "bob").view
+      view.filter.should == {"name" => "bob"}
+    end
+
+    it "converts read option symbol to a server selector" do
+      view = described_class.new(@collection, :read => :secondary_preferred).view
+      view.read.should be_a(Mongo::ServerSelector::SecondaryPreferred)
+    end
+
+    it "converts read option hash to a server selector" do
+      view = described_class.new(@collection, :read => {:mode =>:secondary_preferred}).view
+      view.read.should be_a(Mongo::ServerSelector::SecondaryPreferred)
+    end
+  end
+
+
+
   context "#all" do
     it "works with no arguments" do
       docs = described_class.new(@collection).all
