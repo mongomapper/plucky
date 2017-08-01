@@ -9,11 +9,12 @@ module Plucky
 
     # Private
     OptionKeys = Set[
-      :select, :offset, :order,                         # MM
+      :select, :offset, :order, :transformer,                        # MM
       :projection, :fields, :skip, :limit, :sort, :hint, :snapshot,  # Ruby Driver
       :batch_size, :timeout, :max_scan, :return_key,    # Ruby Driver
-      :transformer, :show_disk_loc, :comment, :read,    # Ruby Driver
+      :show_disk_loc, :comment, :read,    # Ruby Driver
       :tag_sets, :acceptable_latency,                   # Ruby Driver
+      :max_time_ms, :no_cursor_timeout, :collation, :modifiers
     ]
 
     attr_reader    :criteria, :options, :collection
@@ -238,7 +239,18 @@ module Plucky
     end
 
     def view
-      @collection.find(criteria_hash, options_hash)
+      driver_opts = options_hash.dup
+      driver_opts.delete :transformer
+      case driver_opts[:read]
+      when Hash
+        driver_opts[:read] = Mongo::ServerSelector.get(driver_opts[:read])
+      when Symbol
+        driver_opts[:read] = Mongo::ServerSelector.get(mode: driver_opts[:read])
+      else
+        raise "Unexpected read options: #{driver_opts[:read]} - expected hash or symbol"
+      end if driver_opts.has_key?(:read)
+
+      @collection.find(criteria_hash, driver_opts)
     end
 
     def enumerator
