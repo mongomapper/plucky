@@ -3,12 +3,11 @@ require File.expand_path('../lib/plucky/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name         = 'plucky'
-  s.homepage     = 'http://github.com/jnunemaker/plucky'
+  s.homepage     = 'http://github.com/mongomapper/plucky'
   s.summary      = 'Thin layer over the ruby driver that allows you to quickly grab hold of your data (pluck it!).'
   s.require_path = 'lib'
-  s.homepage    = 'http://jnunemaker.github.com/plucky/'
-  s.authors      = ['John Nunemaker']
-  s.email        = ['nunemaker@gmail.com']
+  s.authors      = ['John Nunemaker', 'Chris Heald', 'Scott Taylor']
+  s.email        = ['nunemaker@gmail.com', 'cheald@gmail.com', 'scott@railsnewbie.com']
   s.version      = Plucky::Version
   s.platform     = Gem::Platform::RUBY
 
