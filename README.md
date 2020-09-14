@@ -29,3 +29,15 @@ https://groups.google.com/forum/#!forum/mongomapper
 ## Copyright
 
 Copyright (c) 2010-2020 MongoMapper. See LICENSE for details.
+
+## Contributors
+
+MongoMapper/Plucky is:
+
+* John Nunemaker
+* Chris Heald
+* Scott Taylor
+
+With contributions from:
+
+* Frederick Cheung
