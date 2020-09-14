@@ -6,7 +6,12 @@ gem 'rake'
 group(:test) do
   gem 'rspec'
   gem 'log_buddy'
-  gem 'byebug'
+
+  if RUBY_VERSION >= '2.3'
+    platforms :mri do
+      gem 'byebug'
+    end
+  end
 end
 
 group(:guard) do
