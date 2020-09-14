@@ -10,6 +10,7 @@ require 'plucky'
 require 'fileutils'
 require 'logger'
 require 'pp'
+require 'byebug'
 
 log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir)

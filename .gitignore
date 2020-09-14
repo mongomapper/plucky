@@ -1,3 +1,4 @@
 *.project
 log
 *.gem
+.byebug_history
