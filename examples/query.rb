@@ -7,17 +7,18 @@ lib_path  = root_path.join('lib')
 $:.unshift(lib_path)
 require 'plucky'
 
-connection = Mongo::MongoClient.new
-db = connection.db('test')
+connection = Mongo::Client.new(["127.0.0.1"], :logger => Logger.new('/dev/null'))
+db = connection.use('test').database
 collection = db['users']
-collection.remove # clear out the collection
-
-collection.insert_one({'_id' => 'chris', 'age' => 26, 'name' => 'Chris'})
-collection.insert_one({'_id' => 'steve', 'age' => 29, 'name' => 'Steve'})
-collection.insert_one({'_id' => 'john',  'age' => 28, 'name' => 'John'})
 
 # initialize query with collection
 query = Plucky::Query.new(collection)
+
+query.remove # clear out the collection
+
+query.insert({'_id' => 'chris', 'age' => 26, 'name' => 'Chris'})
+query.insert({'_id' => 'steve', 'age' => 29, 'name' => 'Steve'})
+query.insert({'_id' => 'john',  'age' => 28, 'name' => 'John'})
 
 puts 'Querying'
 pp query.where(:name => 'John').first
