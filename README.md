@@ -26,4 +26,4 @@ https://groups.google.com/forum/#!forum/mongomapper
 
 ## Copyright
 
-Copyright (c) 2010 John Nunemaker. See LICENSE for details.
+Copyright (c) 2010-2020 MongoMapper. See LICENSE for details.
