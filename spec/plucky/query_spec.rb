@@ -224,8 +224,6 @@ describe Plucky::Query do
     end
   end
 
-
-
   context "#all" do
     it "works with no arguments" do
       docs = described_class.new(@collection).all
@@ -306,7 +304,6 @@ describe Plucky::Query do
     it 'counts the result set and not the enumerator' do
       described_class.new(@collection).limit(1).count.should == 3
     end
-    
   end
 
   context "#size" do
@@ -882,6 +879,5 @@ describe Plucky::Query do
         result.should be_instance_of(@user_class)
       end
     end
-
   end
 end

@@ -126,8 +126,6 @@ module Plucky
         clone.tap { |query| query.options[:projection] = *args }
       end
 
-
-
       def ignore(*args)
         set_field_inclusion(args, 0)
       end
