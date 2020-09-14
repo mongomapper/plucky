@@ -2,6 +2,8 @@
 
 A thin layer over the ruby driver that allows you to quickly grab hold of your data (pluck it!).
 
+Used as a query selector inside of MongoMapper.
+
 ## Install
 
 ```
