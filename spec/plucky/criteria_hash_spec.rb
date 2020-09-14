@@ -37,9 +37,9 @@ describe Plucky::CriteriaHash do
     end
 
     it "raises argument error if not array" do
-      expect { described_class.new.object_ids = {} }.to raise_error(ArgumentError)
-      expect { described_class.new.object_ids = nil }.to raise_error(ArgumentError)
-      expect { described_class.new.object_ids = 'foo' }.to raise_error(ArgumentError)
+      lambda { described_class.new.object_ids = {} }.should raise_error(ArgumentError)
+      lambda { described_class.new.object_ids = nil }.should raise_error(ArgumentError)
+      lambda { described_class.new.object_ids = 'foo' }.should raise_error(ArgumentError)
     end
   end
 

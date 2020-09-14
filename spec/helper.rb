@@ -31,7 +31,7 @@ RSpec.configure do |config|
   config.alias_example_to :xit, :pending => true
   config.run_all_when_everything_filtered = true
 
-  config.expect_with(:rspec) { |c| c.syntax = [:should, :expect] }
+  config.expect_with(:rspec) { |c| c.syntax = :should }
   config.mock_with(:rspec) { |c| c.syntax = :should }
 
   config.before(:suite) do

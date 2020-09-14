@@ -554,9 +554,9 @@ describe Plucky::Query do
     end
 
     it "does not error if no sort provided" do
-      expect {
+      lambda {
         subject.reverse
-      }.to_not raise_error
+      }.should_not raise_error
     end
 
     it "reverses the sort order" do

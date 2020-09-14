@@ -13,9 +13,9 @@ describe Plucky::Normalizers::SortValue do
   }
 
   it "raises exception if missing key normalizer" do
-    expect {
+    lambda {
       described_class.new
-    }.to raise_error(ArgumentError, "Missing required key :key_normalizer")
+    }.should raise_error(ArgumentError, "Missing required key :key_normalizer")
   end
 
   it "defaults to nil" do
