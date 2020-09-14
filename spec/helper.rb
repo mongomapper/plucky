@@ -10,7 +10,10 @@ require 'plucky'
 require 'fileutils'
 require 'logger'
 require 'pp'
-require 'byebug'
+
+if RUBY_ENGINE == "ruby" && RUBY_VERSION >= '2.3'
+  require 'byebug'
+end
 
 log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir)
