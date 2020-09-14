@@ -1,7 +1,3 @@
 *.project
 log
 *.gem
-Gemfile.lock
-bin
-vendor
-.bundle
