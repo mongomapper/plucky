@@ -1,6 +1,6 @@
 # Plucky
 
-Thin layer over the ruby driver that allows you to quickly grab hold of your data (pluck it!).
+A thin layer over the ruby driver that allows you to quickly grab hold of your data (pluck it!).
 
 ## Install
 
