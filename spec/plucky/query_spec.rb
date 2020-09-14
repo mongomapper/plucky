@@ -880,4 +880,20 @@ describe Plucky::Query do
       end
     end
   end
+
+  describe "insert" do
+    before  { @query = described_class.new(@collection) }
+    subject { @query }
+
+    it "should be able to insert one doc" do
+      subject.insert({ foo: 'bar' })
+      subject.count({ foo: 'bar' }).should == 1
+    end
+
+    it "should be able to insert multiple" do
+      subject.insert([{ foo: 'bar' }, { baz: 'quxx' }])
+      subject.count({ foo: 'bar' }).should == 1
+      subject.count({ baz: 'quxx' }).should == 1
+    end
+  end
 end

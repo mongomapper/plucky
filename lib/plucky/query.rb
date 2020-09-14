@@ -190,6 +190,16 @@ module Plucky
       end
     end
 
+    def insert(document_or_array, driver_opts={})
+      query = clone
+
+      if document_or_array.is_a?(Array)
+        query.collection.insert_many(document_or_array, driver_opts)
+      else
+        query.collection.insert_one(document_or_array, driver_opts)
+      end
+    end
+
     def amend(opts={})
       opts.each { |key, value| self[key] = value }
       self
