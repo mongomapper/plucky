@@ -1,0 +1,44 @@
+name: Ruby
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - jruby
+          - 2.4.10
+          - 2.5.9
+          - 2.6.10
+          - 2.7.6
+          - 3.0.4
+          - 3.1.2
+        mongo-image:
+          - mongo:4.2
+          - mongo:4.4
+          - mongo:5.0
+    services:
+      mongo:
+        image: ${{ matrix.mongo-image }}
+        ports:
+          - 27017:27017
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "${{ matrix.ruby-version }}"
+    - name: Install dependencies
+      run: |
+        rm Gemfile.lock
+        bundle install --without guard
+    - name: Run tests
+      run: "bundle exec rake"
