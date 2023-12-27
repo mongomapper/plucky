@@ -24,6 +24,8 @@ jobs:
           - mongo:4.2
           - mongo:4.4
           - mongo:5.0
+          - mongo:6.0
+          - mongo:7.0
     services:
       mongo:
         image: ${{ matrix.mongo-image }}
