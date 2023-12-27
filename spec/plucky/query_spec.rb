@@ -429,6 +429,29 @@ describe Plucky::Query do
     end
   end
 
+  context "#hint" do
+    before  { @query = described_class.new(@collection) }
+    subject { @query }
+
+    it "works" do
+      subject.hint(:name, :age).
+        options[:hint].
+        should == { :name => 1, :age => 1 }
+    end
+
+    it "returns new instance of query" do
+      new_query = subject.hint(:name)
+      new_query.should_not equal(subject)
+      subject[:hint].should be_nil
+    end
+
+    it "works with hash" do
+      subject.hint(:name => 1, :_id => 1).
+        options[:hint].
+        should == { :name => 1, :_id => 1 }
+    end
+  end
+
   context "#ignore" do
     before  { @query = described_class.new(@collection) }
     subject { @query }
