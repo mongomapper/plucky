@@ -21,11 +21,12 @@ jobs:
           - 3.0.6
           - 3.1.4
         mongo-image:
-          - mongo:4.2
           - mongo:4.4
-          - mongo:5.0
-          - mongo:6.0
-          - mongo:7.0
+        include:
+          - { "ruby-version": 3.1.4, "mongo-image": "mongo:4.2" }
+          - { "ruby-version": 3.1.4, "mongo-image": "mongo:5.0" }
+          - { "ruby-version": 3.1.4, "mongo-image": "mongo:6.0" }
+          - { "ruby-version": 3.1.4, "mongo-image": "mongo:7.0" }
     services:
       mongo:
         image: ${{ matrix.mongo-image }}
