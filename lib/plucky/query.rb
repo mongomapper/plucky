@@ -126,6 +126,11 @@ module Plucky
         clone.tap { |query| query.options[:projection] = *args }
       end
 
+      def hint(*fields)
+        hint_fields = fields.first.is_a?(Hash) ? fields.first : Hash[fields.map{|hint| [hint, 1]}]
+        clone.tap { |query| query.options[:hint] = hint_fields }
+      end
+
       def ignore(*args)
         set_field_inclusion(args, 0)
       end
