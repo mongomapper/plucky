@@ -14,6 +14,10 @@ gem install plucky
 
 See `examples/query.rb`.
 
+## Notes
+
+- if you are using Ruby 3.4+, you'll need to add the base64 and/or bigdecimal gems to your Gemfile
+
 ## Help
 
 https://groups.google.com/forum/#!forum/mongomapper
