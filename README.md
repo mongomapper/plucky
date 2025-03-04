@@ -14,6 +14,10 @@ gem install plucky
 
 See `examples/query.rb`.
 
+## Notes
+
+- if you are using Ruby >= 3.4 and Rails <= 7.0, you'll need to add the bigdecimal gem to your Gemfile
+
 ## Help
 
 https://groups.google.com/forum/#!forum/mongomapper
