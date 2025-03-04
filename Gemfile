@@ -6,6 +6,9 @@ gem 'rake'
 if RUBY_VERSION >= '3.4'
   # the mongo gem depends on the base64 gem, which has been extracted as a bundled gem since Ruby 3.4.
   gem 'base64'
+
+  # the activesupport gem depends on the base64 gem, which has been extracted as a bundled gem since Ruby 3.4.
+  gem 'bigdecimal'
 end
 
 group(:test) do
