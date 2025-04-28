@@ -29,6 +29,7 @@ jobs:
           - { "ruby-version": 3.3.0, "mongo-image": "mongo:5.0" }
           - { "ruby-version": 3.3.0, "mongo-image": "mongo:6.0" }
           - { "ruby-version": 3.3.0, "mongo-image": "mongo:7.0" }
+          - { "ruby-version": 3.3.0, "mongo-image": "mongo:8.0" }
     services:
       mongo:
         image: ${{ matrix.mongo-image }}
