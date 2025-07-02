@@ -7,6 +7,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    bigdecimal (3.1.9)
     bson (5.0.2)
     byebug (11.1.3)
     coderay (1.1.3)
@@ -74,6 +75,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bigdecimal
   byebug
   guard
   guard-bundler
