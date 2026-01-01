@@ -8,6 +8,11 @@ if RUBY_VERSION >= '3.4'
   gem 'bigdecimal'
 end
 
+if RUBY_VERSION >= '4.0'
+  # the mongo gem depends on the logger gem, which has been extracted as a bundled gem since Ruby 4.0.
+  gem 'logger'
+end
+
 group(:test) do
   gem 'rspec'
   gem 'log_buddy'
