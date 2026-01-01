@@ -44,7 +44,10 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: "${{ matrix.ruby-version }}"
+        bundler-cache: false
+    - name: Set up bundler
+      run: bundle config set --local without "guard"
     - name: Install dependencies
-      run: "bundle install --without guard"
+      run: "bundle install"
     - name: Run tests
       run: "bundle exec rake"
