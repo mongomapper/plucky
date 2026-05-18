@@ -119,6 +119,14 @@ describe Plucky::Query do
       @query.find('john', 'frank').should == [@john]
     end
 
+    it 'works when passed a set' do
+      @query.find(Set.new(['chris', 'john'])).should == [@chris, @john]
+    end
+
+    it 'a set of one returns an array' do
+      @query.find(Set.new(['chris'])).should == [@chris]
+    end
+
     it "returns nil for nil" do
       @query.find(nil).should be_nil
     end
