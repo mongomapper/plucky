@@ -87,12 +87,12 @@ module Plucky
       def find(*ids)
         return nil if ids.empty?
 
-        single_id_find = ids.size == 1 && !ids[0].is_a?(Array)
-
-        if single_id_find
-          first(:_id => ids[0])
+        if ids.size == 1 && !ids.first.is_a?(Enumerable)
+          first(_id: ids.first)
         else
-          all(:_id => ids.flatten)
+          flat_ids = ids.flat_map { |id| Array(id) }.flatten
+
+          all(_id: flat_ids)
         end
       end
 
